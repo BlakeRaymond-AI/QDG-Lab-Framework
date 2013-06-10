@@ -1,0 +1,69 @@
+PAT Experimental Framework
+
+Recipe <<Class>>
+	Desc: Provides functionality for communicating with UTBus.
+	Extends: None
+
+PATController <<Class>>
+	Desc: Consolidates all parts of controlling the PAT experimental apparatus.
+	Equivalencies: Contains high-level functions defined in Master_Recipe. 
+		Settings_Module is consolidated inside of this controller as the
+		settings module.
+	Extends: None
+	Contents:
+		- Settings Dictionary
+		- MagneticFieldController
+		- MOTController
+		
+		- SaveController
+		- DeviceController List
+		
+DefaultSettings <<Dictionary>>
+	Desc: Module containing a dictionary with default values with which to
+			create PAT Controller. Contains all settings for all devices, 
+			components and subsystem within the PAT Apparatus.
+		
+OverwriteSettings <<Dictionary
+	Desc: Module containing a dictionary with the values that are to be 
+			overwritten in the Pat Controller	
+
+SaveController <<Class>>
+	Desc: Handles the creation of directories required for saving data.
+			Generetates file paths that can be passed to DeviceController save()
+			methods.
+
+MagneticFieldController <<Class>>
+	Desc: Handles the PAT Magnetic Field subsystem.
+	Extends: Recipe 
+
+... More Control Subsystems
+
+
+
+DeviceController <<Interface>
+	Desc: A common interface which all device must subclass. Prototypes common
+			methods that all devices must implement [ie. start(), save()]. 
+			Pixelink, PointGrey, Tekscope are all examples of devices that would
+			extend this. Every device would also have a corresponding settings
+			dictionary with the main settings dictiory  
+	Equivalencies: Device settings from Settings_Module
+	Methods:
+		- save(path, devSettings): Saves device data to new folder based 
+									on the path. 
+		- start(): Runs the necessary commands to initialise device.
+	Notes: Monkey patching can be used on existing controllers to consolidate
+			existing functionality.
+	
+	
+PointGreyController
+	Desc: Provides control over the desired Flea2 functionality.
+
+	
+Use Case
+	A script to do Science would work as follows:
+1. Pull in the DefaultSettings dictionary.
+2. Overwrite the DefaultSettings dictionary with the OverwriteSettings dictionary.
+3. Create a PATController class with the overwritten settings.
+4. Pass the PATController object to the Sequence function.
+5. ???
+6. Profit
