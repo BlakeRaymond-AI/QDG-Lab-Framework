@@ -1,5 +1,7 @@
 from Settings import Settings
 from DummyCameraController import CameraController
+from DummyScopeController import ScopeController
+from SaveController import SaveController
 
 
 class PATController(object):
@@ -17,12 +19,18 @@ class PATController(object):
 			self.deviceDict[key] = constructor(deviceData[1])
 			
 		# Create settings objects from general settings.
-		for (key, dictionary) in generalSettings.items():
-			setattr(self, key, Settings(dictionary))
+		for (key, deviceData) in generalSettings.items():
+			constructor = globals()[deviceData[0]]
+			setattr(self, key, constructor(deviceData[1]))
 			
 			
 	# Changing settings during a run is bad because it won't be save in the logs.
 	# Create a new PAT controller instead?	
+	
+	def save(self):
+		path = self.SaveController.dataPath
+		for dev in self.deviceDict.values():
+			dev.save(path)
 	
 	def overwriteSettings(self, dictOfDicts):
 		'''
@@ -31,8 +39,7 @@ class PATController(object):
 		'''
 		for (key, dictionary) in dictOfDicts.items():
 			getattr(self, key).overwrite(dictionary)
-			
-			
+						
 			
 
 

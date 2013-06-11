@@ -1,22 +1,39 @@
 PAT Experimental Framework
 
+Goals:
+	- Establish clear seperation between device control and experimental runs.
+	- Simplify the addition of new devices into the framework.
+	- Prevent dictionary swelling. Settings dictionary should only be
+		be controlling default values and not defining experimental run paths.
+		Current usage as a controller to run experimental paths is dangerous.
+		Rather than relying on a call path defined through settings, write a 
+		script that does what you want explicitly.
+	
+
+
 Recipe <<Class>>
-	Desc: Provides functionality for communicating with UTBus.
+	Desc: Provides functionality for communicating with UTBus devices.
 	Extends: None
 
 PATController <<Class>>
 	Desc: Consolidates all parts of controlling the PAT experimental apparatus.
 	Equivalencies: Contains high-level functions defined in Master_Recipe. 
-		Settings_Module is consolidated inside of this controller as the
-		settings module.
+		Settings_Module is consolidated inside of this controller. Individual
+		device settings are now device controllers stored in a list and global
+		settings are accessed through the Settings class.
 	Extends: None
 	Contents:
-		- Settings Dictionary
+		- Settings
 		- MagneticFieldController
-		- MOTController
-		
+		- LaserController
 		- SaveController
-		- DeviceController List
+		- DeviceController 
+		
+Settings <<Class>>
+	Desc: Module containing the function used to access, build and modify
+			the settings dictionary.
+	Contents:
+		- SettingsDict		
 		
 DefaultSettings <<Dictionary>>
 	Desc: Module containing a dictionary with default values with which to
@@ -28,16 +45,16 @@ OverwriteSettings <<Dictionary
 			overwritten in the Pat Controller	
 
 SaveController <<Class>>
-	Desc: Handles the creation of directories required for saving data.
-			Generetates file paths that can be passed to DeviceController save()
-			methods.
+	Desc: Handles the creation of directories required for saving data. Paths
+			should have the general form of Date/Time_ExpName/DeviceName to make
+			it easy to catalog and find data. Each individual device should 
+			simply have to save the data to the directory passed to it via the
+			DeviceController save() method.
+			
 
 MagneticFieldController <<Class>>
 	Desc: Handles the PAT Magnetic Field subsystem.
 	Extends: Recipe 
-
-... More Control Subsystems
-
 
 
 DeviceController <<Interface>
