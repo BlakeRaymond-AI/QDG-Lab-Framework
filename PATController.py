@@ -8,28 +8,49 @@ from UTBus1_Globals import lock_DDS_params
 from UTBus1.Exceptions import *	# Make this explicit
 import math as mth
 from Database import experiment_devices
-                
+
+from DefaultSettings.Settings import Settings
+from DummyCameraController import CameraController
+from DummyScopeController import ScopeController
+from SaveController import SaveController
+
 class PATController(Recipe):
-    
-    def __init__(self,recipe_name,**kw):
-        Recipe.__init__(self,recipe_name,**kw)
+
+    def __init__(self, controllerName, settingsDict, **kw):        
+        Recipe.__init__(self,controllerName,**kw)
         self.start()
         _D = experiment_devices['PAT']	# PAT Database Settings
         self.__devices = {}
         for (name,addr) in _D['DDS'].items():	# Creates DDS Functions
             self.__devices[addr] = d = DDS(address=addr)
             setattr(self,name,d)
-        
+
         for (name,addr) in _D['AO'].items():	# Create AO Functions
             self.__devices[addr] = d = AnalogOutput(address=addr)
             setattr(self,name,d)
-        
+
         for (name,data) in _D['DO'].items():	# Creates DO Functions
             (addr,port) = data
             if not addr in self.__devices:
                 self.__devices[addr] = d = DigitalOutput(address=addr)
             setattr(self,name,self.__build_DO_method(name,addr,port))
-            
+
+        self.deviceDict = {}
+        deviceSettings  = settingsDict['deviceSettings']
+        generalSettings = settingsDict['generalSettings']
+
+        # Create device controllers using device settings.
+        for (key, deviceData) in deviceSettings.items():
+            constructor = globals()[deviceData[0]]
+            self.deviceDict[key] = constructor(deviceData[1])
+
+        # Create settings objects from general settings.
+        for (key, deviceData) in generalSettings.items():
+            constructor = globals()[deviceData[0]]
+            setattr(self, key, constructor(deviceData[1]))
+
+        settingsDict.save(self.SaveController.expPath)
+		
         self.__camera_triggers = 0
 
     def __build_DO_method(self,name,addr,port):
@@ -42,10 +63,15 @@ class PATController(Recipe):
     def start(self):
         self.__camera_triggers = 0
         Recipe.start(self)
-    
+
+    def save(self):
+		path = self.SaveController.dataPath
+		for dev in self.deviceDict.values():
+			dev.save(path)
+
     def cable3_ttl(self,value=0):
         self.testcable3(value)
-        
+
 ## ========================================================================
 # PAT coil controls
 
@@ -89,7 +115,7 @@ class PATController(Recipe):
             print "Current setting too high (> 5.0A). Current not set."
         else:
             self.MOT_3Dcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
-    
+
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PAT Laser controls
 
@@ -172,7 +198,7 @@ class PATController(Recipe):
         self.set_3DRb_pump_amplitude(0.8)
         self.set_Rb_repump_amplitude(0.8)
         print 'lasers on'
-    
+
     def pat_3DMOT_lasers_off(self):
         self.set_3DRb_pump_amplitude(0.0)
         self.set_Rb_repump_amplitude(0.0)
