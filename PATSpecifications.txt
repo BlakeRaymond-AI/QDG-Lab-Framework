@@ -56,10 +56,9 @@ MagneticFieldController <<Class>>
 	Desc: Handles the PAT Magnetic Field subsystem.
 	Extends: Recipe 
 
-
-DeviceController <<Interface>
-	Desc: A common interface which all device must subclass. Prototypes common
-			methods that all devices must implement [ie. start(), save()]. 
+DeviceControllerMediator <<Interface>
+	Desc: A common interface which all device mediators must subclass. Prototypes common
+			methods that all device mediators must implement [ie. start(), save()]. 
 			Pixelink, PointGrey, Tekscope are all examples of devices that would
 			extend this. Every device would also have a corresponding settings
 			dictionary with the main settings dictiory  
@@ -70,6 +69,11 @@ DeviceController <<Interface>
 		- start(): Runs the necessary commands to initialise device.
 	Notes: Monkey patching can be used on existing controllers to consolidate
 			existing functionality.
+	
+Devices are not imported directly into the PAT apparatus. Devices controllers
+should be built to work independently of any framework (ie. No reliance on 
+input dictionaries). Device mediators will instead be used. Eeach will contain
+an instance of a device controller and have methods to do what needs to be done. 	
 	
 	
 PointGreyController
