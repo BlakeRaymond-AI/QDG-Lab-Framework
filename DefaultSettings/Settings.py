@@ -1,35 +1,51 @@
+from pprint import PrettyPrinter
+from os import path
+from cPickle import dump
+
 class NonExistentValueError(Exception):
 	'''
 	Raised by Settings object when modification of an attribute that is not
 	associated with it is attempted
 	'''
 	
-	def __init__(self, attrName, clsName):
+	def __init__(self, attrName):
 		self.attrName = attrName
-		self.clsName = clsName
 		
 	def __str__(self):
-		msg = repr('The class {0} does not have an attribute named {1}'.format(clsName, attrName))
+		msg = 'The attribute {0} does not exist within the specified settings dictionary.'
+		msg = repr(msg.format(self.attrName))
 		return msg
 		
 
-class Settings(object):
+class Settings(dict):
 	'''
-	Settings class to control access and manipulation of PAT settings 
-	dictionaries.
+	Dictionary subclass to control access and manipulation of PAT settings. 
+	Values in a Settings dictionary can only be modified. New values cannot be 
+	inserted.
 	'''
-	
-	def __init__(self, dictionary):
-		for (key, value) in dictionary.items():
-			setattr(self, key, value)
-		
-	def modify(self, key, value):
-		'''Change the value of an existing setting.'''
-		if hasattr(self, key):
-			setattr(self, key, value)
+
+	def __setitem__(self, key, val):
+		if key in self:
+			dict.__setitem__(self, key, val)
 		else:
-			raise NonExistentValueError(self, key)
+			raise NonExistentValueError(key)
 			
-	def overwrite(self, newDict):
-		for (key, value) in newDict.items():
-			self.modify(key, value)			
+	def __str__(self):
+		pp = PrettyPrinter(indent=0)
+		return pp.pformat(self)
+		
+	def save(self, filePath, fname = 'Settings'):
+		txtPath = path.join(filePath, ''.join([fname, '.txt']))
+		f = open(txtPath, 'wb')
+		f.write(str(self))
+		f.close()
+		picklePath = path.join(filePath, ''.join([fname, '.pkl']))
+		f = open(picklePath, 'wb')
+		dump(self, f)
+		f.close()
+
+	
+			
+				
+		
+			

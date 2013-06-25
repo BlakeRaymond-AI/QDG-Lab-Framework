@@ -10,8 +10,8 @@ import math as mth
 from Database import experiment_devices
 
 from DefaultSettings.Settings import Settings
-from DummyCameraController import CameraController
-from DummyScopeController import ScopeController
+from DeviceMediators.DummyCameraMediator import CameraMediator
+from DeviceMediators.DummyScopeMediator import ScopeMediator
 from SaveController import SaveController
 
 class PATController(Recipe):
@@ -39,7 +39,7 @@ class PATController(Recipe):
         deviceSettings  = settingsDict['deviceSettings']
         generalSettings = settingsDict['generalSettings']
 
-        # Create device controllers using device settings.
+        # Create device mediators using device settings.
         for (key, deviceData) in deviceSettings.items():
             constructor = globals()[deviceData[0]]
             self.deviceDict[key] = constructor(deviceData[1])
@@ -63,11 +63,16 @@ class PATController(Recipe):
     def start(self):
         self.__camera_triggers = 0
         Recipe.start(self)
+        
+    def startDevices(self):
+    	for device in self.deviceDict.values():
+    		device.start()
 
     def save(self):
 		path = self.SaveController.dataPath
 		for dev in self.deviceDict.values():
-			dev.save(path)
+			if dev.takeData: 
+				dev.save(path)
 
     def cable3_ttl(self,value=0):
         self.testcable3(value)

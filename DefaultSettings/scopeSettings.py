@@ -1,5 +1,5 @@
 # Scope Settings
 scopeSettings = dict()
 
-scopeSettings['saveData'] = True
+scopeSettings['takeData'] = False
 scopeSettings['deviceFolderName'] = 'scope'
