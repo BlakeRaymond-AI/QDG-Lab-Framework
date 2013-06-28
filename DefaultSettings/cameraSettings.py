@@ -1,5 +1,5 @@
 # camera Settings
 cameraSettings = dict()
 
-cameraSettings['takeData'] = True
+cameraSettings['takeData'] = False
 cameraSettings['dataFolderName'] = 'Camera'

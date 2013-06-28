@@ -9,7 +9,8 @@ from saveSettings import saveSettings
 # format is (Constructor Name, Initialisation Settings). 
 deviceSettings = {
 	'CameraM' : ('CameraMediator', cameraSettings),
-	'ScopeM' : ('ScopeMediator', scopeSettings)
+	'ScopeM' : ('ScopeMediator', scopeSettings),
+	'LabJack': ('LabJackMediator', labJackSettings)
 }
 
 # Store all other settings dicts in this dictionary

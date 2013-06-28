@@ -59,10 +59,6 @@ class PATController(Recipe):
             self.__devices[addr].set_bit(port,v)
         DO_method.func_name = name
         return DO_method
-
-    def start(self):
-        self.__camera_triggers = 0
-        Recipe.start(self)
         
     def startDevices(self):
     	for device in self.deviceDict.values():
@@ -217,7 +213,6 @@ class PATController(Recipe):
 
     def pat_2DMOT_off(self):
         self.set_2DRb_pump_amplitude(0.0)
-        self.set_Rb_push_amplitude(0.0)
         self.set_2D_I_1(0.0)
         self.set_2D_I_2(0.0)
         self.set_2D_I_3(0.0)
