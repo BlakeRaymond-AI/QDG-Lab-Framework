@@ -1,4 +1,4 @@
-"""
+'''
 This is a database of devices. The name of each device is unique in 
 the QDG Lab.
 
@@ -13,7 +13,7 @@ The specialized Recipe has an instance with the same name for
 all the DDS and AO devices. The DO devices become functions which
 accept a single argument treated as a bool (0 or 1). 
 
-"""
+'''
 __all__ = ['experiment_devices']
 
 __MAT_devices = {
@@ -93,6 +93,11 @@ __PAT_devices = {
     
     'DO' : {
         'pat_scope_trig' : (253,8),
+		'MOT2D_shutter_west': (253,2),
+        'MOT2D_shutter_east':(253,1),
+        'MOT3D_pump_shutter':(253,3),
+        'MOT3D_repump_shutter':(253,4),
+        'push_shutter':(253,5),
     },
     
     'AO' : {

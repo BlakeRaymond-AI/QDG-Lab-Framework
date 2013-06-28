@@ -2,6 +2,7 @@ from Settings import Settings
 from cameraSettings import cameraSettings
 from scopeSettings import scopeSettings
 from coilSettings import coilSettings
+from labJackSettings import labJackSettings
 from PATSettings import PATSettings
 from saveSettings import saveSettings	
 

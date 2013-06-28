@@ -1,5 +1,7 @@
 from DeviceMediatorInterface import DeviceMediatorInterface
-from LabJackController import LabJackController
+from DeviceControllers.LabJackController import LabJackController
+
+from os import path
 
 class LabJackMediator(DeviceMediatorInterface):
 	"""
@@ -17,8 +19,13 @@ class LabJackMediator(DeviceMediatorInterface):
 	def stop(self):
 		self.controller.stop()
 
-	def save(self, path):
-		p = path.join(path, 'LabJackData.txt')
-		self.controller.save(p)
+	def save(self, pth):
+		fname = path.join(pth, 'LabJackData.csv')
+		self.controller.save(fname)
+		
+	def processData(self, pth):
+		pass
+		
+	
 					
 	

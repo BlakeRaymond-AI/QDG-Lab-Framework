@@ -13,6 +13,7 @@ from DefaultSettings.Settings import Settings
 from DeviceMediators.DummyCameraMediator import CameraMediator
 from DeviceMediators.DummyScopeMediator import ScopeMediator
 from SaveController import SaveController
+from DeviceMediators.LabJackMediator import LabJackMediator
 
 class PATController(Recipe):
 
@@ -62,21 +63,25 @@ class PATController(Recipe):
         
     def startDevices(self):
     	for device in self.deviceDict.values():
-    		device.start()
+	    	device.start()
+			
+    def stopDevices(self):
+		for device in self.deviceDict.values():
+            device.stop()
 
     def save(self):
 		path = self.SaveController.dataPath
 		for dev in self.deviceDict.values():
 			if dev.takeData: 
 				dev.save(path)
-
+				if dev.processData:
+					dev.processData(save)
+	
     def cable3_ttl(self,value=0):
         self.testcable3(value)
 
 ## ========================================================================
-# PAT coil controls
-
-# PAT Coils
+# PAT Coil Controls
     def set_2D_I_1(self, A = None): # Set the coil current in amperes
         if A is None: A = self.PATSettings['2D_I_1']
         print "Setting the 2D Coil 1 on to: %.6f" %A
@@ -118,7 +123,7 @@ class PATController(Recipe):
             self.MOT_3Dcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# PAT Laser controls
+# PAT Laser Controls
 
     def set_2DRb_pump_detuning(self, detuning = None):  # The usual detuning is -12 MHz
         if detuning is None: detuning = self.PATSettings['2DRb_pump_detuning']
@@ -213,6 +218,7 @@ class PATController(Recipe):
 
     def pat_2DMOT_off(self):
         self.set_2DRb_pump_amplitude(0.0)
+        self.set_Rb_push_amplitude(0.0)
         self.set_2D_I_1(0.0)
         self.set_2D_I_2(0.0)
         self.set_2D_I_3(0.0)
@@ -253,11 +259,67 @@ class PATController(Recipe):
         self.set_2D_I_2(5.0)
         self.set_2D_I_3(-5.0)
         self.set_2D_I_4(4.4)
+        
 # #------------------------------------------------------------------------
-# #Shutter controls and trigger controls
+# # Shutter Controls trigger controls
     def trig_scope_on(self):
         print 'Triggering scope'
         self.pat_scope_trig(1)
 
     def trig_scope_off(self):
         self.pat_scope_trig(0)
+
+# #------------------------------------------------------------------------
+# # Trigger Controls
+# # When adding triggers, update the open and close all shutter methods.
+     
+    def close_all_shutters(self):
+    	self.MOT2D_shutter_west_close()
+    	self.MOT2D_shutter_east_close()	  
+    	self.MOT3D_pump_shutter_close()
+    	self.MOT3D_repump_shutter_close()	
+    	self.push_shutter_close()
+    	
+    def open_all_shutters(self):
+    	self.MOT2D_shutter_west_open()
+    	self.MOT2D_shutter_east_open()	  
+    	self.MOT3D_pump_shutter_open()
+    	self.MOT3D_repump_shutter_open()	
+    	self.push_shutter_open()
+
+    def MOT2D_shutter_west_open(self):
+    	self.MOT2D_shutter_west(1)
+    
+    def MOT2D_shutter_west_close(self):
+    	self.MOT2D_shutter_west(0)
+    
+    def MOT2D_shutter_east_open(self):
+    	self.MOT2D_shutter_east(1)
+    	
+    def MOT2D_shutter_east_close(self):
+    	self.MOT3D_pump_shutter(0)
+    	
+    def MOT3D_pump_shutter_open(self):
+    	self.MOT3D_pump_shutter(1)
+    	  
+    def MOT3D_pump_shutter_close(self):
+    	self.MOT3D_pump_shutter(0)
+    	  
+    def MOT3D_repump_shutter_open(self):
+    	self.MOT3D_repump_shutter(1)
+    
+    def MOT3D_repump_shutter_close(self):
+    	self.MOT3D_repump_shutter(0)
+    	
+    def push_shutter_open(self):
+    	self.push_shutter(1)
+    	
+    def push_shutter_close(self):
+    	self.push_shutter(0)
+
+        
+    
+    
+  
+    
+    
