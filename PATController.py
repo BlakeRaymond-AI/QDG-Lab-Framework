@@ -10,10 +10,9 @@ import math as mth
 from Database import experiment_devices
 
 from DefaultSettings.Settings import Settings
-from DeviceMediators.DummyCameraMediator import CameraMediator
-from DeviceMediators.DummyScopeMediator import ScopeMediator
 from SaveController import SaveController
 from DeviceMediators.LabJackMediator import LabJackMediator
+from DeviceMediators.PMDMediator import PMDMediator
 
 class PATController(Recipe):
 
@@ -67,7 +66,7 @@ class PATController(Recipe):
 			
     def stopDevices(self):
 		for device in self.deviceDict.values():
-            device.stop()
+			device.stop()
 
     def save(self):
 		path = self.SaveController.dataPath
@@ -76,6 +75,12 @@ class PATController(Recipe):
 				dev.save(path)
 				if dev.processData:
 					dev.processData(save)
+					
+	def off(self):
+		self.set_2D_I_1(0)
+		self.set_2D_I_2(0)
+		self.set_2D_I_3(0)
+		self.set_2D_I_4(0)
 	
     def cable3_ttl(self,value=0):
         self.testcable3(value)

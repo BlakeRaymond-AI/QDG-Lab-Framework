@@ -1,3 +1,7 @@
+'''
+Interface which all device mediators must extend. Defines basic functions
+which mediators must have.
+'''
 
 class DeviceMediatorInterface(object):
 	'''
@@ -9,10 +13,6 @@ class DeviceMediatorInterface(object):
 	def __init__(self):
 		self.takeData = True	
 		self.dataFolderName = "DatafolderUnspecified"
-	
-	def save(self, path):
-		'''Save the data associated with the device to the path given.'''
-		raise NotImplementedError()
 		
 	def start(self):
 		'''Initialise the device for an experimental run.'''
@@ -21,4 +21,11 @@ class DeviceMediatorInterface(object):
 	def stop(self):
 		'''Stop a device after an experimental run.'''
 		raise NotImplementedError()	
- 
+
+	def save(self, path):
+		'''Save the data associated with the device to the path given.'''
+		raise NotImplementedError()
+		
+	def processData(self, path):
+		'''Process the data associated with the device to the path given.'''
+		raise NotImplementedError() 

@@ -1,6 +1,6 @@
 '''Default SaveController Settings'''
 
 saveSettings = dict()
-saveSettings['basePath'] = ''
+saveSettings['basePath'] = 'C:\PATData'
 saveSettings['timeSuffix'] = ''
 saveSettings['multiRunLabels'] = []

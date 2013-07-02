@@ -184,7 +184,8 @@ class LabJackController(object):
 class TriggerThread(Thread):
 	"""
 	Trigger threads will wait for the channel set in setTrigger to go high
-	before beginning data collection
+	before beginning data collection. Note that there is a relatively large
+	delay between triggering and data collection.f
 	"""
 
 	def __init__(self, LJController, triggerChannel):
