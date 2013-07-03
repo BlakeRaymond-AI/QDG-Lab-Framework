@@ -31,6 +31,7 @@ class SaveController(object):
 		self.time = strftime('%H_%M_%S')
 		self.expPath = self._generateExpPath()
 		self.dataPath = self._generateDataPath()
+		self._trialNum = 0
 	
 	def makeFolder(self, p):
 		if path.isdir(p):
@@ -38,6 +39,12 @@ class SaveController(object):
 		else:
 			mkdir(p)
 
+	def generateTrialPath(self, trialName = ''):
+		if trialName:
+			trialName = str(self.n)
+			self.n += 1
+		return path.join(self.dataPath, trialName)	
+	
 	def _generateExpPath(self):
 		p = self.basePath
 		# Generate Date Folder
@@ -58,5 +65,7 @@ class SaveController(object):
 		p = path.join(p, 'Data')
 		self.makeFolder(p)
 		return p
+		
+	
 		 	
 		

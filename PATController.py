@@ -18,6 +18,7 @@ class PATController(Recipe):
 
     def __init__(self, controllerName, settingsDict, **kw):        
         Recipe.__init__(self,controllerName,**kw)
+        self.settingsDict = settingsDict
         self.start()
         _D = experiment_devices['PAT']	# PAT Database Settings
         self.__devices = {}
@@ -47,11 +48,7 @@ class PATController(Recipe):
         # Create settings objects from general settings.
         for (key, deviceData) in generalSettings.items():
             constructor = globals()[deviceData[0]]
-            setattr(self, key, constructor(deviceData[1]))
-
-        settingsDict.save(self.SaveController.expPath)
-		
-        self.__camera_triggers = 0
+            setattr(self, key, constructor(deviceData[1]))		
 
     def __build_DO_method(self,name,addr,port):
     	'''Constructs Digital Output functions dynamically'''
@@ -70,11 +67,20 @@ class PATController(Recipe):
 
     def save(self):
 		path = self.SaveController.dataPath
+		self.settingsDict.save(self.SaveController.expPath)
 		for dev in self.deviceDict.values():
 			if dev.takeData: 
 				dev.save(path)
-				if dev.processData:
-					dev.processData(save)
+			
+	def saveTrial(self, trialName):
+		path = self.SaveController.generateTrialPath(trialName)
+		self.settingsDict.save(path)
+		for dev in self.deviceDict.values():
+			if dev.takeData: 
+				dev.save(path)	
+	
+	def updateSettings(updatePackage):
+		
 					
 	def off(self):
 		self.set_2D_I_1(0)

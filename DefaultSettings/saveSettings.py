@@ -3,4 +3,3 @@
 saveSettings = dict()
 saveSettings['basePath'] = 'C:\PATData'
 saveSettings['timeSuffix'] = ''
-saveSettings['multiRunLabels'] = []
