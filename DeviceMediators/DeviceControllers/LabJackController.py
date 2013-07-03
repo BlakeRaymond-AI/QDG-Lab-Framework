@@ -10,7 +10,7 @@ from threading import Thread
 cDrivers = WinDLL("ljackuw.dll")
 
 class LabJackError(Exception):
-	"""LabJack Error Class"""
+	"""For errors returned from c driver calls."""
 	def __init__(self, errorCode):
 		self.errorCode = errorCode
 	
@@ -23,6 +23,14 @@ class LabJackError(Exception):
 		for c in errorString:
 			result = result + c
 		return repr(result)
+		
+class LabJackSettingsException(Exception):
+	"""For errors related to controller settings."""
+	def __init__(self, msg):
+		self.msg = msg
+		
+	def __str__(self):
+		return repr(self.msg)	
 
 class LabJackController(object):
 	"""
@@ -34,26 +42,27 @@ class LabJackController(object):
 	volts.
 	"""
 		
-	def __init__(self, activeChannels = [0], scanDuration = 5, trigger = False, triggerChannel = 0, idnum=-1):
+	def __init__(self, activeChannels = [0], sampleRatePerChannel = 200, scanDuration = 5, trigger = False, triggerChannel = 0, idnum=-1):
 		"""
 		Parameters:
 		activeChannels: Array of size 1,2 or 4 indicating which channels 
 							to collect data from.
+		sampleRatePerChannel: Number of samples take per channel per second.
 		scanDuration: Time over which to collect data (in seconds).
 		trigger: Determines whether a trigger will be used.
 		triggerChannel: Digital IO channel to use as trigger.
 		idnum: Local ID of LabJack to utilize. -1 uses first available 
 					LabJack.
-		
-		Notes:
-		Constructor maximises the scanRate based on the number of channels
-		data is being collected from.
 		"""
 		self.idnum = idnum
 		self.activeChannels = activeChannels
 		self.numChannels = len(activeChannels)
 		self.scanDuration = long(scanDuration)
-		self.scanRate = 1200 / len(activeChannels) # Scan rate is limited to 1200 over all channels.
+		scanRate = sampleRatePerChannel*len(activeChannels)
+		if (scanRate> 1200:
+			msg = "The aggregate sample rate over all channels must be less than 1200 samples per second. Currently %d." % scanRate
+			raise LabJackSettingsException(msg)
+		self.scanRate = scanRate
 		self.data = []
 		if trigger:
 			self.LJThread = TriggerThread(self, self.triggerChannel)

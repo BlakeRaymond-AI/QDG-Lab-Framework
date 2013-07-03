@@ -10,7 +10,7 @@ import csv
 driver = WinDLL('cbw32')
 						
 class PMDError(Exception):
-	
+	'''For errors returned from c driver calls.'''
 	def __init__(self, errCode):
 		self.errCode = errCode
 		errStr = (c_char*256)()
@@ -22,7 +22,7 @@ class PMDError(Exception):
 		return repr(self.msg)
 
 class PMDSettingsException(Exception):
-	
+	'''For errors related to controller settings.'''
 	def __init__(self, msg):
 		self.msg = msg
 		

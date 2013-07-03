@@ -1,12 +1,19 @@
+'''
+Default settings for PMD. Consult PMD API Specification for voltage range
+and trigger specifications. Device model is PMD-1208FS (USB-1208FS in manual). 
+'''
+
 PMDSettings = dict()
-PMDSettings['activeChannels'] = [0]
-PMDSettings['gainSettings'] = [0]	
-PMDSettings['sampleRatePerChannel'] = 200	#Samples per Second
-PMDSettings['scanDuration'] = 400		# Seconds
-PMDSettings['vRange'] = 'BIP10VOLTS'
-PMDSettings['trigType'] = 'TRIG_POS_EDGE'
+PMDSettings['activeChannels'] = [0]	# Channels to sample.
+PMDSettings['gainSettings'] = [0]	# Gain to use on each channel. Should have same
+									# size as activeChannels array.
+PMDSettings['sampleRatePerChannel'] = 200	# Samples per channel per second. Aggregate
+											# rate should not exceed 1200.
+PMDSettings['scanDuration'] = 10	# Seconds
+PMDSettings['vRange'] = 'BIP10VOLTS'	# Voltage range being measured.
+PMDSettings['trigType'] = 'TRIG_POS_EDGE'	# Trigger type to use
 PMDSettings['boardNum'] = 0
 
 PMDSettings['takeData'] = True
 PMDSettings['processData'] = False
-PMDSettings['dataFolderName'] = "LabJackData"
+PMDSettings['dataFolderName'] = "PMDData"

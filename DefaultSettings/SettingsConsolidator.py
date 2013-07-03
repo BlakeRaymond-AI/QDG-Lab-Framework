@@ -1,12 +1,12 @@
 from Settings import Settings
-from coilSettings import coilSettings
 from labJackSettings import labJackSettings
 from PATSettings import PATSettings
 from PMDSettings import PMDSettings
 from saveSettings import saveSettings	
 
 # Store all settings dicts associated with devices in this dictionary. Data
-# format is (Constructor Name, Initialisation Settings). 
+# format is:
+# 'Device Name in PAT Controller': (Constructor Name, Initialisation Settings). 
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 	'LabJack': ('LabJackMediator', labJackSettings),
@@ -16,7 +16,6 @@ deviceSettings = {
 generalSettings = {
 	'PATSettings' : ('Settings', PATSettings),
 	'SaveController' : ('SaveController', saveSettings),
-	'coilSetting' : ('Settings', coilSettings)
 }
 
 # In general the code below does not need to be modified.
@@ -36,7 +35,26 @@ defaultSettings = {
 
 defaultSettings = Settings(defaultSettings)
 
+def overwriteSettings(default, updatePackage):
+	'''
+	Overwrites the settings in the default settings dictionary with the
+	updated ones.
+	'''
 	
+	deviceSettings = default['deviceSettings']
+	generalSettings = default['generalSettings']
+	
+	for key, updatedSettings in updatePackage.items():
+		if key in deviceSettings:
+			deviceSettings[key][1].update(updatedSettings)
+		if key in generalSettings:
+			generalSettings[key][1].update(updatedSettings)
+	
+	return default
+		
+	
+	
+		
 
 
 

@@ -11,7 +11,7 @@ class LabJackMediator(DeviceMediatorInterface):
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
-		self.controller = LabJackController(self.activeChannels, self.scanDuration, self.trigger)
+		self.controller = LabJackController(self.activeChannels, self.sampleRatePerChannel, self.scanDuration, self.trigger)
 		
 	def start(self):
 		self.controller.start()

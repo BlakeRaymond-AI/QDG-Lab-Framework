@@ -1,9 +1,13 @@
-from DefaultSettings.SettingsConsolidator import defaultSettings
+from DefaultSettings.SettingsConsolidator import defaultSettings, overwriteSettings
+from OverwriteSettings import MOTLoadDataCap
 from PATController import PATController
 from time import sleep
 
+updatedSettings = overwriteSettings(defaulttettings, MOTLoadCap
 
-PATCtrl = PATController('testApparatus', defaultSettings)
+
+
+PATCtrl = PATController('testApparatus', updateSettings)
 PATCtrl.start()
 
 
