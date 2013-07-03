@@ -72,7 +72,7 @@ class PATController(Recipe):
 			if dev.takeData: 
 				dev.save(path)
 			
-    def saveTrial(self, trialName):
+    def saveTrial(self, trialName = ''):
 		path = self.SaveController.generateTrialPath(trialName)
 		self.settingsDict.save(path)
 		for dev in self.deviceDict.values():

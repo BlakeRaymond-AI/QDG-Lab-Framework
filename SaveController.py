@@ -40,10 +40,13 @@ class SaveController(object):
 			mkdir(p)
 
 	def generateTrialPath(self, trialName = ''):
-		if trialName:
-			trialName = str(self.n)
-			self.n += 1
-		return path.join(self.dataPath, trialName)	
+		if not trialName:
+			trialName = str(self._trialNum)
+			self._trialNum += 1
+		p = path.join(self.dataPath, trialName)	
+		self.makeFolder(p)
+		
+		return p
 	
 	def _generateExpPath(self):
 		p = self.basePath
