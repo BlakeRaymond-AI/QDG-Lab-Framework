@@ -59,7 +59,7 @@ class LabJackController(object):
 		self.numChannels = len(activeChannels)
 		self.scanDuration = long(scanDuration)
 		scanRate = sampleRatePerChannel*len(activeChannels)
-		if (scanRate> 1200:
+		if (scanRate> 1200):
 			msg = "The aggregate sample rate over all channels must be less than 1200 samples per second. Currently %d." % scanRate
 			raise LabJackSettingsException(msg)
 		self.scanRate = scanRate
