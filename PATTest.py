@@ -35,7 +35,7 @@ PATCtrl.set_Rb_push_detuning(12)
 PATCtrl.wait_s(1)
 PATCtrl.open_all_shutters()
 
-PATCtrl.wait_s(60)
+PATCtrl.wait_s(300)
 
 
 PATCtrl.MOT2D_shutter_west_close()
@@ -46,7 +46,7 @@ PATCtrl.MOT2D_shutter_east_close()
 PATCtrl.wait_ms(2.4)
 PATCtrl.pat_2DMOT_off()
 
-PATCtrl.wait_s(100)
+PATCtrl.wait_s(200)
 PATCtrl.close_all_shutters()
 
 
