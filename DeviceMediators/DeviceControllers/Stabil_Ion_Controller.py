@@ -43,6 +43,3 @@ class Stabil_Ion_Controller(Serial):
 		sleep(0.1)
 		value = float(data)
 		return value	
-
-SIC = Stabil_Ion_Controller(7)
-print SIC.getIG1Pressure()
