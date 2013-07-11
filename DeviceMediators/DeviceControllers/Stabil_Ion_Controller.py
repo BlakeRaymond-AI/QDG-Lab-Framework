@@ -52,9 +52,10 @@ class Stabil_Ion_Controller(Serial):
 		return value
 
 
-SIC = Stable_Ion_Controller(7)
+SIC = Stabil_Ion_Controller(7)
 tStart = time()
 collectionDuration_s = 60
-while (time() - collectionDuration > tStart):
+tEnd = tStart + collectionDuration_s
+while (time() < tEnd):
 	print SIC.getIG1Pressure()
-	sleep = 4
+	sleep(4)
