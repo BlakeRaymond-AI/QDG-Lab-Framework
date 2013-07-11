@@ -1,5 +1,6 @@
 from serial import Serial
 from time import sleep, time
+import csv
 
 class Stabil_Ion_Controller(Serial):
 	
@@ -51,11 +52,24 @@ class Stabil_Ion_Controller(Serial):
 		value = float(data)
 		return value
 
-
-SIC = Stabil_Ion_Controller(7)
-tStart = time()
-collectionDuration_s = 60
-tEnd = tStart + collectionDuration_s
-while (time() < tEnd):
-	print SIC.getIG1Pressure()
-	sleep(4)
+	def collectData(self, duration_s, secondsPerSample):
+		time = []
+		data = []
+		tStart = time()
+		tEnd = tStart + duration_s
+		while (time() < tEnd):
+			p = self.getIG1Pressure()
+			time.append(t)
+			data.append(p)
+			sleep(secondsPerSample - 0.1)
+		
+		for i in range(len(time)):
+			time[i] = time[i] - tStart
+		
+		csvFile = open('test.csv', 'wb')
+		filewriter = csv.writer(csvFile, delimiter = ',')
+		filewriter.writerow(['Time (s)', 'Pressures (???)'])
+		for i in range(len(time)):
+			output = [time[i], data[i]]
+			filewriter.writerow(output)
+		csvFile.close()
