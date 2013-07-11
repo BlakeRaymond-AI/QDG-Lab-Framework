@@ -189,6 +189,11 @@ class LabJackController(object):
 		errorCode = cDrivers.AIStreamClear(localID)
 		self.ErrorHandler(errorCode)
 		print "LabJack Stream Closed"
+		
+	def setSoftTrigger(self, channel):
+		while (readDigitalIn(channel) == 0):
+			pass
+			
 
 class TriggerThread(Thread):
 	"""
@@ -204,8 +209,7 @@ class TriggerThread(Thread):
 		
 	def run(self):
 		LJC = self.LJC
-		while(LJC.readDigitalIn(self.triggerChannel) == 0):
-			pass
+		LJC.setSoftTrig(triggerChannel)
 		LJC.collectData()
 		
 class DataCollectionThread(Thread):
