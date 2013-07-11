@@ -53,23 +53,27 @@ class Stabil_Ion_Controller(Serial):
 		return value
 
 	def collectData(self, duration_s, secondsPerSample):
-		time = []
-		data = []
+		tDat = []
+		pDat= []
 		tStart = time()
 		tEnd = tStart + duration_s
 		while (time() < tEnd):
 			p = self.getIG1Pressure()
-			time.append(t)
-			data.append(p)
+			tDat.append(time())
+			pDat.append(p)
 			sleep(secondsPerSample - 0.1)
 		
-		for i in range(len(time)):
-			time[i] = time[i] - tStart
+		for i in range(len(tDat)):
+			tDat[i] = tDat[i] - tStart
 		
 		csvFile = open('test.csv', 'wb')
 		filewriter = csv.writer(csvFile, delimiter = ',')
 		filewriter.writerow(['Time (s)', 'Pressures (???)'])
-		for i in range(len(time)):
-			output = [time[i], data[i]]
+		for i in range(len(tDat)):
+			output = [tDat[i], pDat[i]]
 			filewriter.writerow(output)
 		csvFile.close()
+		
+		
+SIC = Stabil_Ion_Controller(7)
+SIC.collectData(25*60, 1)	
