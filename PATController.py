@@ -305,7 +305,7 @@ class PATController(Recipe):
     	self.MOT2D_shutter_east(1)
     	
     def MOT2D_shutter_east_close(self):
-    	self.MOT3D_pump_shutter(0)
+    	self.MOT2D_shutter_east(0)
     	
     def MOT3D_pump_shutter_open(self):
     	self.MOT3D_pump_shutter(1)
