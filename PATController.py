@@ -6,8 +6,10 @@ from UTBus1 import Recipe
 from UTBus1.Globals import MHz
 from UTBus1_Globals import lock_DDS_params
 from UTBus1.Exceptions import *	# Make this explicit
-import math as mth
 from Database import experiment_devices
+import math as mth
+from time import time, localtime, strftime
+
 
 from DefaultSettings.Settings import Settings
 from SaveController import SaveController
@@ -19,7 +21,6 @@ class PATController(Recipe):
     def __init__(self, controllerName, settingsDict, **kw):        
         Recipe.__init__(self,controllerName,**kw)
         self.settingsDict = settingsDict
-        self.start()
         _D = experiment_devices['PAT']	# PAT Database Settings
         self.__devices = {}
         for (name,addr) in _D['DDS'].items():	# Creates DDS Functions
@@ -56,6 +57,20 @@ class PATController(Recipe):
             self.__devices[addr].set_bit(port,v)
         DO_method.func_name = name
         return DO_method
+    
+    def start(self):
+    	super(PATController, self).start()
+       
+    def end(self):
+    	super(PATController, self).end()
+    	startTime = self.time()
+    	runTime = self.__cycles_2_time(self.__cycles)
+    	endTime =  startTime + runTime
+    	print "Recipe started at: " + strftime('%H:%M', startTime)
+    	print "Recipe ends at (approx.)" + strftime('%H:%M', endTime)
+    	startTime = localtime(startTime)
+    	endTime = localTime(endTime)
+    	   
         
     def startDevices(self):
     	for device in self.deviceDict.values():
@@ -64,6 +79,7 @@ class PATController(Recipe):
     def stopDevices(self):
 		for device in self.deviceDict.values():
 			device.stop()
+		print "All devices stopped."
 
     def save(self):
 		path = self.SaveController.dataPath
@@ -71,6 +87,7 @@ class PATController(Recipe):
 		for dev in self.deviceDict.values():
 			if dev.takeData: 
 				dev.save(path)
+		print "Data saved."
 			
     def saveTrial(self, trialName = ''):
 		path = self.SaveController.generateTrialPath(trialName)
@@ -78,6 +95,7 @@ class PATController(Recipe):
 		for dev in self.deviceDict.values():
 			if dev.takeData: 
 				dev.save(path)	
+		print "Trial data saved."		
 					
     def off(self):
 		self.set_2D_I_1(0)
