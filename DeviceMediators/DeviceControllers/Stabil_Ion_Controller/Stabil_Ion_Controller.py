@@ -73,7 +73,3 @@ class Stabil_Ion_Controller(Serial):
 			output = [tDat[i], pDat[i]]
 			filewriter.writerow(output)
 		csvFile.close()
-		
-		
-SIC = Stabil_Ion_Controller(7)
-SIC.collectData(8*60*60, 1)	
