@@ -46,6 +46,10 @@ class SRGSensor(Serial):
 		self.tUnits = tUnits
 		self.setTemperatureUnits(tUnits)
 	
+	def close(self):
+		self.write("rtl\r")
+		super(SRGSensor, self).close()
+	
 	def start(self):
 		self.write("sta\r")
 		
@@ -90,5 +94,4 @@ class SRGSensor(Serial):
 	def getZeroOffset(self):
 		self.write("ofs\r")
 		data = self.waitRead()
-		return data		
-
+		return data

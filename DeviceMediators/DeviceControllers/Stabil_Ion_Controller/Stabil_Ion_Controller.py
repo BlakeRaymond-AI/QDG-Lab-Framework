@@ -62,13 +62,18 @@ class Stabil_Ion_Controller(Serial):
 			tDat.append(time())
 			pDat.append(p)
 			sleep(secondsPerSample - 0.1)
-		
 		for i in range(len(tDat)):
 			tDat[i] = tDat[i] - tStart
-		
-		csvFile = open('test.csv', 'wb')
+		self.tDat = tDat
+		self.pDat = pDat	
+			
+			
+	def save(fname = "PressureData.csv"):		
+		csvFile = open(fname, "wb")
+		tDat = self.tDat
+		pDat = self.pDat
 		filewriter = csv.writer(csvFile, delimiter = ',')
-		filewriter.writerow(['Time (s)', 'Pressures (???)'])
+		filewriter.writerow(["Time (s)", "Pressures (???)"])
 		for i in range(len(tDat)):
 			output = [tDat[i], pDat[i]]
 			filewriter.writerow(output)
