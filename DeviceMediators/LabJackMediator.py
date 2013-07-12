@@ -15,10 +15,12 @@ class LabJackMediator(DeviceMediatorInterface):
 		self.controller = LabJackController(self.activeChannels, self.sampleRatePerChannel, self.scanDuration, self.trigger)
 		
 	def start(self):
+		print "Lab Jack Starting"
 		self.controller.start()
 		
 	def stop(self):
 		self.controller.stop()
+		print "Lab Jack Stopped"
 
 	def save(self, pth):
 		fname = path.join(pth, 'LabJackData.csv')
