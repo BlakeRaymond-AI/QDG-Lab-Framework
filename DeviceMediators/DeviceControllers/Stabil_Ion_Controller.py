@@ -76,4 +76,4 @@ class Stabil_Ion_Controller(Serial):
 		
 		
 SIC = Stabil_Ion_Controller(7)
-SIC.collectData(25*60, 1)	
+SIC.collectData(8*60*60, 1)	
