@@ -9,7 +9,7 @@ from saveSettings import saveSettings
 # 'Device Name in PAT Controller': (Constructor Name, Initialisation Settings). 
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
-	'LabJack': ('LabJackMediator', labJackSettings),
+#	'LabJack': ('LabJackMediator', labJackSettings),
 }
 
 # Store all other settings dicts in this dictionary
