@@ -11,14 +11,15 @@ template = open(templateName, 'wb')
 for root, dirs, files in walk(settingsPath):
 	for file in files:
 		if file.endswith('.py') and not file.startswith('__'):
-			template.write('# -----------------------------------\n')
 			fPath = path.join(settingsPath, file)
 			f = open(fPath, 'rb')
 			for line in f:
 				line = '# ' + line
 				template.write(line)
-			template.write('\n')
-			template.write('\n')
 			f.close()
+			template.write('\n # ----------------------------------- \n')
+			#template.write('')
+			#template.write('')
+			
 			
 template.close()

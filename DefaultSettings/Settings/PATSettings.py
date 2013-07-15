@@ -18,4 +18,4 @@ PATSettings['Rb_push_detuning'] = 20
 PATSettings['2DRb_pump_amplitude'] = 0.8
 PATSettings['3DRb_pump_amplitude'] = 0.8     
 PATSettings['Rb_repump_amplitude'] = 0.8   
-PATSettings['Rb_push_amplitude'] = 0.8     
+PATSettings['Rb_push_amplitude'] = 0.8 

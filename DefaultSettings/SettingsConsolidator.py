@@ -1,8 +1,8 @@
 from Settings import Settings
-from labJackSettings import labJackSettings
-from PATSettings import PATSettings
-from PMDSettings import PMDSettings
-from saveSettings import saveSettings	
+from Settings.labJackSettings import labJackSettings
+from Settings.PATSettings import PATSettings
+from Settings.PMDSettings import PMDSettings
+from Settings.saveSettings import saveSettings	
 
 # Store all settings dicts associated with devices in this dictionary. Data
 # format is:
