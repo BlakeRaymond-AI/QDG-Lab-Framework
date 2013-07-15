@@ -15,12 +15,13 @@ class PMDMediator(DeviceMediatorInterface):
 		self.controller = PMDController(self.activeChannels, self.gainSettings, self.sampleRatePerChannel, self.scanDuration, self.vRange, self.trigType, self.boardNum)
 
 	def start(self):
-		print "PMD Starting"
+		print "Starting PMD data collection thread."
 		self.controller.start()
 		
 	def stop(self):
+		print "Waiting for PMD to finish collecting data."
 		self.controller.stop()
-		print "PMD Stopped"
+		print "PMD Done"
 		
 	def save(self, pth):
 		fname = path.join(pth, 'PMDData.csv')

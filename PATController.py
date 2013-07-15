@@ -10,7 +10,6 @@ from Database import experiment_devices
 import math as mth
 from time import time, localtime, strftime
 
-
 from DefaultSettings.Settings import Settings
 from SaveController import SaveController
 from DeviceMediators.LabJackMediator import LabJackMediator
@@ -67,10 +66,12 @@ class PATController(Recipe):
 		super(PATController, self).end()	   
 		
 	def startDevices(self):
+		print "Starting data collection devices."
 		for device in self.deviceDict.values():
 			device.start()
 			
 	def stopDevices(self):
+		print "Stopping devices."
 		for device in self.deviceDict.values():
 			device.stop()
 		print "All devices stopped."

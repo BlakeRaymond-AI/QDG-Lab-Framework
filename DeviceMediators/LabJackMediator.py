@@ -10,17 +10,17 @@ class LabJackMediator(DeviceMediatorInterface):
 	
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
-			setattr(self, k, v)
-		print self.activeChannels	
+			setattr(self, k, v)	
 		self.controller = LabJackController(self.activeChannels, self.sampleRatePerChannel, self.scanDuration, self.trigger)
 		
 	def start(self):
-		print "Lab Jack Starting"
+		print "Starting Lab Jack data collection thread."
 		self.controller.start()
 		
 	def stop(self):
+		print "Waiting for Lab Jack to finish collecting data."
 		self.controller.stop()
-		print "Lab Jack Stopped"
+		print "Lab Jack Done"
 
 	def save(self, pth):
 		fname = path.join(pth, 'LabJackData.csv')

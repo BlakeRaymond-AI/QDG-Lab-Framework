@@ -4,9 +4,12 @@ import csv
 
 class Stabil_Ion_Controller(Serial):
 	
-	def __init__(self, port = 0):
+	def __init__(self, port = 0, duration_s = 10, secondsPerSample = 1):
 		super(Stabil_Ion_Controller, self).__init__(port = port, timeout = 0)
 		self.flushInput()
+		self.duration_s = duration_s
+		self.secondsPerSample = secondsPerSample
+		self.SIThread = DataCollectionThread(self)
 		
 	def read(self, size = 32):
 		data = super(Stabil_Ion_Controller, self).read(size)
@@ -16,6 +19,12 @@ class Stabil_Ion_Controller(Serial):
 	def write(self, msg):
 		msg = msg + "\r\n"	
 		super.(Stabil_Ion_Controller, self).write(msg)
+	
+	def start(self):
+		self.SIThread.run()
+		
+	def stop(self):
+		self.SIThread.join()
 		
 	def IG1On(self):
 		self.write("IG1 ON")
@@ -57,6 +66,8 @@ class Stabil_Ion_Controller(Serial):
 		return value
 
 	def collectData(self, duration_s, secondsPerSample):
+		duration_s = self.duration_s
+		secondsPerSample = self.secondsPerSample
 		tDat = []
 		pDat= []
 		tStart = time()
@@ -81,3 +92,13 @@ class Stabil_Ion_Controller(Serial):
 			output = [tDat[i], pDat[i]]
 			filewriter.writerow(output)
 		csvFile.close()
+
+class DataCollectionThread(Thread):
+	"""Data collection threads collect data."""
+	
+	def __init__(self, SIController):
+		Thread.__init__(self)
+		self.SIC = SIController
+		
+	def run(self):
+		self.SIC.collectData()
