@@ -55,28 +55,12 @@ Options = {
 
 Range = {
 	# Format (FormatNumber, Low Voltage, High Voltage)f
-	'BIP60VOLTS' : (20, -60, 60), 
-	'BIP30VOLTS' : (23, -30, 30),
 	'BIP20VOLTS' : (15, -20, 20), 
-	'BIP15VOLTS' : (21, -15, 15), 
-	'BIP10VOLTS' : (1, -10, 10), 
+	'BIP10VOLTS' : (1, -10, 10), 	# Only channel usable in single-ended mode.
 	'BIP5VOLTS' : (0, -5, 5), 
 	'BIP4VOLTS' : (16, -4,  4), 
 	'BIP2PT5VOLTS' : (2, -2.5, 2.5), 
 	'BIP2VOLTS' : (14, -2.0, 2.0), 
 	'BIP1PT25VOLTS' : (3, -1.25, 1.25), 
 	'BIP1VOLTS' : (4, -1, 1), 
-	'BIPPT625VOLTS' : (5, -.625, .625), 
-	'BIPPT5VOLTS' : (6, -.5, .5), 
-	'BIPPT25VOLTS' : (12, -0.25, 0.25), 
-	'BIPPT2VOLTS' : (13, -0.2, 0.2), 
-	'BIPPT1VOLTS' : (7, -.1, .1), 
-	'BIPPT05VOLTS' : (8, -.05, .05), 
-	'BIPPT01VOLTS' : (9, -.01, .01), 
-	'BIPPT005VOLTS' : (10, -.005, .005), 
-	'BIP1PT67VOLTS' : (11, -1.67, 1.67), 
-	'BIPPT312VOLTS' : (17, -0.312, 0.312), 
-	'BIPPT156VOLTS' : (18, -0.156, 0.156), 
-	'BIPPT125VOLTS' : (22, -0.125, 0.125), 
-	'BIPPT078VOLTS' : (19	-0.078, 0.078)
-}
+	}

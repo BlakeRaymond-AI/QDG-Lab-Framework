@@ -13,40 +13,44 @@ class Stabil_Ion_Controller(Serial):
 		data = data[:-2]
 		return data
 		
+	def write(self, msg):
+		msg = msg + "\r\n"	
+		super.(Stabil_Ion_Controller, self).write(msg)
+		
 	def IG1On(self):
-		self.write("IG1 ON \r\n")
+		self.write("IG1 ON")
 		sleep(0.5)
 		self.flushInput()
 	
 	def IG1Off(self):
-		self.write("IG1 OFF \r\n")
+		self.write("IG1 OFF")
 		sleep(0.5)
 		self.flushInput()
 		
 	def IG2On(self):
-		self.write("IG2 ON \r\n")
+		self.write("IG2 ON")
 		sleep(0.5)
 		self.flushInput()
 		
 	def IG2ff(self):
-		self.write("IG2 OFF \r\n")
+		self.write("IG2 OFF")
 		sleep(0.5)
 		self.flushInput()
 	
 	def degasOn(self):
-		self.write("DG ON \r\n")
+		self.write("DG ON")
 		sleep(0.5)
 		self.flushInput()
 				
 	def getIG1Pressure(self):
-		self.write("DS IG1 \r\n")
+		self.write("DS IG1")
 		sleep(0.1)
 		data = self.read()
 		value = float(data)
 		return value
 	
 	def getIG2Pressure(self):
-		self.write("DS IG2 \r\n")
+		self.write("DS IG2")
 		data = self.read()
 		sleep(0.1)
 		value = float(data)
@@ -66,9 +70,8 @@ class Stabil_Ion_Controller(Serial):
 			tDat[i] = tDat[i] - tStart
 		self.tDat = tDat
 		self.pDat = pDat	
-			
-			
-	def save(fname = "PressureData.csv"):		
+				
+	def saveData(fname = "PressureData.csv"):		
 		csvFile = open(fname, "wb")
 		tDat = self.tDat
 		pDat = self.pDat
