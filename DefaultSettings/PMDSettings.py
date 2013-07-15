@@ -9,7 +9,7 @@ PMDSettings['gainSettings'] = [0]	# Gain to use on each channel. Should have sam
 									# size as activeChannels array.
 PMDSettings['sampleRatePerChannel'] = 200	# Samples per channel per second. Aggregate
 											# rate should not exceed 40000.
-PMDSettings['scanDuration'] = 2000	# Seconds
+PMDSettings['scanDuration'] = 200	# Seconds
 PMDSettings['vRange'] = 'BIP10VOLTS'	# Voltage range being measured.
 PMDSettings['trigType'] = 'TRIG_POS_EDGE'	# Trigger type to use
 PMDSettings['boardNum'] = 0

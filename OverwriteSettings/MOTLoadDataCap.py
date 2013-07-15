@@ -9,7 +9,7 @@ PMDSettings = dict()
 PMDSettings['activeChannels'] = [0]
 PMDSettings['gainSettings'] = [0]	
 PMDSettings['sampleRatePerChannel'] = 200	#Samples per Second
-PMDSettings['scanDuration'] = 1000	# Seconds
+PMDSettings['scanDuration'] = 985# Seconds
 
 updatePackage = {
 	'LabJack': labJackSettings,

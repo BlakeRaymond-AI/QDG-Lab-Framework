@@ -49,8 +49,8 @@ class PATController(Recipe):
         # Create settings objects from general settings.
         for (key, deviceData) in generalSettings.items():
             constructor = globals()[deviceData[0]]
-            setattr(self, key, constructor(deviceData[1]))		
-
+            setattr(self, key, constructor(deviceData[1]))			
+			
     def __build_DO_method(self,name,addr,port):
     	'''Constructs Digital Output functions dynamically'''
         def DO_method(v):
@@ -59,18 +59,12 @@ class PATController(Recipe):
         return DO_method
     
     def start(self):
-    	super(PATController, self).start()
-       
+        startTime = localtime()
+       	print strftime("Execution began at %H:%M on %x", startTime)
+        super(PATController, self).start()
+        
     def end(self):
-    	super(PATController, self).end()
-    	startTime = self.time()
-    	runTime = self.__cycles_2_time(self.__cycles)
-    	endTime =  startTime + runTime
-    	print "Recipe started at: " + strftime('%H:%M', startTime)
-    	print "Recipe ends at (approx.)" + strftime('%H:%M', endTime)
-    	startTime = localtime(startTime)
-    	endTime = localTime(endTime)
-    	   
+        super(PATController, self).end()  	   
         
     def startDevices(self):
     	for device in self.deviceDict.values():
