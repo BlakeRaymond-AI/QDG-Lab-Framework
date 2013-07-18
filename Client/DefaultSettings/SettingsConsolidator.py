@@ -1,8 +1,9 @@
 from Settings import Settings
-from labJackSettings import labJackSettings
-from PATSettings import PATSettings
-from PMDSettings import PMDSettings
-from saveSettings import saveSettings	
+from Settings.labJackSettings import labJackSettings
+from Settings.PATSettings import PATSettings
+from Settings.PMDSettings import PMDSettings
+from Settings.Stabil_Ion_Settings import Stabil_Ion_Settings
+from Settings.saveSettings import saveSettings	
 
 # Store all settings dicts associated with devices in this dictionary. Data
 # format is:
@@ -10,12 +11,14 @@ from saveSettings import saveSettings
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 #	'LabJack': ('LabJackMediator', labJackSettings),
+	'SI' : ('Stabil_Ion_Mediator', Stabil_Ion_Settings)
 }
 
 # Store all other settings dicts in this dictionary
 generalSettings = {
 	'PATSettings' : ('Settings', PATSettings),
 	'SaveController' : ('SaveController', saveSettings),
+	'PATClient' : ('PATClient', PATClientSettings),
 }
 
 # In general the code below does not need to be modified.
@@ -40,7 +43,6 @@ def overwriteSettings(default, updatePackage):
 	Overwrites the settings in the default settings dictionary with the
 	updated ones.
 	'''
-	
 	deviceSettings = default['deviceSettings']
 	generalSettings = default['generalSettings']
 	

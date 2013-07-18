@@ -10,7 +10,6 @@ from Database import experiment_devices
 import math as mth
 from time import time, localtime, strftime
 
-
 from DefaultSettings.Settings import Settings
 from SaveController import SaveController
 from DeviceMediators.LabJackMediator import LabJackMediator
@@ -37,14 +36,19 @@ class PATController(Recipe):
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
 
-		self.deviceDict = {}
+		
 		deviceSettings	= settingsDict['deviceSettings']
 		generalSettings = settingsDict['generalSettings']
 
 		# Create device mediators using device settings.
-		for (key, deviceData) in deviceSettings.items():
-			constructor = globals()[deviceData[0]]
-			self.deviceDict[key] = constructor(deviceData[1])
+		
+		
+		# Send creation dict here.
+		
+# 		self.deviceDict = {}
+# 		for (key, deviceData) in deviceSettings.items():
+# 			constructor = globals()[deviceData[0]]
+# 			self.deviceDict[key] = constructor(deviceData[1])
 
 		# Create settings objects from general settings.
 		for (key, deviceData) in generalSettings.items():
@@ -59,37 +63,36 @@ class PATController(Recipe):
 		return DO_method
 	
 	def start(self):
-		startTime = localtime()
-		print strftime("Execution began at %H:%M on %x", startTime)
+		print strftime("Execution began at %H:%M on %x", localtime())
 		super(PATController, self).start()
 		
 	def end(self):
 		super(PATController, self).end()	   
 		
 	def startDevices(self):
-		for device in self.deviceDict.values():
-			device.start()
-			
+		print "Starting data collection devices."
+		self.PATClient.sendMediatorCommand("startDevices")
+		self.PATClient.awaitConfirmation()
+
 	def stopDevices(self):
-		for device in self.deviceDict.values():
-			device.stop()
-		print "All devices stopped."
+		print "Stopping devices."
+		self.PATClient.sendMediatorCommand("stopDevices")
+		self.PATClient.awaitConfirmation()
 
 	def save(self):
+		print "Saving data."
 		path = self.SaveController.dataPath
 		self.settingsDict.save(self.SaveController.expPath)
-		for dev in self.deviceDict.values():
-			if dev.takeData: 
-				dev.save(path)
-		print "Data saved."
-			
-	def saveTrial(self, trialName = ''):
+		arguments = (path)
+		self.PATClient.sendMediatorCommand("save", arguments)
+	
+	def saveTrial(self, path, trialName = ''):
+		print "Saving trial data."
 		path = self.SaveController.generateTrialPath(trialName)
 		self.settingsDict.save(path)
-		for dev in self.deviceDict.values():
-			if dev.takeData: 
-				dev.save(path)	
-		print "Trial data saved."		
+		arguments = (path, trialName)
+		self.PATClient.sendMediatorCommand("saveTrial", arguments)
+		self.PATClient.awaitConfirmation()
 					
 	def off(self):
 		self.set_2D_I_1(0)

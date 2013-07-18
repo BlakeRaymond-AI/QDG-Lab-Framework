@@ -91,9 +91,7 @@ class PMDController(object):
 		Waits until data collection is complete, the partially processes
 		the data.
 		'''
-		while(self.PMDThread.isAlive()):
-			pass
-		self.processData()
+		self.PMDThread.join()
 
 	def saveData(self, fname= 'PMDData.csv'):
 		'''Saves the data collected by the PMD.'''
@@ -217,6 +215,7 @@ class PMDThread(Thread):
 	
 	def run(self):
 		self.PMDC.collectData()
+		self.PMDC.processData()
 
 
 

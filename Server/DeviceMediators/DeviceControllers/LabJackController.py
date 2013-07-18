@@ -82,8 +82,9 @@ class LabJackController(object):
 		
 	def stop(self):
 		"""Waits until data collection is complete before proceeding."""
-		while(self.LJThread.isAlive()):
-			pass	
+		print "Waiting for Lab Jack to finish collecting data."
+		self.LJThread.join()
+		print "Lab Jack Done"
 
 	def collectData(self):
 		"""Initiates data collection."""
@@ -213,9 +214,7 @@ class TriggerThread(Thread):
 		LJC.collectData()
 		
 class DataCollectionThread(Thread):
-	"""
-	Data collection threads collect data.
-	"""
+	"""Data collection threads collect data."""
 	
 	def __init__(self, LJController):
 		Thread.__init__(self)
