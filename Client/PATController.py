@@ -11,7 +11,9 @@ import math as mth
 from time import time, localtime, strftime
 
 from DefaultSettings.Settings import Settings
+from DefaultSettings.SettingsConsolidator import defaultSettings, overwriteSettings
 from SaveController import SaveController
+from PATClient import PATClient
 
 class PATController(Recipe):
 
