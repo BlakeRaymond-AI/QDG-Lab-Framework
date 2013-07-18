@@ -1,9 +1,10 @@
 from Settings import Settings
-from Settings.labJackSettings import labJackSettings
-from Settings.PATSettings import PATSettings
-from Settings.PMDSettings import PMDSettings
-from Settings.Stabil_Ion_Settings import Stabil_Ion_Settings
-from Settings.saveSettings import saveSettings	
+from DefaultSettings.labJackSettings import labJackSettings
+from DefaultSettings.PATSettings import PATSettings
+from DefaultSettings.PMDSettings import PMDSettings
+from DefaultSettings.Stabil_Ion_Settings import Stabil_Ion_Settings
+from DefaultSettings.saveSettings import saveSettings	
+from DefaultSettings.PATClientSettings import PATClientSettings	
 
 # Store all settings dicts associated with devices in this dictionary. Data
 # format is:

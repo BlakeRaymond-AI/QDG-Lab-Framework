@@ -1,4 +1,4 @@
-'''Default SaveController Settings'''
+'''Default PATCLient Settings'''
 
 clientSettings = dict()
 clientSettings['HOST'] = 'LOCALHOST'

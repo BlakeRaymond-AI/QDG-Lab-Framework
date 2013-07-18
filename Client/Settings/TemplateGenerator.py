@@ -4,7 +4,7 @@ import sys
 scriptPath = sys.argv[0]
 
 mainPath, script = path.split(scriptPath)
-settingsPath = path.join(mainPath, 'Settings')
+settingsPath = path.join(mainPath, 'DefaultSettings')
 templateName = path.join(mainPath, 'settingsTemplate.py')
 template = open(templateName, 'wb')
 
@@ -18,8 +18,5 @@ for root, dirs, files in walk(settingsPath):
 				template.write(line)
 			f.close()
 			template.write('\n # ----------------------------------- \n')
-			#template.write('')
-			#template.write('')
-			
 			
 template.close()
