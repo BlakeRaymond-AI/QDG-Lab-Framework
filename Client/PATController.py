@@ -11,9 +11,9 @@ import math as mth
 from time import time, localtime, strftime
 
 from DefaultSettings.Settings import Settings
+from DefaultSettings.SettingsConsolidator import defaultSettings, overwriteSettings
 from SaveController import SaveController
-from DeviceMediators.LabJackMediator import LabJackMediator
-from DeviceMediators.PMDMediator import PMDMediator
+from PATClient import PATClient
 
 class PATController(Recipe):
 
