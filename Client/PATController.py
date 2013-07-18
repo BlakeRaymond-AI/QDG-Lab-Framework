@@ -46,7 +46,6 @@ class PATController(Recipe):
 		
 		# Send command to server to create device controllers.
 		self.PATClient.sendCommand(deviceSettings, 'i')
-
 		
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
@@ -71,7 +70,6 @@ class PATController(Recipe):
 		print "Stopping devices."
 		self.PATClient.sendMediatorCommand("stopDevices")
 		self.PATClient.awaitConfirmation()
-		self.PATClient.close()
 
 	def save(self):
 		print "Saving data."
@@ -80,6 +78,10 @@ class PATController(Recipe):
 		arguments = (path,)
 		self.PATClient.sendMediatorCommand("save", arguments)
 		self.PATClient.awaitConfirmation()
+		
+	def closeClient(self):
+		self.PATClient.close()
+		print "PATClient closed."
 	
 	def saveTrial(self, path, trialName = ''):
 		print "Saving trial data."

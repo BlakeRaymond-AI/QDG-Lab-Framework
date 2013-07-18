@@ -15,6 +15,7 @@ class PATClient(object):
 		'''Sends a message string to the server.'''
 		size = len(msg)
 		size = zfill(str(size), 4)
+		print size
 		self.sessionSocket.send(size)
 		self.sessionSocket.send(msg)
 	
@@ -29,9 +30,7 @@ class PATClient(object):
 		msg = commandChar + dictData
 		self.sendMessage(msg)
 	
-	def sendMediatorCommand(self, fnName,	# String 
-							  fnArgs = () 	# Tuple
-							  ):
+	def sendMediatorCommand(self, fnName, fnArgs = ()):
 		'''
 		Used to send commands associated with the mediator interface.
 		fnName must be the name of a valid mediator interface function.
@@ -45,7 +44,7 @@ class PATClient(object):
 	def close(self):
 		self.sendCommand({}, 'c')
 		self.sessionSocket.close()
-		del(self)	
+		# del(self)	
 		
 	def recieveMessage(self):
 		'''Retrieves a message string from the server.'''

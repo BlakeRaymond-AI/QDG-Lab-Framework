@@ -33,25 +33,26 @@ class PATServer(object):
 		self.deviceDict = {}
 		global server
 		server = self
-		print "Server Started"
+		print "PAT Server Started"
 		self.waitForClient()
 	
 	def waitForClient(self):
 		'''Allows server to pickup an incoming connection from the PAT Client.'''
+		print "Waiting for PAT Client."
 		(sessionSocket, sessionAddress) = self.serverSocket.accept()
 		self.inUse = True
 		self.sessionSocket = sessionSocket
+		print "---------- New Client Connected ---------"
 		self.recieveMessage()
 	
 	def recieveMessage(self):
 		'''Server will loop through this method, receiving messages from the client.'''	
-		print "Waiting for commands."
-		sessionSocket = self.sessionSocket
-		size = sessionSocket.recv(4)
-		print "Retrieving message."
-		msg = sessionSocket.recv(int(size))
-		self.interpretMessage(msg)
 		if self.inUse:
+			print "Server waiting for commands."
+			sessionSocket = self.sessionSocket
+			size = sessionSocket.recv(4)
+			msg = sessionSocket.recv(int(size))
+			self.interpretMessage(msg)
 			self.recieveMessage()
 		else:
 			self.waitForClient()
@@ -84,7 +85,7 @@ class PATServer(object):
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
 		elif cmdChar == 'c':
-			self.handleClientClosing(self)
+			self.handleClientClosing()
 		elif cmdChar == 'e':
 			print msg
 		else:
@@ -102,6 +103,7 @@ class PATServer(object):
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
 		functionName = cmdDict['function']
+		print "Mediator Command Recieved: " + functionName
 		functionArgs = cmdDict['arguments']
 		fn = getattr(self, functionName)
 		fn(*functionArgs)
