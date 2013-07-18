@@ -1,5 +1,5 @@
 '''Default SaveController Settings'''
 
 clientSettings = dict()
-clientSettings['HOST'] = ''
-clientSettings['PORT'] = ''
+clientSettings['HOST'] = 'LOCALHOST'
+clientSettings['PORT'] = '34567'

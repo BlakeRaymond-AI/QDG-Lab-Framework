@@ -12,8 +12,6 @@ from time import time, localtime, strftime
 
 from DefaultSettings.Settings import Settings
 from SaveController import SaveController
-from DeviceMediators.LabJackMediator import LabJackMediator
-from DeviceMediators.PMDMediator import PMDMediator
 
 class PATController(Recipe):
 

@@ -8,7 +8,7 @@ import pickle
 #from DeviceMediators.Stabil_Ion_Mediator import SIMediator
 
 HOST = 'LOCALHOST'
-PORT = 34573
+PORT = 34567
 ADDR = (HOST, PORT)
 server = None
 

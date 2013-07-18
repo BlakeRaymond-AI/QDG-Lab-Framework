@@ -2,16 +2,13 @@ from socket import *
 from string import zfill
 import pickle
 
-host= 'LOCALHOST'
-port = 34536
-
 class PATClient(object):
-	def __init__(self): #, dictionary)
-		self.host = host
-		self.port = port
-		self.addr = (self.host, self.port)
+	def __init__(self, dictionary):
+		for (key, value) in dictionary.items():
+			setattr(self, key, value)	
+		self.ADDR = (self.HOST, self.PORT)
 		self.sessionSocket = socket(AF_INET, SOCK_STREAM)
-		self.sessionSocket.connect(self.addr)
+		self.sessionSocket.connect(self.ADDR)
 		
 	def sendMessage(self, msg):
 		size = len(msg)
@@ -24,11 +21,12 @@ class PATClient(object):
 		size = sessionSocket.recv(4)
 		msg = sessionSocket.recv(int(size))
 		self.interpretMessage(msg)
+		self.recieveMessage()
 		
 	def interpretMessage(self, msg):
 		cmdChar = msg[0]
 		msg = msg[1:]
-		if cmdChar == 'o':
+		if cmdChar == 'e':
 			print msg
 	
 	def awaitConfirmation(self, msg):
@@ -50,7 +48,7 @@ class PATClient(object):
 		self.sendMessage(msg)
 	
 	def createDevices(self, deviceDict):
-		sendCommand(deviceDict, 'c')
+		sendCommand(deviceDict, 'i')
 			
 	def sendMediatorCommand(self, fnName,	# String 
 								  fnArgs = () # Tuple
