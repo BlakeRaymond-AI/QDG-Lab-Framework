@@ -18,6 +18,7 @@ deviceSettings = {
 generalSettings = {
 	'PATSettings' : ('Settings', PATSettings),
 	'SaveController' : ('SaveController', saveSettings),
+	'PATClient' : ('PATClient', PATClientSettings),
 }
 
 # In general the code below does not need to be modified.
