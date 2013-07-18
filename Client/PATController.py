@@ -36,25 +36,15 @@ class PATController(Recipe):
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
 
-		
-		deviceSettings	= settingsDict['deviceSettings']
 		generalSettings = settingsDict['generalSettings']
-
-		# Create device mediators using device settings.
-		
-		
-		# Send creation dict here.
-		
-# 		self.deviceDict = {}
-# 		for (key, deviceData) in deviceSettings.items():
-# 			constructor = globals()[deviceData[0]]
-# 			self.deviceDict[key] = constructor(deviceData[1])
+		deviceSettings	= settingsDict['deviceSettings']
 
 		# Create settings objects from general settings.
 		for (key, deviceData) in generalSettings.items():
 			constructor = globals()[deviceData[0]]
 			setattr(self, key, constructor(deviceData[1]))			
 		
+		# Send command to server to create device controllers.
 		self.PATClient.sendCommand(deviceSettings, 'i')
 
 		
@@ -81,6 +71,7 @@ class PATController(Recipe):
 		print "Stopping devices."
 		self.PATClient.sendMediatorCommand("stopDevices")
 		self.PATClient.awaitConfirmation()
+		self.PATClient.close()
 
 	def save(self):
 		print "Saving data."

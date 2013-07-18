@@ -12,29 +12,54 @@ class PATClient(object):
 		print "Client Connected"
 		
 	def sendMessage(self, msg):
+		'''Sends a message string to the server.'''
 		size = len(msg)
 		size = zfill(str(size), 4)
 		self.sessionSocket.send(size)
 		self.sessionSocket.send(msg)
+	
+	def sendCommand(self, dictionary, commandChar):
+		'''
+		Sends a command to the server. The interpretMessage function
+		in the PATServer must be able to handle the commandChar sent,
+		and the associated handler function must know how to unpack 
+		the dictionary.
+		'''
+		dictData = pickle.dumps(dictionary)
+		msg = commandChar + dictData
+		self.sendMessage(msg)
+	
+	def sendMediatorCommand(self, fnName,	# String 
+							  fnArgs = () 	# Tuple
+							  ):
+		'''
+		Used to send commands associated with the mediator interface.
+		fnName must be the name of a valid mediator interface function.
+		fnArgs must be a tuple of the arguments fnName takes.
+		'''	
+		cmdDict = dict()
+		cmdDict["function"] = fnName
+		cmdDict["arguments"] = fnArgs
+		self.sendCommand(cmdDict, 'm')
+		
+	def close(self):
+		self.sendCommand({}, 'c')
+		self.sessionSocket.close()
+		del(self)	
 		
 	def recieveMessage(self):
+		'''Retrieves a message string from the server.'''
 		sessionSocket = self.sessionSocket
 		size = sessionSocket.recv(4)
 		msg = sessionSocket.recv(int(size))
-		self.interpretMessage(msg)
-		self.recieveMessage()
-		
-	def interpretMessage(self, msg):
-		cmdChar = msg[0]
-		msg = msg[1:]
-		if cmdChar == 'e':
-			print msg
+		return msg
 	
 	def awaitConfirmation(self):
-		print "Awaiting confirmation."
-		sessionSocket = self.sessionSocket
-		size = sessionSocket.recv(4)
-		msg = sessionSocket.recv(int(size))
+		'''
+		Forces client to wait until server confirms that the last command
+		sent was executed.
+		'''
+		msg = self.recieveMessage()
 		status = msg[:7]
 		if status == "SUCCESS":
 			print msg
@@ -43,21 +68,6 @@ class PATClient(object):
 		 	#throw an exception
 		else:
 		 	print "INVALID CONFIRMATION MESSAGE"
-		print "Confirmation recieved."
-		
-	def sendCommand(self, dictionary, commandChar):
-		dictData = pickle.dumps(dictionary)
-		msg = commandChar + dictData
-		self.sendMessage(msg)
-	
-	def createDevices(self, deviceDict):
-		sendCommand(deviceDict, 'i')
 			
-	def sendMediatorCommand(self, fnName,	# String 
-								  fnArgs = () # Tuple
-								  ):	
-		cmdDict = dict()
-		cmdDict["function"] = fnName
-		cmdDict["arguments"] = fnArgs
-		self.sendCommand(cmdDict, 'm')
+
 		

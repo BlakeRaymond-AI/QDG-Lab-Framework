@@ -23,21 +23,21 @@ def signal_handler(signal, frame):
 
 class PATServer(object):
 	def __init__(self):
-		 self.serverSocket = socket(AF_INET, SOCK_STREAM)
-		 self.serverSocket.bind(ADDR)
-		 self.serverSocket.listen(5)
-		 self.available = True
-		 self.inUse = False
-		 self.deviceDict = {}
-		 global server
-		 server = self
-		 print "Server Started"
-		 self.run()
-	
-	def run(self):
-		'''Allows server to pickup an incoming connection from the PAT Client.'''	
+		self.serverSocket = socket(AF_INET, SOCK_STREAM)
+		self.serverSocket.bind(ADDR)
+		self.serverSocket.listen(5)
+		self.available = True
+		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
+		self.deviceDict = {}
+		global server
+		server = self
+		print "Server Started"
+		self.waitForClient()
+	
+	def waitForClient(self):
+		'''Allows server to pickup an incoming connection from the PAT Client.'''
 		(sessionSocket, sessionAddress) = self.serverSocket.accept()
 		self.inUse = True
 		self.sessionSocket = sessionSocket
@@ -53,6 +53,8 @@ class PATServer(object):
 		self.interpretMessage(msg)
 		if self.inUse:
 			self.recieveMessage()
+		else:
+			self.waitForClient()
 	
 	def sendMessage(self, msg):
 		'''
@@ -73,19 +75,20 @@ class PATServer(object):
 	def interpretMessage(self, msg):
 		'''
 		Handles messages received from the client based on the first character
-		of the message
+		of the message.
 		'''
 		cmdChar = msg[0]
-		print "COMMAND CHAR: " + cmdChar
 		msg = msg[1:]
-		if cmdChar == 'i':
-			print "Initialization Command"
-			self.handleInitialization(msg)
 		if cmdChar == 'm':
-			print "Mediator Command"
 			self.handleMediatorCommand(msg)	
-		if cmdChar == 'e':
+		elif cmdChar == 'i':
+			self.handleInitialization(msg)
+		elif cmdChar == 'c':
+			self.handleClientClosing(self)
+		elif cmdChar == 'e':
 			print msg
+		else:
+			print "Invalid Command Char: " + cmdChar
 	
 	def handleInitialization(self, msg):
 		deviceSettings = pickle.loads(msg)
@@ -97,12 +100,16 @@ class PATServer(object):
 		print deviceDict
 	
 	def handleMediatorCommand(self, msg):
-		print "Mediator Handler"
 		cmdDict = pickle.loads(msg)
 		functionName = cmdDict['function']
 		functionArgs = cmdDict['arguments']
 		fn = getattr(self, functionName)
 		fn(*functionArgs)
+	
+	def handleClientClosing(self):
+		self.inUse = False
+		self.sessionSocket = None
+		self.sessionAddress = None
 	
 	def startDevices(self):
 		print "Starting data collection devices."
@@ -110,7 +117,6 @@ class PATServer(object):
 			device.start()
 		print "All devices started."
 		self.sendMessage("SUCCESS: All devices started.")
-		print "Confirmation sent"
 			
 	def stopDevices(self):
 		print "Stopping devices."
