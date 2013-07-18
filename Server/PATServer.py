@@ -2,10 +2,11 @@ from socket import *
 import signal
 import sys
 import pickle
+from string import zfill
 
 #from DeviceMediators.LabJackMediator import LabJackMediator
-#from DeviceMediators.PMDMediator import PMDMediator
-#from DeviceMediators.Stabil_Ion_Mediator import SIMediator
+from DeviceMediators.PMDMediator import PMDMediator
+# from DeviceMediators.Stabil_Ion_Mediator import SIMediator
 
 HOST = 'LOCALHOST'
 PORT = 34567
@@ -44,8 +45,10 @@ class PATServer(object):
 	
 	def recieveMessage(self):
 		'''Server will loop through this method, receiving messages from the client.'''	
+		print "Waiting for commands."
 		sessionSocket = self.sessionSocket
 		size = sessionSocket.recv(4)
+		print "Retrieving message."
 		msg = sessionSocket.recv(int(size))
 		self.interpretMessage(msg)
 		if self.inUse:
@@ -73,10 +76,13 @@ class PATServer(object):
 		of the message
 		'''
 		cmdChar = msg[0]
+		print "COMMAND CHAR: " + cmdChar
 		msg = msg[1:]
 		if cmdChar == 'i':
+			print "Initialization Command"
 			self.handleInitialization(msg)
 		if cmdChar == 'm':
+			print "Mediator Command"
 			self.handleMediatorCommand(msg)	
 		if cmdChar == 'e':
 			print msg
@@ -87,13 +93,16 @@ class PATServer(object):
 		for (key, deviceData) in deviceSettings.items():
 			constructor = globals()[deviceData[0]]
 			self.deviceDict[key] = constructor(deviceData[1])
+		print "Devices Created"
+		print deviceDict
 	
 	def handleMediatorCommand(self, msg):
+		print "Mediator Handler"
 		cmdDict = pickle.loads(msg)
 		functionName = cmdDict['function']
-		functionrArgs = cmdDict['arguments']
-		fn = self.getattr(functionName)
-		fn(*arguments)
+		functionArgs = cmdDict['arguments']
+		fn = getattr(self, functionName)
+		fn(*functionArgs)
 	
 	def startDevices(self):
 		print "Starting data collection devices."
@@ -101,6 +110,7 @@ class PATServer(object):
 			device.start()
 		print "All devices started."
 		self.sendMessage("SUCCESS: All devices started.")
+		print "Confirmation sent"
 			
 	def stopDevices(self):
 		print "Stopping devices."

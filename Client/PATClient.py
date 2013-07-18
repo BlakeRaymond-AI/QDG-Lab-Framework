@@ -5,10 +5,11 @@ import pickle
 class PATClient(object):
 	def __init__(self, dictionary):
 		for (key, value) in dictionary.items():
-			setattr(self, key, value)	
+			setattr(self, key, value)
 		self.ADDR = (self.HOST, self.PORT)
 		self.sessionSocket = socket(AF_INET, SOCK_STREAM)
 		self.sessionSocket.connect(self.ADDR)
+		print "Client Connected"
 		
 	def sendMessage(self, msg):
 		size = len(msg)
@@ -29,18 +30,20 @@ class PATClient(object):
 		if cmdChar == 'e':
 			print msg
 	
-	def awaitConfirmation(self, msg):
-		sessionSockect = self.sessionSocket
+	def awaitConfirmation(self):
+		print "Awaiting confirmation."
+		sessionSocket = self.sessionSocket
 		size = sessionSocket.recv(4)
-		msg = sessionsSocket.recv(4)
+		msg = sessionSocket.recv(int(size))
 		status = msg[:7]
-		if status == SUCCESS:
+		if status == "SUCCESS":
 			print msg
-		elif status == FAILURE:
+		elif status == "FAILURE":
 			print msg
 		 	#throw an exception
 		else:
 		 	print "INVALID CONFIRMATION MESSAGE"
+		print "Confirmation recieved."
 		
 	def sendCommand(self, dictionary, commandChar):
 		dictData = pickle.dumps(dictionary)
@@ -56,5 +59,5 @@ class PATClient(object):
 		cmdDict = dict()
 		cmdDict["function"] = fnName
 		cmdDict["arguments"] = fnArgs
-		self.sendCommand(cmdDict, 'c')
+		self.sendCommand(cmdDict, 'm')
 		

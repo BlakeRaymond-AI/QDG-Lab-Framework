@@ -54,7 +54,10 @@ class PATController(Recipe):
 		for (key, deviceData) in generalSettings.items():
 			constructor = globals()[deviceData[0]]
 			setattr(self, key, constructor(deviceData[1]))			
-			
+		
+		self.PATClient.sendCommand(deviceSettings, 'i')
+
+		
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
 		def DO_method(v):
@@ -83,8 +86,9 @@ class PATController(Recipe):
 		print "Saving data."
 		path = self.SaveController.dataPath
 		self.settingsDict.save(self.SaveController.expPath)
-		arguments = (path)
+		arguments = (path,)
 		self.PATClient.sendMediatorCommand("save", arguments)
+		self.PATClient.awaitConfirmation()
 	
 	def saveTrial(self, path, trialName = ''):
 		print "Saving trial data."

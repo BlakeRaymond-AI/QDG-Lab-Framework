@@ -1,6 +1,6 @@
 from pprint import PrettyPrinter
 from os import path
-from cPickle import dump
+from pickle import dump
 
 class NonExistentValueError(Exception):
 	'''

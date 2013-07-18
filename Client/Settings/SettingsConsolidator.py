@@ -2,7 +2,7 @@ from Settings import Settings
 from DefaultSettings.labJackSettings import labJackSettings
 from DefaultSettings.PATSettings import PATSettings
 from DefaultSettings.PMDSettings import PMDSettings
-from DefaultSettings.Stabil_Ion_Settings import Stabil_Ion_Settings
+from DefaultSettings.Stabil_Ion_Settings import SISettings
 from DefaultSettings.saveSettings import saveSettings	
 from DefaultSettings.PATClientSettings import PATClientSettings	
 
@@ -12,7 +12,7 @@ from DefaultSettings.PATClientSettings import PATClientSettings
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 #	'LabJack': ('LabJackMediator', labJackSettings),
-	'SI' : ('Stabil_Ion_Mediator', Stabil_Ion_Settings)
+#	'SI' : ('Stabil_Ion_Mediator', SISettings)
 }
 
 # Store all other settings dicts in this dictionary

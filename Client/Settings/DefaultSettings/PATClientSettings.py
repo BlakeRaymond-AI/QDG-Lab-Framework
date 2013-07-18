@@ -1,5 +1,5 @@
 '''Default PATCLient Settings'''
 
-clientSettings = dict()
-clientSettings['HOST'] = 'LOCALHOST'
-clientSettings['PORT'] = '34567'
+PATClientSettings = dict()
+PATClientSettings['HOST'] = 'LOCALHOST'
+PATClientSettings['PORT'] = 34567
