@@ -1,5 +1,5 @@
-from DeviceControllers.PixelLinkController.CameraController import CameraController as Pixelink_Controller
-from DeviceControllers.PixelLinkController.frame_handler_basic import FramesHandler
+from DeviceControllers.PixeLinkController.CameraController import CameraController as Pixelink_Controller
+from DeviceControllers.PixeLinkController.frame_handler_basic import FramesHandler
 
 class PixeLinkMediator(object):
 	
@@ -14,7 +14,7 @@ class PixeLinkMediator(object):
 		self.controller.set_roi(*ROI)
 		self.controller.set_exposure_time_ms(self.expTime_ms)
 		self.controller.set_gain(self.gain)
-		# self.controller.set_external_trigger()
+		self.controller.set_external_trigger()
 		
 		self._imagelist = []
 		self.framesHandler = FramesHandler()

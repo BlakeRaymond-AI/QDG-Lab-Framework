@@ -8,8 +8,8 @@ from string import zfill
 from DeviceMediators.PMDMediator import PMDMediator
 # from DeviceMediators.Stabil_Ion_Mediator import SIMediator
 
-HOST = 'LOCALHOST'
-PORT = 34567
+HOST = gethostbyname(gethostname())
+PORT = 15964
 ADDR = (HOST, PORT)
 server = None
 
@@ -84,6 +84,8 @@ class PATServer(object):
 			self.handleMediatorCommand(msg)	
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
+		elif cmdCHar == 's':
+			self.handleSpecficiDeviceCommand(msg)
 		elif cmdChar == 'c':
 			self.handleClientClosing()
 		elif cmdChar == 'e':
@@ -106,6 +108,15 @@ class PATServer(object):
 		print "Mediator Command Recieved: " + functionName
 		functionArgs = cmdDict['arguments']
 		fn = getattr(self, functionName)
+		fn(*functionArgs)
+	
+	def handleSpecificDeviceCommand(self, msg):
+		cmdDict = pickel.loads(msg)
+		functionName = cmdDict['function']
+		functionArgs = cmdDict['arguments']
+		deviceName = cmdDict['deviceName']
+		device = self.deviceDict[deviceName]
+		fn = getattr(device, functionName)
 		fn(*functionArgs)
 	
 	def handleClientClosing(self):

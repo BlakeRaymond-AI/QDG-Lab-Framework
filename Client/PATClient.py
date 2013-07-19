@@ -36,9 +36,16 @@ class PATClient(object):
 		fnArgs must be a tuple of the arguments fnName takes.
 		'''	
 		cmdDict = dict()
-		cmdDict["function"] = fnName
-		cmdDict["arguments"] = fnArgs
+		cmdDict['function'] = fnName
+		cmdDict['arguments'] = fnArgs
 		self.sendCommand(cmdDict, 'm')
+	
+	def sendSpecicificDeviceCommand(self, fnName, devName, fnArgs = ()):
+		cmdDict = dict()
+		cmdDict['function'] = fnName
+		cmdDict['arguments'] = fnArgs
+		cmdDict['deviceName'] = deviceName
+		self.sendCommand(cmdDict, 's')
 		
 	def close(self):
 		self.sendCommand({}, 'c')
