@@ -75,11 +75,3 @@ class PixeLinkMediator(object):
 		if height > 1024 - top:
 			rop = 1024 - top
 		self.ROI_top = int(top/8)*8
-
-
-PLM = PixeLinkMediator(PixeLinkSettings)		
-PLM.setNumberOfImages(3)
-PLM.start()
-PLM.stop()
-PLM.save('Images')	
-		
