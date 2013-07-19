@@ -43,8 +43,9 @@ class PATController(Recipe):
 			setattr(self, key, constructor(deviceData[1]))			
 		
 		# Server is notified only if devices need to be created.
-		if deviceDict:
-			self.PATClient.sendCommand(self.controllerName, 'n')
+		deviceSettings = settingsDict['deviceSettings']
+		if deviceSettings:	
+			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(settingsDict, 'i')
 			
 	def __build_DO_method(self,name,addr,port):
