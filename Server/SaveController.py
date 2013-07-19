@@ -23,10 +23,9 @@ class DataFolderDuplicationError(Exception):
 
 class SaveController(object):
 	
-	def __init__(self, dictionary):
-		for (key, value) in dictionary.items():
-			setattr(self, key, value)
-		
+	def __init__(self, basePath, timeSuffix):
+		self.basePath = basePath
+		self.timeSuffix = timeSuffix
 		self.date = strftime('%Y_%m_%d')
 		self.time = strftime('%H_%M_%S')
 		self.expPath = self._generateExpPath()
@@ -45,7 +44,6 @@ class SaveController(object):
 			self._trialNum += 1
 		p = path.join(self.dataPath, trialName)	
 		self.makeFolder(p)
-		
 		return p
 	
 	def _generateExpPath(self):

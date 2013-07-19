@@ -3,6 +3,7 @@ import signal
 import sys
 import pickle
 from string import zfill
+from SaveController import SaveController
 
 from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
@@ -12,6 +13,8 @@ HOST = gethostbyname(gethostname())
 PORT = 15964
 ADDR = (HOST, PORT)
 server = None
+
+dataPath = 'C:\PAT\PATData'
 
 def signal_handler(signal, frame):
 	'''Handler designed to close server when Python instance is interrupted.'''
@@ -31,6 +34,7 @@ class PATServer(object):
 		self.sessionSocket = None
 		self.sessionAddress = None
 		self.deviceDict = {}
+		self.clientName = ''
 		global server
 		server = self
 		print "PAT Server Started"
@@ -38,11 +42,11 @@ class PATServer(object):
 	
 	def waitForClient(self):
 		'''Allows server to pickup an incoming connection from the PAT Client.'''
-		print "Waiting for PAT Client."
+		print "---------- Waiting for PAT Client ----------"
 		(sessionSocket, sessionAddress) = self.serverSocket.accept()
 		self.inUse = True
 		self.sessionSocket = sessionSocket
-		print "---------- New Client Connected ---------"
+		print "---------- New Client Connected ----------"
 		self.recieveMessage()
 	
 	def recieveMessage(self):
@@ -81,7 +85,9 @@ class PATServer(object):
 		cmdChar = msg[0]
 		msg = msg[1:]
 		if cmdChar == 'm':
-			self.handleMediatorCommand(msg)	
+			self.handleMediatorCommand(msg)
+		elif cmdChar == 'n':
+			self.handleName(msg)
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
 		elif cmdCHar == 's':
@@ -94,7 +100,10 @@ class PATServer(object):
 			print "Invalid Command Char: " + cmdChar
 	
 	def handleInitialization(self, msg):
-		deviceSettings = pickle.loads(msg)
+		settingsDict = pickle.loads(msg)
+		self.saveController = SaveController(dataPath, self.clientName)
+		self.settingsDict.save(self.saveController.expPath)
+		deviceDict = settingsDict['deviceDict']
 		deviceDict = self.deviceDict
 		for (key, deviceData) in deviceSettings.items():
 			constructor = globals()[deviceData[0]]
@@ -110,6 +119,10 @@ class PATServer(object):
 		fn = getattr(self, functionName)
 		fn(*functionArgs)
 	
+	def handleName(self, msg):
+		print "Client for %s started." % msg
+		self.clientName = msg
+	
 	def handleSpecificDeviceCommand(self, msg):
 		cmdDict = pickel.loads(msg)
 		functionName = cmdDict['function']
@@ -124,6 +137,8 @@ class PATServer(object):
 		self.sessionSocket = None
 		self.sessionAddress = None
 		self.deviceDict = {}
+		self.saveController = None
+		self.clientName = ''
 	
 	def startDevices(self):
 		print "Starting data collection devices."
@@ -139,8 +154,9 @@ class PATServer(object):
 		print "All devices stopped"
 		self.sendMessage("SUCCESS: All devices stopped.")
 
-	def save(self, path):
+	def save(self):
 		print "Saving data"
+		path = self.saveController.dataPath
 		for dev in self.deviceDict.values():
 			if dev.takeData: 
 				dev.save(path)

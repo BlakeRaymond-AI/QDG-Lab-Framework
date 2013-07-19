@@ -12,13 +12,13 @@ from time import time, localtime, strftime
 
 from Settings.Settings import Settings
 from Settings.SettingsConsolidator import defaultSettings, overwriteSettings
-from SaveController import SaveController
 from PATClient import PATClient
 
 class PATController(Recipe):
 
 	def __init__(self, controllerName, settingsDict, **kw):		   
 		Recipe.__init__(self,controllerName,**kw)
+		self.controllerName = controllerName
 		self.settingsDict = settingsDict
 		_D = experiment_devices['PAT']	# PAT Database Settings
 		self.__devices = {}
@@ -36,17 +36,17 @@ class PATController(Recipe):
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
 
-		generalSettings = settingsDict['generalSettings']
-		deviceSettings	= settingsDict['deviceSettings']
-
 		# Create settings objects from general settings.
+		generalSettings = settingsDict['generalSettings']
 		for (key, deviceData) in generalSettings.items():
 			constructor = globals()[deviceData[0]]
 			setattr(self, key, constructor(deviceData[1]))			
 		
-		# Send command to server to create device controllers.
-		self.PATClient.sendCommand(deviceSettings, 'i')
-		
+		# Server is notified only if devices need to be created.
+		if deviceDict:
+			self.PATClient.sendCommand(self.controllerName, 'n')
+			self.PATClient.sendCommand(settingsDict, 'i')
+			
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
 		def DO_method(v):
@@ -67,16 +67,13 @@ class PATController(Recipe):
 		self.PATClient.awaitConfirmation()
 
 	def stopDevices(self):
-		print "Stopping devices."
+		print "Stopping data collection devices."
 		self.PATClient.sendMediatorCommand("stopDevices")
 		self.PATClient.awaitConfirmation()
 
 	def save(self):
 		print "Saving data."
-		path = self.SaveController.dataPath
-		self.settingsDict.save(self.SaveController.expPath)
-		arguments = (path,)
-		self.PATClient.sendMediatorCommand("save", arguments)
+		self.PATClient.sendMediatorCommand("save")
 		self.PATClient.awaitConfirmation()
 		
 	def closeClient(self):
