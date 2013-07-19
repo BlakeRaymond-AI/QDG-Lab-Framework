@@ -3,5 +3,5 @@ from socket import gethostbyname
 
 
 PATClientSettings = dict()
-PATClientSettings['HOST'] = gethostbyname("QDG-PATPC")
-PATClientSettings['PORT'] = 34567
+PATClientSettings['HOST'] = '10.1.137.1'
+PATClientSettings['PORT'] = 15964
