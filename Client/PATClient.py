@@ -15,7 +15,6 @@ class PATClient(object):
 		'''Sends a message string to the server.'''
 		size = len(msg)
 		size = zfill(str(size), 4)
-		print size
 		self.sessionSocket.send(size)
 		self.sessionSocket.send(msg)
 	

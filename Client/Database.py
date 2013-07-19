@@ -98,6 +98,7 @@ __PAT_devices = {
         'MOT3D_pump_shutter':(253,3),
         'MOT3D_repump_shutter':(253,4),
         'push_shutter':(253,5),
+		'pixelink_trigger' : (253, 15),
     },
     
     'AO' : {
