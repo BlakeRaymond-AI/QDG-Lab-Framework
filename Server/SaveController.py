@@ -66,7 +66,11 @@ class SaveController(object):
 		p = path.join(p, 'Data')
 		self.makeFolder(p)
 		return p
-		
+
+if __name__ == '__main__':
+	SaveController('C:\PAT\PATData', 'SaveTest')
+	
+	
 	
 		 	
 		

@@ -90,7 +90,7 @@ class PATServer(object):
 			self.handleName(msg)
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
-		elif cmdCHar == 's':
+		elif cmdChar == 's':
 			self.handleSpecficiDeviceCommand(msg)
 		elif cmdChar == 'c':
 			self.handleClientClosing()
@@ -102,14 +102,14 @@ class PATServer(object):
 	def handleInitialization(self, msg):
 		settingsDict = pickle.loads(msg)
 		self.saveController = SaveController(dataPath, self.clientName)
-		self.settingsDict.save(self.saveController.expPath)
-		deviceDict = settingsDict['deviceDict']
-		deviceDict = self.deviceDict
+		settingsDict.save(self.saveController.expPath)
+		deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in deviceSettings.items():
-			constructor = globals()[deviceData[0]]
-			self.deviceDict[key] = constructor(deviceData[1])
+			if deviceData[1]['takeData']:
+				constructor = globals()[deviceData[0]]
+				self.deviceDict[key] = constructor(deviceData[1])
 		print "Devices Created"
-		print deviceDict
+		print self.deviceDict
 	
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
@@ -128,7 +128,7 @@ class PATServer(object):
 		functionName = cmdDict['function']
 		functionArgs = cmdDict['arguments']
 		deviceName = cmdDict['deviceName']
-		device = self.deviceDict[deviceName]
+		device = self.deviceSettings[deviceName]
 		fn = getattr(device, functionName)
 		fn(*functionArgs)
 	
@@ -136,23 +136,23 @@ class PATServer(object):
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
-		self.deviceDict = {}
+		self.deviceSettings = {}
 		self.saveController = None
 		self.clientName = ''
 	
 	def startDevices(self):
-		print "Starting data collection devices."
+		print "Starting data collection deviceDict."
 		for device in self.deviceDict.values():
 			device.start()
-		print "All devices started."
-		self.sendMessage("SUCCESS: All devices started.")
+		print "All deviceDict started."
+		self.sendMessage("SUCCESS: All deviceDict started.")
 			
 	def stopDevices(self):
-		print "Stopping devices."
+		print "Stopping deviceDict."
 		for device in self.deviceDict.values():
 			device.stop()
-		print "All devices stopped"
-		self.sendMessage("SUCCESS: All devices stopped.")
+		print "All deviceDict stopped"
+		self.sendMessage("SUCCESS: All deviceDict stopped.")
 
 	def save(self):
 		print "Saving data"
@@ -164,7 +164,7 @@ class PATServer(object):
 		
 	def saveTrial(self, path, trialName):
 		print "Saving trial data."
-		for dev in self.deviceDict.values():
+		for dev in self.deviceSettings.values():
 			if dev.takeData: 
 				dev.save(path)	
 		print "Trial data saved."
