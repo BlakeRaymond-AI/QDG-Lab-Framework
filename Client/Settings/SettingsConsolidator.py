@@ -22,7 +22,6 @@ deviceSettings = {
 # Store all other settings dicts in this dictionary
 generalSettings = {
 	'PATSettings' : ('Settings', PATSettings),
-	'SaveController' : ('SaveController', saveSettings),
 	'PATClient' : ('PATClient', PATClientSettings),
 }
 
