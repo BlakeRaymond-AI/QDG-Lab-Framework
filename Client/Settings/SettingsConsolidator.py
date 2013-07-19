@@ -14,7 +14,7 @@ from DefaultSettings.PATClientSettings import PATClientSettings
 # 'Device Name in PAT Controller': (Constructor Name, Initialisation Settings). 
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
-#	'LabJack': ('LabJackMediator', labJackSettings),
+	'LabJack': ('LabJackMediator', labJackSettings),
 #	'PixelLink' : ('PixelLinkMediator', PixeLinkSettings),
 #	'SI' : ('Stabil_Ion_Mediator', SISettings)
 }

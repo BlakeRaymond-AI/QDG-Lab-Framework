@@ -58,11 +58,11 @@ class LabJackController(object):
 		self.activeChannels = activeChannels
 		self.numChannels = len(activeChannels)
 		self.scanDuration = long(scanDuration)
-		scanRate = sampleRatePerChannel*len(activeChannels)
-		if (scanRate> 1200):
-			msg = "The aggregate sample rate over all channels must be less than 1200 samples per second. Currently %d." % scanRate
+		aggSampleRate = sampleRatePerChannel*len(activeChannels)
+		if not (200 <= aggSampleRate <= 1200):
+			msg = "The aggregate sample rate over all channels must be between 200 - 1200 samples per second. Currently %d." % aggSampleRate
 			raise LabJackSettingsException(msg)
-		self.scanRate = scanRate
+		self.sampleRatePerChannel = sampleRatePerChannel
 		self.data = []
 		if trigger:
 			self.LJThread = TriggerThread(self, self.triggerChannel)
@@ -108,7 +108,7 @@ class LabJackController(object):
 		channelDataFiltered = []		
 		for ch in channelDataFull:
 			channelDataFiltered.append([c for c in ch if c < 9999.])
-		time = np.arange(len(channelDataFiltered[0])) / float(self.scanRate)
+		time = np.arange(len(channelDataFiltered[0])) / float(self.sampleRatePerChannel)
 		data = [time]
 		labels = ["Time (s)"]
 		for ch in channelDataFiltered:
@@ -148,7 +148,7 @@ class LabJackController(object):
 		channels = (c_long * numChannels.value)()
 		for i in range(numChannels.value):
 			channels[i] = self.activeChannels[i]
-		scanRate = c_float(self.scanRate)
+		sampleRatePerChannel = c_float(self.sampleRatePerChannel)
 		
 		# Function Filler
 		demo = c_long(0) 
@@ -160,18 +160,18 @@ class LabJackController(object):
 		reserved1 = c_long(0)
 		readCount = c_long(0)
 		
-		errorCode = cDrivers.AIStreamStart(byref(idnum), demo, stateIOin, updateIO, ledOn, numChannels, byref(channels), byref(gains), byref(scanRate), disableCal, reserved1, readCount)
+		errorCode = cDrivers.AIStreamStart(byref(idnum), demo, stateIOin, updateIO, ledOn, numChannels, byref(channels), byref(gains), byref(sampleRatePerChannel), disableCal, reserved1, readCount)
 		self.ErrorHandler(errorCode)
 		
 		print "LabJack Stream Opened"		
 		self.idnum = idnum.value		# Update idnum to local id.
-		self.scanRate = int(scanRate.value)	# Update scan rate to that given by LabJack.	
+		self.sampleRatePerChannel = int(sampleRatePerChannel.value)	# Update scan rate to that given by LabJack.	
 
 	def readStream(self):
 		"""Retrieve data from running LabJack stream."""
 		# Important Settings Variables
 		localID = c_long(self.idnum)
-		numScans = c_long(self.scanRate)	# Pull data once every second.
+		numScans = c_long(self.sampleRatePerChannel)	# Pull data once every second.
 		timeout = c_long(3)
 		
 		# Function Filler
@@ -221,4 +221,9 @@ class DataCollectionThread(Thread):
 		self.LJC = LJController 
 		
 	def run(self):
-		self.LJC.collectData()	
+		self.LJC.collectData()
+
+
+if __name__ == '__main__':			
+	LJC = LabJackController()
+	LJC.collectData()

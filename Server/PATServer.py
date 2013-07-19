@@ -4,7 +4,7 @@ import sys
 import pickle
 from string import zfill
 
-#from DeviceMediators.LabJackMediator import LabJackMediator
+from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
 # from DeviceMediators.Stabil_Ion_Mediator import SIMediator
 
@@ -112,6 +112,7 @@ class PATServer(object):
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
+		self.deviceDict = {}
 	
 	def startDevices(self):
 		print "Starting data collection devices."
