@@ -1,8 +1,11 @@
 from Settings import Settings
+
 from DefaultSettings.labJackSettings import labJackSettings
-from DefaultSettings.PATSettings import PATSettings
 from DefaultSettings.PMDSettings import PMDSettings
+from DefaultSettings.PixeLinkSettings import PixeLinkSettings
 from DefaultSettings.Stabil_Ion_Settings import SISettings
+
+from DefaultSettings.PATSettings import PATSettings
 from DefaultSettings.saveSettings import saveSettings	
 from DefaultSettings.PATClientSettings import PATClientSettings	
 
@@ -12,6 +15,7 @@ from DefaultSettings.PATClientSettings import PATClientSettings
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 #	'LabJack': ('LabJackMediator', labJackSettings),
+#	'PixelLink' : ('PixelLinkMediator', PixeLinkSettings),
 #	'SI' : ('Stabil_Ion_Mediator', SISettings)
 }
 
