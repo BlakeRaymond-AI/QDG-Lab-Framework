@@ -1,4 +1,5 @@
 from serial import Serial
+from time import sleep
 
 pressureUnits = {
 	'PASCAL' : 1,
@@ -35,7 +36,7 @@ class SRGSensor(Serial):
 	
 	def __init__(self, 	port = 0,
 						gType = gasTypes['AIR'], 
-						pUnits = pressureUnits['PASCAL'],
+						pUnits = pressureUnits['TORR'],
 						tUnits = temperatureUnits['CELSIUS']
 						):
 		super(SRGSensor, self).__init__(port = port, timeout = 0)
@@ -46,34 +47,38 @@ class SRGSensor(Serial):
 		self.tUnits = tUnits
 		self.setTemperatureUnits(tUnits)
 	
+	def write(self, msg):
+		msg = msg + "\r"
+		super(SRGSensor, self).write(msg)
+		sleep(0.5)
+		
 	def close(self):
-		self.write("rtl\r")
+		self.write("rtl")
 		super(SRGSensor, self).close()
-	
+		
 	def start(self):
-		self.write("sta\r")
+		self.write("sta")
 		
 	def stop(self):
-		self.write("stp\r")	
+		self.write("stp")	
 	
 	def waitRead(self):
-		data = ""
-		while data:
-			data = self.read(256)
+		sleep(2.)
+		data = self.read(256)
 		return data
 				
 	def setGasType(self, gType):
-		msg = "".join([str(gType), " gas\r"])
+		msg = "".join([str(gType), " gas"])
 	
 	def setPressureUnits(self, pUnits):
-		msg = "".join([str(pUnits), " unt\r"])
+		msg = "".join([str(pUnits), " unt"])
 		self.write(msg)
 		
 	def setTemperatureUnits(self, tUnits):
-		msg = "".join([str(tUnits), " tsc\r"])	
+		msg = "".join([str(tUnits), " tsc"])	
 	
 	def setGasTemperature(self, degrees):
-		msg = "".join([str(degrees), " tmp\r"]) 
+		msg = "".join([str(degrees), " tmp"]) 
 		self.write(msg)
 	
 	def determineBackground(self, numSamples):
@@ -81,17 +86,25 @@ class SRGSensor(Serial):
 			print "Averaging Deactivated"
 		if (numSamples > 50):
 			print "Number of samples must be in range [0,50]"
-		msg = "".join([str(numSamples), " bga\r"])
+		msg = "".join([str(numSamples), " bga"])
 		self.write(msg)
 		
 	def getMeasurementTime(self):
-		self.write("mti\r")
+		self.write("mti")
 		
 	def getPressure(self):
-		self.write("val\r")
-		data = self.waitRead() 	
+		self.flushInput()
+		self.write("val")
+		data = self.waitRead()
+		val = float(data[1:-3])
+		return val
 		
 	def getZeroOffset(self):
-		self.write("ofs\r")
+		self.write("ofs")
 		data = self.waitRead()
 		return data
+		
+if __name__ == '__main__':
+	SRGC = SRGSensor(port = 2)
+	print SRGC.getPressure()
+	SRGC.close()

@@ -44,6 +44,10 @@ class PATController(Recipe):
 		
 		# Server is notified only if devices need to be created.
 		deviceSettings = settingsDict['deviceSettings']
+		for key, val in deviceSettings.items():
+			if not val[1]['takeData']:
+				deviceSettings.pop(key)
+				
 		if deviceSettings:	
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(settingsDict, 'i')

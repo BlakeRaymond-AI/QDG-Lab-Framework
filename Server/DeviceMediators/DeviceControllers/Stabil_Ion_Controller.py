@@ -1,4 +1,5 @@
 from serial import Serial
+from threading import Thread
 from time import sleep, time
 import csv
 
@@ -12,13 +13,15 @@ class Stabil_Ion_Controller(Serial):
 		self.SIThread = DataCollectionThread(self)
 		
 	def read(self, size = 32):
+		sleep(0.2)
 		data = super(Stabil_Ion_Controller, self).read(size)
 		data = data[:-2]
 		return data
 		
 	def write(self, msg):
 		msg = msg + "\r\n"	
-		super.(Stabil_Ion_Controller, self).write(msg)
+		super(Stabil_Ion_Controller, self).write(msg)
+		sleep(0.5)
 	
 	def start(self):
 		self.SIThread.run()
@@ -28,32 +31,26 @@ class Stabil_Ion_Controller(Serial):
 		
 	def IG1On(self):
 		self.write("IG1 ON")
-		sleep(0.5)
 		self.flushInput()
 	
 	def IG1Off(self):
 		self.write("IG1 OFF")
-		sleep(0.5)
 		self.flushInput()
 		
 	def IG2On(self):
 		self.write("IG2 ON")
-		sleep(0.5)
 		self.flushInput()
 		
 	def IG2ff(self):
 		self.write("IG2 OFF")
-		sleep(0.5)
 		self.flushInput()
 	
 	def degasOn(self):
 		self.write("DG ON")
-		sleep(0.5)
 		self.flushInput()
 				
 	def getIG1Pressure(self):
 		self.write("DS IG1")
-		sleep(0.1)
 		data = self.read()
 		value = float(data)
 		return value
@@ -61,7 +58,6 @@ class Stabil_Ion_Controller(Serial):
 	def getIG2Pressure(self):
 		self.write("DS IG2")
 		data = self.read()
-		sleep(0.1)
 		value = float(data)
 		return value
 
@@ -102,3 +98,9 @@ class DataCollectionThread(Thread):
 		
 	def run(self):
 		self.SIC.collectData()
+
+if __name__ == '__main__':
+	SIC = Stabil_Ion_Controller(port = 3)
+	print SIC.getIG1Pressure()
+	SIC.close()
+		

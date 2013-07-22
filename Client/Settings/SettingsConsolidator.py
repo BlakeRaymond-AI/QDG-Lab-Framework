@@ -1,12 +1,12 @@
 from Settings import Settings
 
-from DefaultSettings.labJackSettings import labJackSettings
 from DefaultSettings.PMDSettings import PMDSettings
-from DefaultSettings.PixeLinkSettings import PixeLinkSettings
+from DefaultSettings.labJackSettings import labJackSettings
 from DefaultSettings.Stabil_Ion_Settings import SISettings
+from DefaultSettings.MKG_SRG3_Settings import MKG_SRG3_Settings
 
+from DefaultSettings.PixeLinkSettings import PixeLinkSettings
 from DefaultSettings.PATSettings import PATSettings
-from DefaultSettings.saveSettings import saveSettings	
 from DefaultSettings.PATClientSettings import PATClientSettings	
 
 # Store all settings dicts associated with devices in this dictionary. Data
@@ -15,8 +15,9 @@ from DefaultSettings.PATClientSettings import PATClientSettings
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 	'LabJack': ('LabJackMediator', labJackSettings),
-#	'PixelLink' : ('PixelLinkMediator', PixeLinkSettings),
-#	'SI' : ('Stabil_Ion_Mediator', SISettings)
+	'SI' : ('Stabil_Ion_Mediator', SISettings)
+	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
+	'PixelLink' : ('PixelLinkMediator', PixeLinkSettings),
 }
 
 # Store all other settings dicts in this dictionary

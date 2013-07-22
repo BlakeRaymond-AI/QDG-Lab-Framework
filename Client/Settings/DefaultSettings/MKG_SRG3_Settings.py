@@ -1,10 +1,8 @@
 '''Default settings for Stabil Ion Gauge'''
 
-SRG3Settings = dict()
-SRG3Settings['port'] = 0	# The COMx port the gauge is connected to.			
-SRG3Settings['duration_s'] = 10 # Duration of data collection.
-SRG3Settings['secondPerSample'] = 1	# Max of 1 second per sample
+MKG_SRG3_Settings = dict()
+MKG_SRG3_Settings['port'] = 2	# The COMx port the gauge is connected to.			
 
-SRG3Settings['takeData'] = False
-SRG3Settings['processData'] = False
-SRG3Settings['dataFolderName'] = "MKS_SRG3_Data"
+MKG_SRG3_Settings['takeData'] = False
+MKG_SRG3_Settings['processData'] = False
+MKG_SRG3_Settings['dataFolderName'] = "MKS_MKG_SRG3__Data"
