@@ -32,14 +32,14 @@ gasTypes = {
 	'XENON' : 25
 }
 
-class SRGSensor(Serial):
+class MKS_SRG3_Controller(Serial):
 	
 	def __init__(self, 	port = 0,
 						gType = gasTypes['AIR'], 
 						pUnits = pressureUnits['TORR'],
 						tUnits = temperatureUnits['CELSIUS']
 						):
-		super(SRGSensor, self).__init__(port = port, timeout = 0)
+		super(MKS_SRG3_Controller, self).__init__(port = port, timeout = 0)
 		self.gType = gType
 		self.setGasType(gType)		
 		self.pUnits = pUnits
@@ -49,12 +49,12 @@ class SRGSensor(Serial):
 	
 	def write(self, msg):
 		msg = msg + "\r"
-		super(SRGSensor, self).write(msg)
+		super(MKS_SRG3_Controller, self).write(msg)
 		sleep(0.5)
 		
 	def close(self):
 		self.write("rtl")
-		super(SRGSensor, self).close()
+		super(MKS_SRG3_Controller, self).close()
 		
 	def start(self):
 		self.write("sta")
@@ -105,6 +105,6 @@ class SRGSensor(Serial):
 		return data
 		
 if __name__ == '__main__':
-	SRGC = SRGSensor(port = 2)
-	print SRGC.getPressure()
-	SRGC.close()
+	MKS_SRG3_C = MKS_SRG3_Controller(port = 2)
+	print MKS_SRG3C.getPressure()
+	MKS_SRG3C.close()

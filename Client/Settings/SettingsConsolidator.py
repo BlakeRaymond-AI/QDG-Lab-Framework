@@ -2,7 +2,7 @@ from Settings import Settings
 
 from DefaultSettings.PMDSettings import PMDSettings
 from DefaultSettings.labJackSettings import labJackSettings
-from DefaultSettings.Stabil_Ion_Settings import SISettings
+from DefaultSettings.Stabil_Ion_Settings import Stabil_Ion_Settings
 from DefaultSettings.MKG_SRG3_Settings import MKG_SRG3_Settings
 
 from DefaultSettings.PixeLinkSettings import PixeLinkSettings
@@ -15,8 +15,8 @@ from DefaultSettings.PATClientSettings import PATClientSettings
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 	'LabJack': ('LabJackMediator', labJackSettings),
-	'SI' : ('Stabil_Ion_Mediator', SISettings)
-	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
+	'Stabil_Ion' : ('Stabil_Ion_Mediator', Stabil_Ion_Settings)
+#	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
 	'PixelLink' : ('PixelLinkMediator', PixeLinkSettings),
 }
 

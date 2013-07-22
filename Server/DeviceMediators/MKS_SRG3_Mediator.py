@@ -1,9 +1,9 @@
 from DeviceMediatorInterface import DeviceMediatorInterface
-from DeviceControllers.Stabil_Ion_Controller import Stabil_Ion_Controller
+from DeviceControllers.MKS_SRG3_Controller import MKS_SRG3_Controller
 
 from os import path
 
-class Stabil_Ion_Mediator(DeviceMediatorInterface):
+class MKS_SRG3_Mediator(DeviceMediatorInterface):
 	"""
 	Mediator for Stabil Ion gauge specific to the QDG Framework
 	""" 
@@ -11,10 +11,10 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
-		self.controller = Stabil_Ion_Controller(self.port)
+		self.controller = MKS_SRG3_Controller(self.port)
 		
 	def start(self):
-		print "Starting Stable Ion Gauge data collection thread."
+		print "Starting Stable Ion Gague data collection thread."
 		self.controller.start()
 		
 	def stop(self):

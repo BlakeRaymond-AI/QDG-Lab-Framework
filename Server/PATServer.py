@@ -7,7 +7,8 @@ from SaveController import SaveController
 
 from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
-# from DeviceMediators.Stabil_Ion_Mediator import SIMediator
+from DeviceMediators.Stabil_Ion_Mediator import Stabil_Ion_Mediator
+from DeviceMediators.MKS_SRG3_Mediator import MKS_SRG3_Mediator
 
 HOST = gethostbyname(gethostname())
 PORT = 15964
