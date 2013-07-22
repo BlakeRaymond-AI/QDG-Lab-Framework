@@ -10,7 +10,7 @@ from threading import Thread
 cDrivers = WinDLL("ljackuw.dll")
 
 class LabJackError(Exception):
-	"""For errors returned from c driver calls."""
+	"""Displays errors returned from c driver calls."""
 	def __init__(self, errorCode):
 		self.errorCode = errorCode
 	
@@ -25,7 +25,7 @@ class LabJackError(Exception):
 		return repr(result)
 		
 class LabJackSettingsException(Exception):
-	"""For errors related to controller settings."""
+	"""Displays errors related to controller settings."""
 	def __init__(self, msg):
 		self.msg = msg
 		
@@ -37,9 +37,12 @@ class LabJackController(object):
 	LabJack Control Class. Instantiate an instance with the desired settings
 	and then call collectData() on it to collect voltage data.  A subsequent
 	call to save() wil then save this data. Controller can be set to trigger
-	on a rising input. Uses ctypes to call LabJack 	c drivers so make sure 
+	on a rising input. Uses ctypes to call LabJack c drivers so make sure 
 	they're installed. Time data is recorded in seconds and voltage data in
 	volts.
+	
+	To run in a separate thread, call start() instead of collectData(). Then
+	before calling save(), call stop().
 	"""
 		
 	def __init__(self, activeChannels = [0], sampleRatePerChannel = 200, scanDuration = 5, trigger = False, triggerChannel = 0, idnum=-1):
@@ -186,16 +189,17 @@ class LabJackController(object):
 		return voltages
 
 	def endStream(self):
+		"""Closes the LabJack stream."""
 		localID = c_long(self.idnum)
 		errorCode = cDrivers.AIStreamClear(localID)
 		self.ErrorHandler(errorCode)
 		print "LabJack Stream Closed"
 		
 	def setSoftTrigger(self, channel):
+		"""Causes LabJack to utilize trigger."""
 		while (readDigitalIn(channel) == 0):
 			pass
 			
-
 class TriggerThread(Thread):
 	"""
 	Trigger threads will wait for the channel set in setTrigger to go high
@@ -223,7 +227,16 @@ class DataCollectionThread(Thread):
 	def run(self):
 		self.LJC.collectData()
 
-
 if __name__ == '__main__':			
+	# Creates a default LabJackController to collect and save data.
 	LJC = LabJackController()
 	LJC.collectData()
+	LJC.save()
+	
+# Using LabJackController with start and stop.
+# 	LJC = LabJackController()
+# 	LJC.start()
+# 	print "OTHER CODE HERE"
+# 	LJC.stop()
+# 	LJC.save()	
+	

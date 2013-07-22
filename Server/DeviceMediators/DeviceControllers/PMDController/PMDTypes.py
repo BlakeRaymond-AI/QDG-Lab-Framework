@@ -1,11 +1,21 @@
-from ctypes import *
+Range = {
+	# Format (FormatNumber, Low Voltage, High Voltage)
+	'BIP20VOLTS' : (15, -20, 20), 
+	'BIP10VOLTS' : (1, -10, 10), 	# Only channel usable in single-ended mode.
+	'BIP5VOLTS' : (0, -5, 5), 
+	'BIP4VOLTS' : (16, -4,  4), 
+	'BIP2PT5VOLTS' : (2, -2.5, 2.5), 
+	'BIP2VOLTS' : (14, -2.0, 2.0), 
+	'BIP1PT25VOLTS' : (3, -1.25, 1.25), 
+	'BIP1VOLTS' : (4, -1, 1), 
+	}
 
 TrigType = {'GATE_HIGH' : 8,
-				'GATE_LOW' : 9,
-				'TRIG_HIGH' : 10,
-				'TRIG_LOW' : 11,
-				'TRIG_POS_EDGE' : 12,
-				'TRIG_NEG_EDGE' : 13
+			'GATE_LOW' : 9,
+			'TRIG_HIGH' : 10,
+			'TRIG_LOW' : 11,
+			'TRIG_POS_EDGE' : 12,
+			'TRIG_NEG_EDGE' : 13
 			}
 
 Options = {
@@ -52,15 +62,3 @@ Options = {
 	'UPDATEIMMEDIATE' : 0,
 	'UPDATEONCOMMAND' : 1,
 }
-
-Range = {
-	# Format (FormatNumber, Low Voltage, High Voltage)f
-	'BIP20VOLTS' : (15, -20, 20), 
-	'BIP10VOLTS' : (1, -10, 10), 	# Only channel usable in single-ended mode.
-	'BIP5VOLTS' : (0, -5, 5), 
-	'BIP4VOLTS' : (16, -4,  4), 
-	'BIP2PT5VOLTS' : (2, -2.5, 2.5), 
-	'BIP2VOLTS' : (14, -2.0, 2.0), 
-	'BIP1PT25VOLTS' : (3, -1.25, 1.25), 
-	'BIP1VOLTS' : (4, -1, 1), 
-	}

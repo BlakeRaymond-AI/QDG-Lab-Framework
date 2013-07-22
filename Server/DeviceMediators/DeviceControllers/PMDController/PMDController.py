@@ -7,7 +7,7 @@ from math import ceil
 import numpy as np
 import csv
 
-driver = WinDLL('cbw32')
+driver = WinDLL('cbw64')
 						
 class PMDError(Exception):
 	'''For errors returned from c driver calls.'''
@@ -40,6 +40,7 @@ class PMDController(object):
 						sampleRatePerChannel=5000, 
 						scanDuration = 5.0,
 						vRange = 'BIP10VOLTS',
+						trigger = False,
 						trigType = 'TRIG_POS_EDGE',
 						boardNum = 0):
 		'''
@@ -49,6 +50,7 @@ class PMDController(object):
 		sampleRatePerChannel: Sample rate per channel.
 		scanDuration: Duration of scan in seconds.
 		vRange: Voltage range identifier code from PMDTypes.
+		trigger: Boolean indicate whether a trigger should be used or not.
 		trigType: Trigger type identifier code to use from PMDTypes.
 		boardNum: Board number registered through InstaCal program.
 		
@@ -70,6 +72,7 @@ class PMDController(object):
 		self.sampleRatePerChannel = sampleRatePerChannel
 		self.totalSampleRate = sampleRatePerChannel * self.numOfChannels
 		self.scanDuration = scanDuration
+		self.trigger = trigger
 		self.trigType = TrigType['TRIG_POS_EDGE']
 		self.vRange = vRange
 		self.PMDThread = PMDThread(self)
@@ -147,7 +150,9 @@ class PMDController(object):
 		if (winBufferHandle == 0):
 			print "!!!!! BUFFER NOT ALLOCATED !!!!!"
 		sampleRatePerChannel = c_long(self.totalSampleRate / self.numOfChannels)
-		options = Options['BLOCKIO'] | Options['CONVERTDATA'] #| Options['EXTTRIGGER']
+		options = Options['BLOCKIO'] | Options['CONVERTDATA']
+		if self.trigger:
+			option = optoins | Options['EXTTRIGGER']
 		self.handleError(driver.cbAInScan(self.boardNum, 0, 0, numOfSamples, byref(sampleRatePerChannel), self.vRange[0], winBufferHandle, options))
 		self.sampleRatePerChannel = sampleRatePerChannel.value	
 			
@@ -217,6 +222,16 @@ class PMDThread(Thread):
 		self.PMDC.collectData()
 		self.PMDC.processData()
 
+if __name__ == '__main__':	
+	PMDC = PMDController()
+	PMDC.collectData()
+	PMDC.processData()
+	PMDC.saveData()
 
-
+# Using PMDController with start and stop.
+# 	PMDC = LabJackController()
+#	PMDC.start()
+# 	print "OTHER CODE HERE"
+# 	PMDC.stop()
+# 	PMDC.save()			
 		

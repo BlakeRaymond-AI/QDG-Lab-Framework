@@ -12,7 +12,14 @@ class PMDMediator(DeviceMediatorInterface):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
 				
-		self.controller = PMDController(self.activeChannels, self.gainSettings, self.sampleRatePerChannel, self.scanDuration, self.vRange, self.trigType, self.boardNum)
+		self.controller = PMDController(self.activeChannels, 
+										self.gainSettings,
+										self.sampleRatePerChannel,
+										self.scanDuration,
+										self.vRange,
+										self.trigger,
+										self.trigType, 
+										self.boardNum)
 
 	def start(self):
 		print "Starting PMD data collection thread."
