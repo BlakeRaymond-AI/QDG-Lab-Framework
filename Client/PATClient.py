@@ -40,7 +40,7 @@ class PATClient(object):
 		cmdDict['arguments'] = fnArgs
 		self.sendCommand(cmdDict, 'm')
 	
-	def sendSpecificDeviceCommand(self, fnName, devName, fnArgs = ()):
+	def sendSpecificDeviceCommand(self, devName, fnName, fnArgs = ()):
 		cmdDict = dict()
 		cmdDict['function'] = fnName
 		cmdDict['arguments'] = fnArgs

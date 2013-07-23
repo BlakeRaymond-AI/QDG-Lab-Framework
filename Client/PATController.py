@@ -51,6 +51,13 @@ class PATController(Recipe):
 		if deviceSettings:	
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(settingsDict, 'i')
+		
+		# Initialise trigger DO
+		self.pixelink_trigger(0)
+		#self.PMD_trigger(0)
+			
+		# Keep track of the number of times cameras have been triggered.
+		self.numPixeLinkTriggers = 0	
 			
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
@@ -64,6 +71,8 @@ class PATController(Recipe):
 		super(PATController, self).start()
 		
 	def end(self):
+		if self.numPixeLinkTriggers:
+			self.setPixeLinkImageCount(self.numPixeLinkTriggers)
 		super(PATController, self).end()	   
 		
 	def startDevices(self):
@@ -339,6 +348,29 @@ class PATController(Recipe):
 	def push_shutter_close(self):
 		self.push_shutter(0)
 
+# #------------------------------------------------------------------------
+# # PixeLink Controls
+
+	def triggerPixeLink(self):
+		self.numPixeLinkTriggers += 1
+		self.pixelink_trigger(1)
+		self.wait_us(5)
+		self.pixelink_trigger(0)
+		
+	def setPixeLinkImageCount(numOfImages)
+		devName = 'PixeLink'
+		fName = 'setNumberOfImages'
+		args = (numOfImages,)
+		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
+		
+# #------------------------------------------------------------------------
+# # PMD Trigger
+
+	def triggerPMD(self):
+		self.PMD_trigger(1)
+		self.wait_us(5)
+		self.PMD_Trigger
+		
 		
 	
 	
