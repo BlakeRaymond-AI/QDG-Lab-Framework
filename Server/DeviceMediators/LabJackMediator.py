@@ -31,7 +31,8 @@ class LabJackMediator(DeviceMediatorInterface):
 		self.controller.save(fname)
 		
 	def processExpData(self, pth):
-		pass
+		fname = path.join(pth, 'LabJackPlot.png')
+		self.controller.plotData(fname)
 		
 	
 					

@@ -85,10 +85,8 @@ class LabJackController(object):
 		
 	def stop(self):
 		"""Waits until data collection is complete before proceeding."""
-		print "Waiting for Lab Jack to finish collecting data."
 		self.LJThread.join()
-		print "Lab Jack Done"
-
+		
 	def collectData(self):
 		"""Initiates data collection."""
 		data = []

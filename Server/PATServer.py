@@ -136,7 +136,7 @@ class PATServer(object):
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
-		self.deviceSettings = {}
+		self.deviceDict = {}
 		self.saveController = None
 		self.clientName = ''
 	
@@ -163,9 +163,10 @@ class PATServer(object):
 	
 	def processExpData(self):
 		print "Processing Data."
-		path = self.deviceDict.values()
+		path = self.saveController.dataPath
+		for dev in self.deviceDict.values():
 			if dev.processData:
-				dev.processExpData()
+				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
 		
 	def saveTrial(self, path, trialName):

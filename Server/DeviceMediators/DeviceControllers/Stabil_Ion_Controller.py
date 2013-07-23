@@ -54,10 +54,10 @@ class Stabil_Ion_Controller(Serial):
 				
 	def getIG1Pressure(self):
 		self.write("DS IG1")
-		try:
-			data = self.read()
-			value = float(data)
-		except ValueError
+		# try:
+		data = self.read()
+		value = float(data)
+		# except ValueError
 		return value
 	
 	def getIG2Pressure(self):
