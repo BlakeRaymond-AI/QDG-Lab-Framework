@@ -58,7 +58,7 @@ class PATController(Recipe):
 			self.PATClient.sendCommand(settingsDict, 'i')
 	
 		# Initialise trigger DO
-		self.pixelink_trigger(0)
+		# self.pixelink_trigger(0)
 		#self.PMD_trigger(0)
 			
 		# Keep track of the number of times cameras have been triggered.
@@ -367,7 +367,7 @@ class PATController(Recipe):
 		self.wait_us(5)
 		self.pixelink_trigger(0)
 		
-	def setPixeLinkImageCount(numOfImages)
+	def setPixeLinkImageCount(numOfImages):
 		devName = 'PixeLink'
 		fName = 'setNumberOfImages'
 		args = (numOfImages,)
