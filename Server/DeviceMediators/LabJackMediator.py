@@ -30,7 +30,7 @@ class LabJackMediator(DeviceMediatorInterface):
 		fname = path.join(pth, 'LabJackData.csv')
 		self.controller.save(fname)
 		
-	def processData(self, pth):
+	def processExpData(self, pth):
 		pass
 		
 	

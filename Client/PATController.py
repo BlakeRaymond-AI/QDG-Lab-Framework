@@ -94,6 +94,11 @@ class PATController(Recipe):
 		print "Saving data."
 		self.PATClient.sendMediatorCommand("save")
 		self.PATClient.awaitConfirmation()
+	
+	def processData(self):
+		print "Processing data."
+		self.PATClient.sendMediatorCommand("processExpData")
+		self.PATClient.awaitConfirmation()
 		
 	def closeClient(self):
 		self.PATClient.close()

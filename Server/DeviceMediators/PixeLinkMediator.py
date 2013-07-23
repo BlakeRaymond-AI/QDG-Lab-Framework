@@ -33,7 +33,7 @@ class PixeLinkMediator(object):
 	def save(self, path):
 		self.framesHandler.save_frames(folder = path, data = False) 
 
-	def processData(self, pth):
+	def processExpData(self, pth):
 		pass
 	
 	def setROICenter(self):

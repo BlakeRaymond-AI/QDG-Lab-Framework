@@ -54,8 +54,10 @@ class Stabil_Ion_Controller(Serial):
 				
 	def getIG1Pressure(self):
 		self.write("DS IG1")
-		data = self.read()
-		value = float(data)
+		try:
+			data = self.read()
+			value = float(data)
+		except ValueError
 		return value
 	
 	def getIG2Pressure(self):
@@ -81,16 +83,27 @@ class Stabil_Ion_Controller(Serial):
 		self.tDat = tDat
 		self.pDat = pDat	
 				
-	def saveData(self, fname = "PressureData.csv"):		
+	def saveData(self, fname = "SIPressureData.csv"):		
 		csvFile = open(fname, "wb")
 		tDat = self.tDat
 		pDat = self.pDat
 		filewriter = csv.writer(csvFile, delimiter = ',')
-		filewriter.writerow(["Time (s)", "Pressures (???)"])
+		filewriter.writerow(["Time (s)", "Pressures (Torr)"])
 		for i in range(len(tDat)):
 			output = [tDat[i], pDat[i]]
 			filewriter.writerow(output)
 		csvFile.close()
+		
+	def plotData(self, fname = "SIPressurePlot.png"):
+		'''Plots the data collected by the Stabil Ion gauge.'''
+		import matplotlib.pyplot as plt
+		tDat = self.tDat
+		pDat = self.pDat
+		plt.plot(tDat, pDat)
+		plt.xlabel('Time (s)')
+		plt.ylabel('Pressure (Torr)')
+		plt.legend()
+		plt.savefig(fname)		
 
 class DataCollectionThread(Thread):
 	"""Data collection threads collect data."""
@@ -105,5 +118,6 @@ class DataCollectionThread(Thread):
 if __name__ == '__main__':
 	SIC = Stabil_Ion_Controller(port = 3)
 	SIC.start()
+	print SIC.pDat
 	SIC.stop()
 		

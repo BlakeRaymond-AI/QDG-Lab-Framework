@@ -106,8 +106,7 @@ class LabJackController(object):
 		for dataArray in data:
 			for scan in dataArray:
 				for i in range(self.numChannels):
-					channelDataFull[i].append(scan[i])
-				
+					channelDataFull[i].append(scan[i])	
 		channelDataFiltered = []		
 		for ch in channelDataFull:
 			channelDataFiltered.append([c for c in ch if c < 9999.])
@@ -118,7 +117,23 @@ class LabJackController(object):
 			data.append(ch)			
 		for ch in (self.activeChannels):
 			labels.append("Channel " + str(ch) + " (V)")
+		self.data = data
+		self.labels = labels
 		self.outputter(data, labels, fname)
+
+	def plotData(self, fname = 'LabJackDataPlot.png'):
+		'''Plots the data collected by the LabJack.'''
+		import matplotlib.pyplot as plt
+		data = self.data
+		labels = self.labels
+		time = data[0]
+		for i in range(1, len(data)):
+			lbl = labels[i]
+			plt.plot(time, data[i], label = lbl)
+		plt.xlabel('Time (s)')
+		plt.ylabel('Voltage (V)')
+		plt.legend()
+		plt.savefig(fname)
 		
 	def outputter(self, dataArray, labelArray, fileName):
 		"""Formats data collected by LabJack into an appropriates CSV format"""
@@ -198,7 +213,7 @@ class LabJackController(object):
 	def setSoftTrigger(self, channel):
 		"""Causes LabJack to utilize trigger."""
 		while (readDigitalIn(channel) == 0):
-			pass
+			pass				
 			
 class TriggerThread(Thread):
 	"""

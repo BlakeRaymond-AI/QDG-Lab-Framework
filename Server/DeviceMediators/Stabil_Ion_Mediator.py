@@ -26,6 +26,6 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 		fname = path.join(pth, 'PressureData.csv')
 		self.controller.saveData(fname)
 		
-	def processData(self, pth):
+	def processExpData(self, pth):
 		pass
 	

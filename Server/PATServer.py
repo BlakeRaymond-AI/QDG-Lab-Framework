@@ -160,6 +160,13 @@ class PATServer(object):
 		for dev in self.deviceDict.values():
 			dev.save(path)
 		self.sendMessage("SUCCESS: Device data saved.")
+	
+	def processExpData(self):
+		print "Processing Data."
+		path = self.deviceDict.values()
+			if dev.processData:
+				dev.processExpData()
+		self.sendMessage("SUCCESS: Device data processed.")
 		
 	def saveTrial(self, path, trialName):
 		print "Saving trial data."
