@@ -106,9 +106,8 @@ class PATServer(object):
 		settingsDict.save(self.saveController.expPath)
 		deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in deviceSettings.items():
-			if deviceData[1]['takeData']:
-				constructor = globals()[deviceData[0]]
-				self.deviceDict[key] = constructor(deviceData[1])
+			constructor = globals()[deviceData[0]]
+			self.deviceDict[key] = constructor(deviceData[1])
 		print "Devices Created"
 		print self.deviceDict
 	
@@ -142,32 +141,30 @@ class PATServer(object):
 		self.clientName = ''
 	
 	def startDevices(self):
-		print "Starting data collection deviceDict."
+		print "Starting data collection devices."
 		for device in self.deviceDict.values():
 			device.start()
-		print "All deviceDict started."
-		self.sendMessage("SUCCESS: All deviceDict started.")
+		print "All devices started."
+		self.sendMessage("SUCCESS: All devices started.")
 			
 	def stopDevices(self):
-		print "Stopping deviceDict."
+		print "Stopping devices."
 		for device in self.deviceDict.values():
 			device.stop()
-		print "All deviceDict stopped"
-		self.sendMessage("SUCCESS: All deviceDict stopped.")
+		print "All devices stopped."
+		self.sendMessage("SUCCESS: All devices stopped.")
 
 	def save(self):
-		print "Saving data"
+		print "Saving data."
 		path = self.saveController.dataPath
 		for dev in self.deviceDict.values():
-			if dev.takeData: 
-				dev.save(path)
+			dev.save(path)
 		self.sendMessage("SUCCESS: Device data saved.")
 		
 	def saveTrial(self, path, trialName):
 		print "Saving trial data."
-		for dev in self.deviceSettings.values():
-			if dev.takeData: 
-				dev.save(path)	
+		for device in self.deviceSettings.values():
+			device.save(path)	
 		print "Trial data saved."
 		self.sendMessage("SUCCESS: Trial data saved")	
 	

@@ -11,7 +11,7 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
-		self.controller = Stabil_Ion_Controller(self.port)
+		self.controller = Stabil_Ion_Controller(self.port, self.duration_s, self.secondsPerSample)
 		
 	def start(self):
 		print "Starting Stable Ion Gauge data collection thread."
@@ -24,11 +24,8 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 
 	def save(self, pth):
 		fname = path.join(pth, 'PressureData.csv')
-		self.controller.save(fname)
+		self.controller.saveData(fname)
 		
 	def processData(self, pth):
 		pass
-		
-	
-					
 	

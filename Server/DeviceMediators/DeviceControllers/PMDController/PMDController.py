@@ -7,7 +7,7 @@ from math import ceil
 import numpy as np
 import csv
 
-driver = WinDLL('cbw64')
+driver = WinDLL('cbw32')
 						
 class PMDError(Exception):
 	'''For errors returned from c driver calls.'''
@@ -127,11 +127,11 @@ class PMDController(object):
 		self.splitChannels()
 
 	def setDigitalTrigger(self):
-		'''Sets the digital trigger types based on the trigType input'''
+		'''Sets the digital trigger types based on the trigType input.'''
 		self.handleError(driver.cbSetTrigger(self.boardNum, self.trigType, 0, 3000))
 	
 	def setChannels(self):
-		'''Sets the channels over which data will be taken'''
+		'''Sets the channels over which data will be taken.'''
 		numOfChannels = self.numOfChannels
 		chanArr = (c_ushort*numOfChannels)()
 		gainArr = (c_ushort*numOfChannels)()
@@ -141,7 +141,7 @@ class PMDController(object):
 		self.handleError(driver.cbALoadQueue(self.boardNum, chanArr, gainArr, numOfChannels))
 	
 	def setStream(self):
-		'''Sets the scan which will be initiated upon triggering'''
+		'''Sets the scan which will be initiated upon triggering.'''
 		numOfSamples = int(ceil(self.totalSampleRate * self.scanDuration))
 		self.numOfSamples = numOfSamples
 		numOfSamples = c_long(numOfSamples)
@@ -152,7 +152,7 @@ class PMDController(object):
 		sampleRatePerChannel = c_long(self.totalSampleRate / self.numOfChannels)
 		options = Options['BLOCKIO'] | Options['CONVERTDATA']
 		if self.trigger:
-			option = optoins | Options['EXTTRIGGER']
+			option = options | Options['EXTTRIGGER']
 		self.handleError(driver.cbAInScan(self.boardNum, 0, 0, numOfSamples, byref(sampleRatePerChannel), self.vRange[0], winBufferHandle, options))
 		self.sampleRatePerChannel = sampleRatePerChannel.value	
 			

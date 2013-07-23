@@ -27,7 +27,10 @@ class Stabil_Ion_Controller(Serial):
 		self.SIThread.run()
 		
 	def stop(self):
-		self.SIThread.join()
+		SIThread = self.SIThread
+		if SIThread.isAlive():
+			SIThread.join()
+		self.close()
 		
 	def IG1On(self):
 		self.write("IG1 ON")
@@ -61,7 +64,7 @@ class Stabil_Ion_Controller(Serial):
 		value = float(data)
 		return value
 
-	def collectData(self, duration_s, secondsPerSample):
+	def collectData(self):
 		duration_s = self.duration_s
 		secondsPerSample = self.secondsPerSample
 		tDat = []
@@ -78,7 +81,7 @@ class Stabil_Ion_Controller(Serial):
 		self.tDat = tDat
 		self.pDat = pDat	
 				
-	def saveData(fname = "PressureData.csv"):		
+	def saveData(self, fname = "PressureData.csv"):		
 		csvFile = open(fname, "wb")
 		tDat = self.tDat
 		pDat = self.pDat
@@ -101,6 +104,6 @@ class DataCollectionThread(Thread):
 
 if __name__ == '__main__':
 	SIC = Stabil_Ion_Controller(port = 3)
-	print SIC.getIG1Pressure()
-	SIC.close()
+	SIC.start()
+	SIC.stop()
 		
