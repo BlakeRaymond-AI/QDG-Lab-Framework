@@ -35,23 +35,28 @@ class PATController(Recipe):
 			if not addr in self.__devices:
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
-
-		# Create settings objects from general settings.
-		generalSettings = settingsDict['generalSettings']
-		for (key, deviceData) in generalSettings.items():
-			constructor = globals()[deviceData[0]]
-			setattr(self, key, constructor(deviceData[1]))			
 		
-		# Server is notified only if devices need to be created.
+		# Remove all devices that aren't taking data from the deviceSettings dict
 		deviceSettings = settingsDict['deviceSettings']
 		for key, val in deviceSettings.items():
 			if not val[1]['takeData']:
 				deviceSettings.pop(key)
+		
+		# If there are no devices, there is no need for the PATClient
+		if not deviceSettings:
+			generalSettings.pop['PATClient']
 				
+		# Create settings objects from general settings.
+		generalSettings = settingsDict['generalSettings']
+		for (key, deviceData) in generalSettings.items():
+			constructor = globals()[deviceData[0]]
+			setattr(self, key, constructor(deviceData[1]))	
+		
+		# Use client to signal server to create devices.		
 		if deviceSettings:	
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(settingsDict, 'i')
-		
+	
 		# Initialise trigger DO
 		self.pixelink_trigger(0)
 		#self.PMD_trigger(0)
