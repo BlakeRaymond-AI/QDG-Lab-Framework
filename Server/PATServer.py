@@ -9,6 +9,7 @@ from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
 from DeviceMediators.Stabil_Ion_Mediator import Stabil_Ion_Mediator
 from DeviceMediators.MKS_SRG3_Mediator import MKS_SRG3_Mediator
+from DeviceMediators.PixeLinkMediator import PixeLinkMediator
 
 HOST = gethostbyname(gethostname())
 PORT = 15964
@@ -92,7 +93,7 @@ class PATServer(object):
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
 		elif cmdChar == 's':
-			self.handleSpecficiDeviceCommand(msg)
+			self.handleSpecificDeviceCommand(msg)
 		elif cmdChar == 'c':
 			self.handleClientClosing()
 		elif cmdChar == 'e':
@@ -124,11 +125,11 @@ class PATServer(object):
 		self.clientName = msg
 	
 	def handleSpecificDeviceCommand(self, msg):
-		cmdDict = pickel.loads(msg)
+		cmdDict = pickle.loads(msg)
 		functionName = cmdDict['function']
 		functionArgs = cmdDict['arguments']
 		deviceName = cmdDict['deviceName']
-		device = self.deviceSettings[deviceName]
+		device = self.deviceDict[deviceName]
 		fn = getattr(device, functionName)
 		fn(*functionArgs)
 	
