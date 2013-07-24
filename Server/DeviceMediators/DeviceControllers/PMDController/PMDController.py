@@ -201,15 +201,17 @@ class PMDController(object):
 	def plotData(self, fname = 'PMDDataPlot.png'):
 		'''Plots the data collected by the PMD.'''
 		import matplotlib.pyplot as plt
+		plt.clf()
 		data = self.data
 		time = data[0]
 		for i in range(1, len(data)):
 			lbl = "Channel " + str(self.activeChannels[i-1])
-			plt.plot(time, data[i], label = lbl)
+			plt.plot(time, data[i], label = lbl, ls = 'None', marker = '.')
 		plt.xlabel('Time (s)')
 		plt.ylabel('Voltage (V)')
 		plt.legend()
 		plt.savefig(fname)
+		plt.clf()
 		
 class PMDThread(Thread):
 	'''Thread for data collection.'''

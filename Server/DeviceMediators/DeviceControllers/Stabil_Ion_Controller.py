@@ -97,14 +97,15 @@ class Stabil_Ion_Controller(Serial):
 	def plotData(self, fname = "SIPressurePlot.png"):
 		'''Plots the data collected by the Stabil Ion gauge.'''
 		import matplotlib.pyplot as plt
+		plt.clf()
 		tDat = self.tDat
 		pDat = self.pDat
-		plt.plot(tDat, pDat)
+		plt.plot(tDat, pDat, ls = 'None', marker = '.')
 		plt.xlabel('Time (s)')
 		plt.ylabel('Pressure (Torr)')
-		plt.legend()
 		plt.savefig(fname)		
-
+		plt.clf()
+		
 class DataCollectionThread(Thread):
 	"""Data collection threads collect data."""
 	
@@ -122,6 +123,6 @@ class DataCollectionThread(Thread):
 		
 if __name__ == '__main__':			
 	# Creates a default LabJackController to collect and save data.
-	SIC = Stabil_Ion_Controller(3, 43200, 1)
+	SIC = Stabil_Ion_Controller(3, 3600, 1)
 	SIC.collectData()
 	SIC.saveData()				

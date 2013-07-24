@@ -23,9 +23,10 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 		print "Stabil Ion Gauge Done"
 
 	def save(self, pth):
-		fname = path.join(pth, 'PressureData.csv')
+		fname = path.join(pth, 'SIData.csv')
 		self.controller.saveData(fname)
 		
 	def processExpData(self, pth):
-		pass
+		fname = path.join(pth, 'SIDataPlot.png')
+		self.controller.plotData(fname)
 	
