@@ -24,7 +24,7 @@ class Stabil_Ion_Controller(Serial):
 		sleep(0.5)
 	
 	def start(self):
-		self.SIThread.run()
+		self.SIThread.start()
 		
 	def stop(self):
 		SIThread = self.SIThread
