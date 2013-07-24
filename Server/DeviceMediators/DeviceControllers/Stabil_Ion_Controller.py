@@ -70,7 +70,7 @@ class Stabil_Ion_Controller(Serial):
 		duration_s = self.duration_s
 		secondsPerSample = self.secondsPerSample
 		tDat = []
-		pDat= []
+		pDat = []
 		tStart = time()
 		tEnd = tStart + duration_s
 		while (time() < tEnd):
@@ -115,9 +115,13 @@ class DataCollectionThread(Thread):
 	def run(self):
 		self.SIC.collectData()
 
-if __name__ == '__main__':
-	SIC = Stabil_Ion_Controller(port = 3)
-	SIC.start()
-	print SIC.pDat
-	SIC.stop()
+# if __name__ == '__main__':
+	# SIC = Stabil_Ion_Controller(3, 5, 1)
+	# SIC.collectData()
+	# SIC.save()
 		
+if __name__ == '__main__':			
+	# Creates a default LabJackController to collect and save data.
+	SIC = Stabil_Ion_Controller(3, 43200, 1)
+	SIC.collectData()
+	SIC.saveData()				
