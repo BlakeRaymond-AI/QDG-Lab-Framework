@@ -66,7 +66,10 @@ FEATURE_TRIGGER_WITH_CONTROLLED_LIGHT = 30
 #  The number of bits used to represnt 16-bit data (10 or 12)
 FEATURE_MAX_PIXEL_SIZE = 31
 # 
-FEATURES_TOTAL = 32
+FEATURE_FILLER1 = 32
+FEATURE_FILLER2 = 33
+
+FEATURES_TOTAL = 34
 #  Really, decimation is just one type of pixel
 FEATURE_PIXEL_ADDRESSING = 21
 # 

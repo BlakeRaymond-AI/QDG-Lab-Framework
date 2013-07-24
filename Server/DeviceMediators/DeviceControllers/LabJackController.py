@@ -114,7 +114,7 @@ class LabJackController(object):
 		for ch in channelDataFiltered:
 			data.append(ch)			
 		for ch in (self.activeChannels):
-			labels.append("Channel " + str(ch) + " (V)")
+			labels.append("Channel " + str(ch))
 		self.data = data
 		self.labels = labels
 		self.outputter(data, labels, fname)
@@ -122,16 +122,18 @@ class LabJackController(object):
 	def plotData(self, fname = 'LabJackDataPlot.png'):
 		'''Plots the data collected by the LabJack.'''
 		import matplotlib.pyplot as plt
+		plt.clf()
 		data = self.data
 		labels = self.labels
 		time = data[0]
 		for i in range(1, len(data)):
 			lbl = labels[i]
-			plt.plot(time, data[i], label = lbl)
+			plt.plot(time, data[i], label = lbl, ls = 'None', marker = '.')
 		plt.xlabel('Time (s)')
 		plt.ylabel('Voltage (V)')
 		plt.legend()
 		plt.savefig(fname)
+		plt.clf()
 		
 	def outputter(self, dataArray, labelArray, fileName):
 		"""Formats data collected by LabJack into an appropriates CSV format"""
