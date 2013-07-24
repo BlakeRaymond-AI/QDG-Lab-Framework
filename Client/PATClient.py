@@ -44,7 +44,7 @@ class PATClient(object):
 		cmdDict = dict()
 		cmdDict['function'] = fnName
 		cmdDict['arguments'] = fnArgs
-		cmdDict['deviceName'] = deviceName
+		cmdDict['deviceName'] = devName
 		self.sendCommand(cmdDict, 's')
 		
 	def close(self):
