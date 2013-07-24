@@ -77,7 +77,7 @@ class PATController(Recipe):
 		
 	def end(self):
 		if self.numPixeLinkTriggers:
-			self.setPixeLinkImageCount(self.numPixeLinkTriggers)
+			self.setPixeLinkImageCount()
 		super(PATController, self).end()	   
 		
 	def startDevices(self):
@@ -367,10 +367,10 @@ class PATController(Recipe):
 		self.wait_us(5)
 		self.pixelink_trigger(0)
 		
-	def setPixeLinkImageCount(numOfImages):
+	def setPixeLinkImageCount():
 		devName = 'PixeLink'
 		fName = 'setNumberOfImages'
-		args = (numOfImages,)
+		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
 		
 # #------------------------------------------------------------------------
