@@ -76,8 +76,6 @@ class PATController(Recipe):
 		super(PATController, self).start()
 		
 	def end(self):
-		if self.numPixeLinkTriggers:
-			self.setPixeLinkImageCount()
 		super(PATController, self).end()	   
 		
 	def startDevices(self):
@@ -367,7 +365,7 @@ class PATController(Recipe):
 		self.wait_us(5)
 		self.pixelink_trigger(0)
 		
-	def setPixeLinkImageCount():
+	def setPixeLinkImageCount(self):
 		devName = 'PixeLink'
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
