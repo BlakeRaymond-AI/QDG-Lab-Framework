@@ -36,24 +36,25 @@ class PATController(Recipe):
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
 		
-		# Remove all devices that aren't taking data from the deviceSettings dict
 		deviceSettings = settingsDict['deviceSettings']
+		generalSettings = settingsDict['generalSettings']
+				
+		# Remove all devices that aren't taking data from the deviceSettings dict
 		for key, val in deviceSettings.items():
 			if not val[1]['takeData']:
-				deviceSettings.pop(key)
-		
+				del deviceSettings[key]
+				
 		# If there are no devices, there is no need for the PATClient
 		if not deviceSettings:
-			generalSettings.pop['PATClient']
+			del generalSettings['PATClient']
 				
 		# Create settings objects from general settings.
-		generalSettings = settingsDict['generalSettings']
 		for (key, deviceData) in generalSettings.items():
 			constructor = globals()[deviceData[0]]
 			setattr(self, key, constructor(deviceData[1]))	
 		
 		# Use client to signal server to create devices.		
-		if deviceSettings:	
+		if deviceSettings:
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(settingsDict, 'i')
 	
