@@ -148,6 +148,7 @@ class PATServer(object):
 		self.deviceDict = {}
 		self.saveController = None
 		self.clientName = ''
+		print "Client Closed"
 	
 	def startDevices(self):
 		print "Starting data collection devices."
@@ -180,8 +181,8 @@ class PATServer(object):
 		
 	def saveTrial(self, path, trialName):
 		print "Saving trial data."
-		for device in self.deviceSettings.values():
-			device.save(path)	
+		for dev in self.deviceDict.values():
+			dev.save(path)	
 		print "Trial data saved."
 		self.sendMessage("SUCCESS: Trial data saved")	
 	
