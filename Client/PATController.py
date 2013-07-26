@@ -63,7 +63,6 @@ class PATController(Recipe):
 		self.deviceSettings = deviceSettings
 	
 		# Initialise trigger DO
-		self.pixelink_trigger(0)
 		#self.PMD_trigger(0)
 			
 		# Keep track of the number of times cameras have been triggered.
@@ -98,7 +97,7 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("save")
 		self.PATClient.awaitConfirmation()
 	
-	def saveTrial(self, path, trialName = ''):
+	def saveTrial(self, trialName = ''):
 		print "Saving trial data."
 		args = (trialName,)
 		self.PATClient.sendMediatorCommand("saveTrial", args)
@@ -108,8 +107,6 @@ class PATController(Recipe):
 		print "Resetting devices."
 		self.numPixeLinkTriggers = 0
 		self.PATClient.sendCommand(self.deviceSettings, 'r')
-		
-		MediatorCommand("resetDevices")
 		self.PATClient.awaitConfirmation()
 	
 	def processData(self):
@@ -385,6 +382,7 @@ class PATController(Recipe):
 		self.pixelink_trigger(0)
 		
 	def setPixeLinkImageCount(self):
+		self.pixelink_trigger(0)
 		devName = 'PixeLink'
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)

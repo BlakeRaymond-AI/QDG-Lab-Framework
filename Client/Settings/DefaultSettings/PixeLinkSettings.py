@@ -2,8 +2,8 @@
 
 PixeLinkSettings = dict()
 
-PixeLinkSettings['gain'] = 1.7 	# Possible Values: 0, 1.5, 3.1, 4.6	
-PixeLinkSettings['expTime_ms'] = 200.0
+PixeLinkSettings['gain'] = 0 	# Possible Values: 0, 1.5, 3.1, 4.6	
+PixeLinkSettings['expTime_ms'] = 10.0
 
 PixeLinkSettings['useROICenter'] = False
 
