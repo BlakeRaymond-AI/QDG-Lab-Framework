@@ -107,7 +107,7 @@ class PATController(Recipe):
 	def closeClient(self):
 		self.PATClient.close()
 		print "PATClient closed."
-				
+
 	def off(self):
 		self.set_2D_I_1(0)
 		self.set_2D_I_2(0)
@@ -158,6 +158,14 @@ class PATController(Recipe):
 			print "Current setting too high (> 5.0A). Current not set."
 		else:
 			self.MOT_3Dcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
+			
+	def set_Comp_Zcoils_I(self, A = None): # Set the coil current in amperes
+		if A is None: A = self.PATSettings['Comp_Zcoils_I']
+		print "Setting the PAT Coils on to: %.6f" %A
+		if mth.fabs(A) > 5.0:
+			print "Current setting too high (> 5.0A). Current not set."
+		else:
+			self.Comp_Zcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PAT Laser Controls

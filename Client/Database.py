@@ -108,6 +108,7 @@ __PAT_devices = {
         'MOT_2Dcoil_3' : 202,
         'MOT_2Dcoil_4' : 203,
         'MOT_3Dcoils' : 196,
+		'Comp_Zcoils': 207,
     },
 }
 
