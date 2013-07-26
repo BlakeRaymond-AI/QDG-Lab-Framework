@@ -98,6 +98,11 @@ class PATController(Recipe):
 		args = (trialName,)
 		self.PATClient.sendMediatorCommand("saveTrial", args)
 		self.PATClient.awaitConfirmation()
+		
+	def resetDevices(self):
+		print "Resetting devices."
+		self.PATClient.sendMediatorCommand("resetDevices")
+		self.PATClient.awaitConfirmation()
 	
 	def processData(self):
 		print "Processing data."

@@ -29,3 +29,7 @@ class DeviceMediatorInterface(object):
 	def processData(self, path):
 		'''Process the data associated with the device to the path given.'''
 		raise NotImplementedError() 
+		
+	def reset(self):
+		'''Reset a device in order for it to collect data again.'''
+		raise NotImplementedError()
