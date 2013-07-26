@@ -18,7 +18,6 @@ class PATController(Recipe):
 	def __init__(self, controllerName, settingsDict, **kw):		   
 		Recipe.__init__(self,controllerName,**kw)
 		self.controllerName = controllerName
-		self.settingsDict = settingsDict
 		_D = experiment_devices['PAT']	# PAT Database Settings
 		self.__devices = {}
 		for (name,addr) in _D['DDS'].items():	# Creates DDS Functions
@@ -42,6 +41,7 @@ class PATController(Recipe):
 		for key, val in deviceSettings.items():
 			if not val[1]['takeData']:
 				del deviceSettings[key]
+		self.deviceSettings = deviceSettings	
 				
 		# If there are no devices, there is no need for the PATClient
 		if not deviceSettings:
@@ -57,8 +57,13 @@ class PATController(Recipe):
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(settingsDict, 'i')
 	
+		# Save settings.
+		self.settingsDict = settingsDict
+		self.generalSettings = generalSettings
+		self.deviceSettings = deviceSettings
+	
 		# Initialise trigger DO
-		# self.pixelink_trigger(0)
+		self.pixelink_trigger(0)
 		#self.PMD_trigger(0)
 			
 		# Keep track of the number of times cameras have been triggered.
@@ -99,9 +104,12 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("saveTrial", args)
 		self.PATClient.awaitConfirmation()
 		
-	def resetDevices(self):
+	def reset(self):
 		print "Resetting devices."
-		self.PATClient.sendMediatorCommand("resetDevices")
+		self.numPixeLinkTriggers = 0
+		self.PATClient.sendCommand(self.deviceSettings, 'r')
+		
+		MediatorCommand("resetDevices")
 		self.PATClient.awaitConfirmation()
 	
 	def processData(self):

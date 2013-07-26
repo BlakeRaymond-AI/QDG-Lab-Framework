@@ -32,23 +32,6 @@ class PixeLinkMediator(object):
 		
 	def save(self, path):
 		self.framesHandler.save_frames(folder = path, data = False) 
-
-	def reset(self):
-		del(self.controller)
-		del(self._imagelist)
-		del(self.framesHandler)
-		self.controller = Pixelink_Controller()
-		if self.useROICenter:
-			self.setROICenter()
-		self.checkROI()
-		ROI = self.ROI()
-		self.controller.set_roi(*ROI)
-		self.controller.set_exposure_time_ms(self.expTime_ms)
-		self.controller.set_gain(self.gain)
-		self.controller.set_external_trigger()
-		
-		self._imagelist = []
-		self.framesHandler = FramesHandler()
 		
 	def processExpData(self, pth):
 		pass

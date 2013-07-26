@@ -96,6 +96,8 @@ class PATServer(object):
 		msg = msg[1:]
 		if cmdChar == 'm':
 			self.handleMediatorCommand(msg)
+		elif cmdChar == 'r':
+			self.handleReset(msg)
 		elif cmdChar == 'n':
 			self.handleName(msg)
 		elif cmdChar == 'i':
@@ -120,6 +122,15 @@ class PATServer(object):
 		print "Devices Created"
 		print self.deviceDict
 	
+	def handleReset(self, msg):
+		del(self.deviceDict)
+		settingsDict = pickle.loads(msg)
+		for (key, deviceData) in deviceSettings.items():
+			constructor = globals()[deviceData[0]]
+			self.deviceDict[key] = constructor(deviceData[1])
+		print self.deviceDict
+		print "Devices Reset"
+		
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
 		functionName = cmdDict['function']
@@ -150,6 +161,7 @@ class PATServer(object):
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
+		del(self.deviceDict)
 		self.deviceDict = {}
 		self.saveController = None
 		self.clientName = ''
@@ -199,8 +211,6 @@ class PATServer(object):
 				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
 		
-	
-	
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	server = PATServer()	
