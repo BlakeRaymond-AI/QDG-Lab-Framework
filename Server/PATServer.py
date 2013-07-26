@@ -137,9 +137,14 @@ class PATServer(object):
 		functionName = cmdDict['function']
 		functionArgs = cmdDict['arguments']
 		deviceName = cmdDict['deviceName']
+		waitForResponse = cmdDict['waitForResponse']
 		device = self.deviceDict[deviceName]
 		fn = getattr(device, functionName)
-		fn(*functionArgs)
+		if waitForResponse;
+			msg = fn(*functionArgs)
+			self.sendMessage(msg)
+		else:
+			fn(*functionArgs)
 	
 	def handleClientClosing(self):
 		self.inUse = False
@@ -171,12 +176,21 @@ class PATServer(object):
 			dev.save(path)
 		self.sendMessage("SUCCESS: Device data saved.")
 		self.reset()
+
+	def saveTrial(self, trialName):
+		print "Saving trial data."
+		path = self.saveController.generateTrialPath(trialName)
+		for dev in self.deviceDict.values():
+			dev.save(path)	
+		print "Trial data saved."
+		self.reset()
+		self.sendMessage("SUCCESS: Trial data saved")
 		
 	def reset(self):
 		print "Resetting devices."
 		for dev in self.deviceDict.values():
 			dev.reset()
-	
+
 	def processExpData(self):
 		print "Processing Data."
 		path = self.saveController.dataPath
@@ -185,14 +199,7 @@ class PATServer(object):
 				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
 		
-	def saveTrial(self, trialName):
-		print "Saving trial data."
-		path = self.saveController.generateTrialPath(trialName)
-		for dev in self.deviceDict.values():
-			dev.save(path)	
-		print "Trial data saved."
-		self.reset()
-		self.sendMessage("SUCCESS: Trial data saved")	
+	
 	
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)

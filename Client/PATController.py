@@ -15,7 +15,6 @@ from Settings.SettingsConsolidator import defaultSettings, overwriteSettings
 from PATClient import PATClient
 
 class PATController(Recipe):
-
 	def __init__(self, controllerName, settingsDict, **kw):		   
 		Recipe.__init__(self,controllerName,**kw)
 		self.controllerName = controllerName
@@ -94,6 +93,12 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("save")
 		self.PATClient.awaitConfirmation()
 	
+	def saveTrial(self, path, trialName = ''):
+		print "Saving trial data."
+		args = (trialName,)
+		self.PATClient.sendMediatorCommand("saveTrial", args)
+		self.PATClient.awaitConfirmation()
+	
 	def processData(self):
 		print "Processing data."
 		self.PATClient.sendMediatorCommand("processExpData")
@@ -102,15 +107,7 @@ class PATController(Recipe):
 	def closeClient(self):
 		self.PATClient.close()
 		print "PATClient closed."
-	
-	def saveTrial(self, path, trialName = ''):
-		print "Saving trial data."
-		path = self.SaveController.generateTrialPath(trialName)
-		self.settingsDict.save(path)
-		arguments = (path, trialName)
-		self.PATClient.sendMediatorCommand("saveTrial", arguments)
-		self.PATClient.awaitConfirmation()
-					
+
 	def off(self):
 		self.set_2D_I_1(0)
 		self.set_2D_I_2(0)
@@ -161,6 +158,14 @@ class PATController(Recipe):
 			print "Current setting too high (> 5.0A). Current not set."
 		else:
 			self.MOT_3Dcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
+			
+	def set_Comp_Zcoils_I(self, A = None): # Set the coil current in amperes
+		if A is None: A = self.PATSettings['Comp_Zcoils_I']
+		print "Setting the PAT Coils on to: %.6f" %A
+		if mth.fabs(A) > 5.0:
+			print "Current setting too high (> 5.0A). Current not set."
+		else:
+			self.Comp_Zcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PAT Laser Controls
@@ -371,6 +376,15 @@ class PATController(Recipe):
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
+
+# #------------------------------------------------------------------------
+# # Optimizer Controls
+
+	def evaluateFitness(self):
+		devName = 'Optimizer'
+		fName = 'evaulateFitness'
+		self.PATClient.sendSpecificDeviceCommand(devName, fName, waitForResponse = True)
+		value = self.PATClient.recieveMessage()
 		
 # #------------------------------------------------------------------------
 # # PMD Trigger

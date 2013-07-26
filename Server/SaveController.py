@@ -8,7 +8,6 @@ dataPath:	<basePath>/<Date>/<Time><_TimeSuffix>/Data
 from os import mkdir, path
 from time import strftime
 
-
 class DataFolderDuplicationError(Exception):
 	'''
 	Raised by SaveController when it detects that two different experimental
@@ -33,21 +32,25 @@ class SaveController(object):
 		self._trialNum = 0
 	
 	def makeFolder(self, p):
+		'''Used to create folders whilst preventing overwrites.''' 
 		if path.isdir(p):
 			raise DataFolderDuplicationError(p)
 		else:
 			mkdir(p)
 
 	def generateTrialPath(self, trialName = ''):
+		'''Generates the path for an experimental trial.'''
 		if not trialName:
 			trialName = str(self._trialNum)
 			self._trialNum += 1
 		p = path.join(self.dataPath, trialName)
-		self.trialName = p
+
+		self.trialPath = p
 		self.makeFolder(p)
 		return p
 	
 	def _generateExpPath(self):
+		'''Generate the path for the experimental run.'''
 		p = self.basePath
 		# Generate Date Folder
 		p = path.join(p, self.date)	
@@ -63,6 +66,7 @@ class SaveController(object):
 		return p		
 			
 	def _generateDataPath(self):
+		'''Generate the path in which to store experimental run data.'''
 		p = self.expPath
 		p = path.join(p, 'Data')
 		self.makeFolder(p)
