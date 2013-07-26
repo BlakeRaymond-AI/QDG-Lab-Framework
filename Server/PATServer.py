@@ -11,6 +11,7 @@ from DeviceMediators.PMDMediator import PMDMediator
 from DeviceMediators.Stabil_Ion_Mediator import Stabil_Ion_Mediator
 from DeviceMediators.MKS_SRG3_Mediator import MKS_SRG3_Mediator
 from DeviceMediators.PixeLinkMediator import PixeLinkMediator
+from DeviceMediators.OptimizerMediator import OptimizerMediator
 
 HOST = gethostbyname(gethostname())
 PORT = 15964
@@ -107,7 +108,7 @@ class PATServer(object):
 		elif cmdChar == 'c':
 			self.handleClientClosing()
 		elif cmdChar == 'e':
-			print msg
+			self.handleFitnessEvaluation()			
 		else:
 			print "Invalid Command Char: " + cmdChar
 	
@@ -170,6 +171,11 @@ class PATServer(object):
 		self.clientName = ''
 		print "Client Closed"
 	
+	def handleFitnessEval(self):
+		optimizer = self.deviceDict['Optimizer']
+		optimizer.evaluateParticle(self.saveController.trialPath)
+		print "Evaluating fitness."
+	
 	def startDevices(self):
 		print "Starting data collection devices."
 		for device in self.deviceDict.values():
@@ -214,7 +220,7 @@ class PATServer(object):
 			if dev.processData:
 				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
-		
+			
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	server = PATServer()	
