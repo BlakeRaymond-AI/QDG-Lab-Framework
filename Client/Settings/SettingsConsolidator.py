@@ -1,7 +1,7 @@
 from Settings import Settings
 
 from DefaultSettings.PMDSettings import PMDSettings
-from DefaultSettings.labJackSettings import labJackSettings
+from DefaultSettings.LabJackSettings import LabJackSettings
 from DefaultSettings.Stabil_Ion_Settings import Stabil_Ion_Settings
 from DefaultSettings.MKS_SRG3_Settings import MKS_SRG3_Settings
 
@@ -14,7 +14,7 @@ from DefaultSettings.PATClientSettings import PATClientSettings
 # 'Device Name in PAT Controller': (Constructor Name, Initialisation Settings). 
 deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
-	'LabJack': ('LabJackMediator', labJackSettings),
+	'LabJack': ('LabJackMediator', LabJackSettings),
 	'Stabil_Ion' : ('Stabil_Ion_Mediator', Stabil_Ion_Settings),
 #	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
 	'PixeLink' : ('PixeLinkMediator', PixeLinkSettings),
