@@ -1,4 +1,5 @@
 from socket import *
+import errno
 import signal
 import sys
 import pickle
@@ -42,26 +43,33 @@ class PATServer(object):
 		print "PAT Server Started"
 		self.waitForClient()
 	
-	def waitForClient(self):
+	def waitForClient(self):	
 		'''Allows server to pickup an incoming connection from the PAT Client.'''
-		print "---------- Waiting for PAT Client ----------"
-		(sessionSocket, sessionAddress) = self.serverSocket.accept()
-		self.inUse = True
-		self.sessionSocket = sessionSocket
-		print "---------- New Client Connected ----------"
-		self.recieveMessage()
+		while True:
+			print "---------- Waiting for PAT Client ----------"
+			(sessionSocket, sessionAddress) = self.serverSocket.accept()
+			self.inUse = True
+			self.sessionSocket = sessionSocket
+			print "---------- New Client Connected ----------"
+			self.recieveMessage()
 	
 	def recieveMessage(self):
 		'''Server will loop through this method, receiving messages from the client.'''	
-		if self.inUse:
+		sessionSocket = self.sessionSocket
+		while self.inUse:
 			print "Server waiting for commands."
-			sessionSocket = self.sessionSocket
-			size = sessionSocket.recv(4)
-			msg = sessionSocket.recv(int(size))
-			self.interpretMessage(msg)
-			self.recieveMessage()
-		else:
-			self.waitForClient()
+			try:
+				size = sessionSocket.recv(4)
+				if size:
+					msg = sessionSocket.recv(int(size))
+					self.interpretMessage(msg)
+				else:
+					self.handClientClosing()
+			except error, e:	# error imported from socket
+				if e.errno == errno.ECONNRESET:
+					self.handleClientClosing()
+				else:
+					raise e
 	
 	def sendMessage(self, msg):
 		'''
@@ -140,6 +148,7 @@ class PATServer(object):
 		self.deviceDict = {}
 		self.saveController = None
 		self.clientName = ''
+		print "Client Closed"
 	
 	def startDevices(self):
 		print "Starting data collection devices."
@@ -172,12 +181,11 @@ class PATServer(object):
 		
 	def saveTrial(self, path, trialName):
 		print "Saving trial data."
-		for device in self.deviceSettings.values():
-			device.save(path)	
+		for dev in self.deviceDict.values():
+			dev.save(path)	
 		print "Trial data saved."
 		self.sendMessage("SUCCESS: Trial data saved")	
 	
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
-	# signal.signal(signal.SIGTSTP, signal_handler)
 	server = PATServer()	
