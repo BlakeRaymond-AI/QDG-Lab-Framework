@@ -115,8 +115,8 @@ class PATServer(object):
 		settingsDict = pickle.loads(msg)
 		self.saveController = SaveController(dataPath, self.clientName)
 		settingsDict.save(self.saveController.expPath)
-		deviceSettings = settingsDict['deviceSettings']
-		for (key, deviceData) in deviceSettings.items():
+		self.deviceSettings = settingsDict['deviceSettings']
+		for (key, deviceData) in self.deviceSettings.items():
 			constructor = globals()[deviceData[0]]
 			self.deviceDict[key] = constructor(deviceData[1])
 		print "Devices Created"
@@ -124,10 +124,13 @@ class PATServer(object):
 	
 	def handleReset(self, msg):
 		del(self.deviceDict)
-		settingsDict = pickle.loads(msg)
-		for (key, deviceData) in deviceSettings.items():
+		del(self.deviceSettings)
+		self.deviceDict = {}
+		self.deviceSettings = pickle.loads(msg)
+		for (key, deviceData) in self.deviceSettings.items():
 			constructor = globals()[deviceData[0]]
 			self.deviceDict[key] = constructor(deviceData[1])
+		self.sendMessage("SUCCESS: All devices reset.")
 		print self.deviceDict
 		print "Devices Reset"
 		
@@ -151,7 +154,7 @@ class PATServer(object):
 		waitForResponse = cmdDict['waitForResponse']
 		device = self.deviceDict[deviceName]
 		fn = getattr(device, functionName)
-		if waitForResponse;
+		if waitForResponse:
 			msg = fn(*functionArgs)
 			self.sendMessage(msg)
 		else:
@@ -191,6 +194,7 @@ class PATServer(object):
 	def saveTrial(self, trialName):
 		print "Saving trial data."
 		path = self.saveController.generateTrialPath(trialName)
+		self.deviceSettings.save(path)
 		for dev in self.deviceDict.values():
 			dev.save(path)	
 		print "Trial data saved."

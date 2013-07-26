@@ -41,7 +41,7 @@ class SaveController(object):
 	def generateTrialPath(self, trialName = ''):
 		'''Generates the path for an experimental trial.'''
 		if not trialName:
-			trialName = str(self._trialNum)
+			trialName = "Trial_" + str(self._trialNum)
 			self._trialNum += 1
 		p = path.join(self.dataPath, trialName)
 
