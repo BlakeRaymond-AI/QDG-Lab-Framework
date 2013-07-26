@@ -42,7 +42,8 @@ class SaveController(object):
 		if not trialName:
 			trialName = str(self._trialNum)
 			self._trialNum += 1
-		p = path.join(self.dataPath, trialName)	
+		p = path.join(self.dataPath, trialName)
+		self.trialName = p
 		self.makeFolder(p)
 		return p
 	

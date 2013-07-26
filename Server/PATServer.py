@@ -170,6 +170,12 @@ class PATServer(object):
 		for dev in self.deviceDict.values():
 			dev.save(path)
 		self.sendMessage("SUCCESS: Device data saved.")
+		self.reset()
+		
+	def reset(self):
+		print "Resetting devices."
+		for dev in self.deviceDict.values():
+			dev.reset()
 	
 	def processExpData(self):
 		print "Processing Data."
@@ -179,11 +185,13 @@ class PATServer(object):
 				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
 		
-	def saveTrial(self, path, trialName):
+	def saveTrial(self, trialName):
 		print "Saving trial data."
+		path = self.saveController.generateTrialPath(trialName)
 		for dev in self.deviceDict.values():
 			dev.save(path)	
 		print "Trial data saved."
+		self.reset()
 		self.sendMessage("SUCCESS: Trial data saved")	
 	
 if __name__ == "__main__":

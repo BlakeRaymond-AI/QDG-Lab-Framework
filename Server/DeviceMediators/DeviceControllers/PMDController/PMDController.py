@@ -213,6 +213,10 @@ class PMDController(object):
 		plt.savefig(fname)
 		plt.clf()
 		
+	def reset(self):
+		del(self.PMDThread)
+		self.PMDThread = PMDThread(self)
+		
 class PMDThread(Thread):
 	'''Thread for data collection.'''
 	

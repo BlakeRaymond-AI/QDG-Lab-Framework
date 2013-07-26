@@ -33,7 +33,10 @@ class PMDMediator(DeviceMediatorInterface):
 	def save(self, pth):
 		fname = path.join(pth, 'PMDData.csv')
 		self.controller.saveData(fname)
-		
+
+	def reset(self):
+		self.controller.reset()
+	
 	def processExpData(self, pth):
 		fname = path.join(pth, 'PMDDataPlot.png')
 		self.controller.plotData(fname)
