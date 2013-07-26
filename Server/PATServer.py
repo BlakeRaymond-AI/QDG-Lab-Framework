@@ -153,6 +153,7 @@ class PATServer(object):
 		self.deviceDict = {}
 		self.saveController = None
 		self.clientName = ''
+		print "Client Closed"
 	
 	def startDevices(self):
 		print "Starting data collection devices."
