@@ -40,12 +40,17 @@ class PATClient(object):
 		cmdDict['arguments'] = fnArgs
 		self.sendCommand(cmdDict, 'm')
 	
-	def sendSpecificDeviceCommand(self, devName, fnName, fnArgs = ()):
+	def sendSpecificDeviceCommand(self, devName, fnName, fnArgs = (), waitForResponse = False):
 		cmdDict = dict()
 		cmdDict['function'] = fnName
 		cmdDict['arguments'] = fnArgs
 		cmdDict['deviceName'] = devName
+		cmdDict['waitForResponse'] = waitForResponse
 		self.sendCommand(cmdDict, 's')
+		msg = ''
+		if waitForResponse:
+			msg = self.recieveMessage()
+		return msg
 		
 	def close(self):
 		self.sendCommand({}, 'c')

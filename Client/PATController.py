@@ -15,7 +15,6 @@ from Settings.SettingsConsolidator import defaultSettings, overwriteSettings
 from PATClient import PATClient
 
 class PATController(Recipe):
-
 	def __init__(self, controllerName, settingsDict, **kw):		   
 		Recipe.__init__(self,controllerName,**kw)
 		self.controllerName = controllerName
@@ -94,6 +93,12 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("save")
 		self.PATClient.awaitConfirmation()
 	
+	def saveTrial(self, path, trialName = ''):
+		print "Saving trial data."
+		args = (trialName,)
+		self.PATClient.sendMediatorCommand("saveTrial", args)
+		self.PATClient.awaitConfirmation()
+	
 	def processData(self):
 		print "Processing data."
 		self.PATClient.sendMediatorCommand("processExpData")
@@ -102,15 +107,7 @@ class PATController(Recipe):
 	def closeClient(self):
 		self.PATClient.close()
 		print "PATClient closed."
-	
-	def saveTrial(self, path, trialName = ''):
-		print "Saving trial data."
-		path = self.SaveController.generateTrialPath(trialName)
-		self.settingsDict.save(path)
-		arguments = (path, trialName)
-		self.PATClient.sendMediatorCommand("saveTrial", arguments)
-		self.PATClient.awaitConfirmation()
-					
+				
 	def off(self):
 		self.set_2D_I_1(0)
 		self.set_2D_I_2(0)
@@ -371,6 +368,15 @@ class PATController(Recipe):
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
+
+# #------------------------------------------------------------------------
+# # Optimizer Controls
+
+	def evaluateFitness(self):
+		devName = 'Optimizer'
+		fName = 'evaulateFitness'
+		self.PATClient.sendSpecificDeviceCommand(devName, fName, waitForResponse = True)
+		value = self.PATClient.recieveMessage()
 		
 # #------------------------------------------------------------------------
 # # PMD Trigger
