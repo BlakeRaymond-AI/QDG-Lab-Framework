@@ -1,5 +1,7 @@
 from serial import Serial
-from time import sleep
+from threading import Thread
+from time import sleep, time
+import csv
 
 pressureUnits = {
 	'PASCAL' : 1,
@@ -35,18 +37,21 @@ gasTypes = {
 class MKS_SRG3_Controller(Serial):
 	
 	def __init__(self, 	port = 0,
+						duration_s = 10,
 						gType = gasTypes['AIR'], 
 						pUnits = pressureUnits['TORR'],
 						tUnits = temperatureUnits['CELSIUS']
 						):
 		super(MKS_SRG3_Controller, self).__init__(port = port, timeout = 0)
+		self.duration_s = duration_s
+		self.MKSThread = DataCollectionThread(self)
 		self.gType = gType
 		self.setGasType(gType)		
 		self.pUnits = pUnits
 		self.setPressureUnits(pUnits)
 		self.tUnits = tUnits
 		self.setTemperatureUnits(tUnits)
-	
+
 	def write(self, msg):
 		msg = msg + "\r"
 		super(MKS_SRG3_Controller, self).write(msg)
@@ -58,9 +63,12 @@ class MKS_SRG3_Controller(Serial):
 		
 	def start(self):
 		self.write("sta")
+		self.MKSThread.start()
 		
 	def stop(self):
-		self.write("stp")	
+		self.MKSThread.join()
+		self.write("stp")
+		self.close()
 	
 	def waitRead(self):
 		sleep(2.)
@@ -102,9 +110,73 @@ class MKS_SRG3_Controller(Serial):
 	def getZeroOffset(self):
 		self.write("ofs")
 		data = self.waitRead()
-		return data
+
+	def timeForNextReading(self):
+		self.flushInput()
+		self.write("rem")
+		data = self.waitRead()
+		val = float(data[1:-3])
+		return val
+
+	def collectData(self):
+		duration_s = self.duration_s
+		tDat = []
+		pDat = []
+		tStart = time()
+		tEnd = tStart + duration_s
+		while (time() < tEnd):
+			timeLeftOld = 70 # Larger than max wait time (intentional)
+			timeLeftNew = self.timeForNextReading()
+			while (timeLeftNew < timeLeftOld):
+				timeLeftOld = timeLeftNew
+				timeLeftNew = self.timeForNextReading()
+			p = self.getPressure()
+			t = time()
+			pDat.append(p)
+			tDat.append(t)
+		for i in range(len(tDat)):
+			tDat[i] = tDat[i] - tStart
+		self.tStart = tStart
+		self.tDat = tDat
+		self.pDat = pDat
 		
+	def saveData(self, fname = "MKSPressureData.csv"):
+		csvFile = open(fname, 'wb')
+		tDat = self.tDat
+		pDat = self.pDat
+		filewriter = csv.writer(csvFile, delimiter = ',')
+		filewriter.writerow(['Start Time:', self.tStart])
+		filewriter.writerow(["Time (s)", "Pressures (Torr)"])
+		for i in range(len(tDat)):
+			output = [tDat[i], pDat[i]]
+			filewriter.writerow(output)
+		csvFile.close()
+		
+	def plotData(self, fname = "MKSPressurePlot.png"):
+		'''Plots the data collected by the MKS SRG3 Gauge.'''
+		import matplotlib.pyplot as plt
+		plt.clf()
+		tDat = self.tDat
+		pDat = self.pDat
+		plt.plot(tDat, pDat, ls = 'None', marker = '.')
+		plt.xlabel('Time (s)')
+		plt.ylabel('Pressure (Torr)')
+		plt.savefig(fname)		
+		plt.clf()	
+		
+class DataCollectionThread(Thread):
+	"""Data collection threads collect data."""
+	
+	def __init__(self, MKSController):
+		Thread.__init__(self)
+		self.MKSC = MKSController
+		
+	def run(self):
+		self.MKSC.collectData()	
+	
 if __name__ == '__main__':
-	MKS_SRG3_C = MKS_SRG3_Controller(port = 2)
-	print MKS_SRG3C.getPressure()
-	MKS_SRG3C.close()
+	MKSC = MKS_SRG3_Controller(2, 100)
+	MKSC.collectData()
+	MKSC.saveData()
+	MKSC.plotData()
+	MKSC.close()

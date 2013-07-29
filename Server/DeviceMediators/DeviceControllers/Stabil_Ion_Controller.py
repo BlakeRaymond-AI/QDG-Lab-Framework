@@ -27,9 +27,7 @@ class Stabil_Ion_Controller(Serial):
 		self.SIThread.start()
 		
 	def stop(self):
-		SIThread = self.SIThread
-		if SIThread.isAlive():
-			SIThread.join()
+		SIThread.join()
 		self.close()
 		
 	def IG1On(self):
@@ -75,11 +73,13 @@ class Stabil_Ion_Controller(Serial):
 		tEnd = tStart + duration_s
 		while (time() < tEnd):
 			p = self.getIG1Pressure()
-			tDat.append(time())
+			t = time()
+			tDat.append(t)
 			pDat.append(p)
 			sleep(secondsPerSample - 0.1)
 		for i in range(len(tDat)):
 			tDat[i] = tDat[i] - tStart
+		self.tStart = tStart
 		self.tDat = tDat
 		self.pDat = pDat	
 				
@@ -88,6 +88,7 @@ class Stabil_Ion_Controller(Serial):
 		tDat = self.tDat
 		pDat = self.pDat
 		filewriter = csv.writer(csvFile, delimiter = ',')
+		filewriter.writerow(['Start Time:', self.tStart])
 		filewriter.writerow(["Time (s)", "Pressures (Torr)"])
 		for i in range(len(tDat)):
 			output = [tDat[i], pDat[i]]
@@ -107,7 +108,7 @@ class Stabil_Ion_Controller(Serial):
 		plt.clf()
 		
 class DataCollectionThread(Thread):
-	"""Data collection threads collect data."""
+	'''Data collection threads collect data.'''
 	
 	def __init__(self, SIController):
 		Thread.__init__(self)
@@ -116,13 +117,11 @@ class DataCollectionThread(Thread):
 	def run(self):
 		self.SIC.collectData()
 
-# if __name__ == '__main__':
-	# SIC = Stabil_Ion_Controller(3, 5, 1)
-	# SIC.collectData()
-	# SIC.save()
-		
-if __name__ == '__main__':			
-	# Creates a default LabJackController to collect and save data.
-	SIC = Stabil_Ion_Controller(3, 3600, 1)
+if __name__ == '__main__':
+	SIC = Stabil_Ion_Controller(3, 10, 1)
 	SIC.collectData()
-	SIC.saveData()				
+	SIC.saveData()
+	SIC.plotData()
+	SIC.close()
+		
+			

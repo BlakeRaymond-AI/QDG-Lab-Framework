@@ -16,7 +16,7 @@ deviceSettings = {
 	'PMD' : ('PMDMediator', PMDSettings),
 	'LabJack': ('LabJackMediator', LabJackSettings),
 	'Stabil_Ion' : ('Stabil_Ion_Mediator', Stabil_Ion_Settings),
-#	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
+	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
 	'PixeLink' : ('PixeLinkMediator', PixeLinkSettings),
 }
 

@@ -5,30 +5,31 @@ from os import path
 
 class MKS_SRG3_Mediator(DeviceMediatorInterface):
 	"""
-	Mediator for Stabil Ion gauge specific to the QDG Framework
+	Mediator for MKS SRG3 specific to the QDG Framework
 	""" 
 	
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
-		self.controller = MKS_SRG3_Controller(self.port)
-		
+		self.controller = MKS_SRG3_Controller(self.port,
+												self.duration_s,
+												self.gType, 
+												self.pUnits,
+												self.tUnits)
 	def start(self):
-		print "Starting Stable Ion Gague data collection thread."
+		print "Starting MKS SRG3 data collection thread."
 		self.controller.start()
 		
 	def stop(self):
-		print "Waiting for Stabil Ion Gauge to finish collecting data."
+		print "Waiting for MKS SRG3 to finish collecting data."
 		self.controller.stop()
-		print "Stabil Ion Gauge Done"
+		print "MKS SRG3 Gauge Done"
 
 	def save(self, pth):
-		fname = path.join(pth, 'PressureData.csv')
-		self.controller.save(fname)
+		fname = path.join(pth, 'MKSData.csv')
+		self.controller.saveData(fname)
 		
 	def processExpData(self, pth):
-		pass
-		
-	
-					
+		fname = path.join(pth, 'MKSDataPlot.png')
+		self.controller.plotData(fname)
 	
