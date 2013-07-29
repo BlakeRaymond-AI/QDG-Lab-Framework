@@ -391,11 +391,18 @@ class PATController(Recipe):
 # #------------------------------------------------------------------------
 # # Optimizer Controls
 
+	def getParticle(self):
+		devName = 'Optimizer'
+		fName = 'getParticle'
+		part = self.PATClient.sendSpecificDeviceCommand(devName, fname, 
+														waitForResponse = True, 
+														pickledResponse = True)
+		return part
+		
 	def evaluateFitness(self):
 		devName = 'Optimizer'
-		fName = 'evaulateFitness'
-		self.PATClient.sendSpecificDeviceCommand(devName, fName, waitForResponse = True)
-		value = self.PATClient.recieveMessage()
+		fName = 'evaluateFitness'
+		self.PATClient.sendCommand({}, 'e')
 		
 # #------------------------------------------------------------------------
 # # PMD Trigger

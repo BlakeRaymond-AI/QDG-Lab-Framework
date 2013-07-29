@@ -40,7 +40,12 @@ class PATClient(object):
 		cmdDict['arguments'] = fnArgs
 		self.sendCommand(cmdDict, 'm')
 	
-	def sendSpecificDeviceCommand(self, devName, fnName, fnArgs = (), waitForResponse = False):
+	def sendSpecificDeviceCommand(self, devName, 
+										fnName, 
+										fnArgs = (), 
+										waitForResponse = False, 
+										pickledResponse = False
+										):
 		cmdDict = dict()
 		cmdDict['function'] = fnName
 		cmdDict['arguments'] = fnArgs
@@ -50,7 +55,11 @@ class PATClient(object):
 		msg = ''
 		if waitForResponse:
 			msg = self.recieveMessage()
-		return msg
+			if pickledReponse:
+				value = pickle.loads(msg)
+				return value
+			else:
+				return msg
 		
 	def close(self):
 		self.sendCommand({}, 'c')

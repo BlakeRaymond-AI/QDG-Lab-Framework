@@ -19,21 +19,29 @@ class ParticleSwarmOptimizer(object):
 						numOfGenerations, 
 						fitnessEvalScript,
 						phiG = 1, 
-						phiP = 1
+						phiP = 1,
+						speedLimiter = 1,
+						minimization = False
 				):
 		self.paramBounds = paramBounds
 		self.numOfParticles = numOfParticles
 		self.numOfGenerations = numOfGenerations
 		self.fitnessEvalScript = fitnessEvalScript
 		
-		creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-		creator.create("Particle", list, fitness=creator.FitnessMax, speed=list, smin=None, smax=None, best=None)
+		if minimization:
+			weights = (-1.0,)
+		else:
+			weights = (1.0,)	
+		print "Weights: ", weights
+		
+		creator.create("Fitness", base.Fitness, weights = weights)
+		creator.create("Particle", list, fitness=creator.Fitness, speed=list, smin=None, smax=None, best=None)
 
 		def generate(paramBounds):
 			''' Generate a particle with a set position and velocity'''
 			part = creator.Particle(uniform(bL, bH) for bL, bH in paramBounds) 
-			part.smax = [(bH - bL) for bL, bH in paramBounds]
-			part.smin = [(bL - bH) for bL, bH in paramBounds]
+			part.smax = [(bH - bL) * speedLimiter for bL, bH in paramBounds]
+			part.smin = [(bL - bH) * speedLimiter for bL, bH in paramBounds]
 			part.speed = [uniform(part.smin[i], part.smax[i]) for i in range(len(part))]
 			return part
 	
@@ -53,11 +61,16 @@ class ParticleSwarmOptimizer(object):
 				elif part.speed[i] > part.smax[i]:
 					part.speed[i] = part.smax[i]
 			part[:] = list(map(operator.add, part, part.speed))
+			
 			for i in range(len(part)):
 				if part[i] < paramBounds[i][0]:
-					part[i] = paramBounds[i][0]
+					distanceOver = paramBounds[i][0] - part[i]
+					part[i] = paramBounds[i][1] - distanceOver
+					part.speed[i] = uniform(part.smin[i], part.smax[i])
 				elif part[i] > paramBounds[i][1]:
-					part[i] = paramBounds[i][1]
+					distanceOver = part[i] - paramBounds[i][1]
+					part[i] = paramBounds[i][0] + distanceOver
+					part.speed[i] = uniform(part.smin[i], part.smax[i])
 			
 		def evaluateParticle(args):
 			''' Evaluate the goodness of particle based on the MOT loading.'''
@@ -67,7 +80,6 @@ class ParticleSwarmOptimizer(object):
 			lcl['fitness'] = None
 		 	execfile(self.fitnessEvalScript, lcl)
 		 	fitness = lcl['fitness']
-			#print self.currentGen, self.currentPart, self.particles[self.currentPart]
 			return fitness
 
 		toolbox = base.Toolbox()
@@ -131,7 +143,7 @@ class ParticleSwarmOptimizer(object):
 	
 if __name__ == '__main__':
 	paramBounds = ((-10, 10), (-10, 10))	
-	PSO = ParticleSwarmOptimizer(paramBounds, 5, 1000, 'DefaultFitnessEvaluator.py', 1, 1)
+	PSO = ParticleSwarmOptimizer(paramBounds, 10, 1000, 'DefaultFitnessEvaluator.py', 1, 1, 1)
 	part = PSO.getParticle()
 	while part:
 		PSO.evaluateParticle({'part' : part})
