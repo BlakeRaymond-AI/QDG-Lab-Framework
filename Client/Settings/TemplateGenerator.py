@@ -17,6 +17,6 @@ for root, dirs, files in walk(settingsPath):
 				line = '# ' + line
 				template.write(line)
 			f.close()
-			template.write('\n # ----------------------------------- \n')
-			
+			template.write('\n# ----------------------------------- \n')
+	template.write('\nupdatePackage = { \n\n }')				
 template.close()
