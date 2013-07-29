@@ -159,6 +159,7 @@ class PATServer(object):
 			self.sendMessage(msg)
 		else:
 			fn(*functionArgs)
+		print "%s function in %s executed." % (functionName, deviceName)
 	
 	def handleClientClosing(self):
 		self.inUse = False
