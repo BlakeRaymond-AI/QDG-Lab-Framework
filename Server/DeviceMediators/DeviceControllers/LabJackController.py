@@ -5,6 +5,7 @@
 from ctypes import *
 import numpy as np
 import csv
+from time import time
 from threading import Thread
 
 cDrivers = WinDLL("ljackuw.dll")
@@ -90,6 +91,7 @@ class LabJackController(object):
 	def collectData(self):
 		"""Initiates data collection."""
 		data = []
+		self.tStart = time()
 		self.startStream()
 		for r in np.arange(self.scanDuration): # 1 second per read.
 			data.append(self.readStream())
@@ -108,8 +110,8 @@ class LabJackController(object):
 		channelDataFiltered = []		
 		for ch in channelDataFull:
 			channelDataFiltered.append([c for c in ch if c < 9999.])
-		time = np.arange(len(channelDataFiltered[0])) / float(self.sampleRatePerChannel)
-		data = [time]
+		tDat = np.arange(len(channelDataFiltered[0])) / float(self.sampleRatePerChannel)
+		data = [tDat]
 		labels = ["Time (s)"]
 		for ch in channelDataFiltered:
 			data.append(ch)			
@@ -125,10 +127,10 @@ class LabJackController(object):
 		plt.clf()
 		data = self.data
 		labels = self.labels
-		time = data[0]
+		tDat = data[0]
 		for i in range(1, len(data)):
 			lbl = labels[i]
-			plt.plot(time, data[i], label = lbl, ls = 'None', marker = '.')
+			plt.plot(tDat, data[i], label = lbl, ls = 'None', marker = '.')
 		plt.xlabel('Time (s)')
 		plt.ylabel('Voltage (V)')
 		plt.legend()
@@ -140,6 +142,7 @@ class LabJackController(object):
 		csvFile =  open(fileName, 'wb')
 		try:
 			fileWriter = csv.writer(csvFile, delimiter=',')
+			filewriter.writerow(['Start Time:', self.tStart])
 			fileWriter.writerow(labelArray)
 			for i in range(len(dataArray[0])):	# Num of data points.
 				output = [];
