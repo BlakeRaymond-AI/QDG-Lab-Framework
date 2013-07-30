@@ -28,7 +28,9 @@ class PixeLinkMediator(object):
 		print "PixeLink camera set. Waiting for %d triggers." % self.numberOfImages
 		
 	def stop(self):
+		print "Waiting for PixeLink Camera to finish."
 		self.controller.T.join()
+		print "PixeLink Done"
 		
 	def save(self, path):
 		self.framesHandler.save_frames(folder = path, data = False) 
