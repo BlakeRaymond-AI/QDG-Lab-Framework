@@ -4,6 +4,7 @@ from ctypes.wintypes import *
 from PMDTypes import TrigType, Options, Range
 from threading import Thread
 from math import ceil
+from time import time
 import numpy as np
 import csv
 
@@ -105,6 +106,7 @@ class PMDController(object):
 			labels.append(''.join(['Channels: ', str(ch)]))
 		try:
 			filewriter = csv.writer(csvFile, delimiter=',')
+			filewriter.writerow(['Start Time (No Trigger):', self.tStart])
 			filewriter.writerow(labels)
 			for i in range(len(data[0])):
 				output = []
@@ -153,6 +155,7 @@ class PMDController(object):
 		options = Options['BLOCKIO'] | Options['CONVERTDATA']
 		if self.trigger:
 			option = options | Options['EXTTRIGGER']
+		self.tStart = time()
 		self.handleError(driver.cbAInScan(self.boardNum, 0, 0, numOfSamples, byref(sampleRatePerChannel), self.vRange[0], winBufferHandle, options))
 		self.sampleRatePerChannel = sampleRatePerChannel.value	
 			
@@ -188,8 +191,8 @@ class PMDController(object):
 		data = [[]]*numOfChannels
 		for i in range(numOfChannels):
 			data[i] = allData[i::numOfChannels]
-		time = np.arange(len(data[0]))/float(self.sampleRatePerChannel)
-		self.data = [time] + data
+		tDat = np.arange(len(data[0]))/float(self.sampleRatePerChannel)
+		self.data = [tDat] + data
 		
 	def analogIn(self, channel):
 		'''Determines the voltage input for the specified analog channel.'''
@@ -203,19 +206,15 @@ class PMDController(object):
 		import matplotlib.pyplot as plt
 		plt.clf()
 		data = self.data
-		time = data[0]
+		tDat = data[0]
 		for i in range(1, len(data)):
 			lbl = "Channel " + str(self.activeChannels[i-1])
-			plt.plot(time, data[i], label = lbl, ls = 'None', marker = '.')
+			plt.plot(tDat, data[i], label = lbl, ls = 'None', marker = '.')
 		plt.xlabel('Time (s)')
 		plt.ylabel('Voltage (V)')
 		plt.legend()
 		plt.savefig(fname)
 		plt.clf()
-		
-	def reset(self):
-		del(self.PMDThread)
-		self.PMDThread = PMDThread(self)
 		
 class PMDThread(Thread):
 	'''Thread for data collection.'''
@@ -233,11 +232,4 @@ if __name__ == '__main__':
 	PMDC.collectData()
 	PMDC.processData()
 	PMDC.saveData()
-
-# Using PMDController with start and stop.
-# 	PMDC = LabJackController()
-#	PMDC.start()
-# 	print "OTHER CODE HERE"
-# 	PMDC.stop()
-# 	PMDC.save()			
-		
+	
