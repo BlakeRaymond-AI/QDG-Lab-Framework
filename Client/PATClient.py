@@ -55,7 +55,7 @@ class PATClient(object):
 		msg = ''
 		if waitForResponse:
 			msg = self.recieveMessage()
-			if pickledReponse:
+			if pickledResponse:
 				value = pickle.loads(msg)
 				return value
 			else:
