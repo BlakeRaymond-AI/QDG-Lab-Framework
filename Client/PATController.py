@@ -248,6 +248,23 @@ class PATController(Recipe):
 		else:
 			print 'Error: Push detuning frequency greater than 60 MHz.'
 
+	def set_optical_pump_amplitude(self, amplitude = None):
+		if amplitude is None: amplitude = self.PATSettings['optical_pump_amplitude']
+		if amplitude > 1.0:
+			print "Push amplitude too high (> 1.0). Setting repump amplitude to 1.0"
+			amplitude = 1.0
+		print 'setting push amplitude to %.3f'%amplitude
+		self.optical_pump.set_amplitude(amplitude)
+
+	def set_optical_pump_detuning(self, detuning = None):
+		if detuning is None: detuning = self.PATSettings['optical_pump_detuning']
+		if mth.fabs(detuning) < 64.0:
+			DDS_freq = 90.0 + detuning/2.0
+			self.optical_pump.single_tone(DDS_freq*MHz)
+			print 'setting push AOM to %.6f'%detuning
+		else:
+			print 'Error: Push detuning frequency greater than 60 MHz.'
+
 	def pat_lasers_on(self):
 	   # self.set_2DRb_pump_amplitude(0.5)
 		self.set_3DRb_pump_amplitude(0.8)
