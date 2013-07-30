@@ -27,13 +27,11 @@ class ParticleSwarmOptimizer(object):
 		self.numOfParticles = numOfParticles
 		self.numOfGenerations = numOfGenerations
 		self.fitnessEvalScript = fitnessEvalScript
-		
+		self.logFile = open('OptimizationLog.txt', 'wb')
 		if minimization:
 			weights = (-1.0,)
 		else:
 			weights = (1.0,)	
-		print "Weights: ", weights
-		
 		creator.create("Fitness", base.Fitness, weights = weights)
 		creator.create("Particle", list, fitness=creator.Fitness, speed=list, smin=None, smax=None, best=None)
 
@@ -98,6 +96,7 @@ class ParticleSwarmOptimizer(object):
 		column_names = ["gen", "evals"]
 		column_names.extend(stats.functions.keys())
 		self.logger = tools.EvolutionLogger(column_names)
+		self.logger.output = self.logFile
 		self.logger.logHeader()
     	
 		self.toolbox = toolbox
