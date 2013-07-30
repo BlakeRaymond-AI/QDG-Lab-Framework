@@ -180,6 +180,14 @@ class PATController(Recipe):
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PAT Laser Controls
 
+	def set_2DRb_pump_amplitude(self, amplitude = None):
+		if amplitude is None: amplitude = self.PATSettings['2DRb_pump_amplitude']
+		if amplitude > 1.0:
+			print "AOM amplitude too high (>1.0). Setting amplitude to 1.0"
+			amplitude = 1.0
+		self.Rb_2Dpump.set_amplitude(amplitude)
+		print "2D Rb Pump amplitude set to %.3f" %amplitude
+	
 	def set_2DRb_pump_detuning(self, detuning = None):	# The usual detuning is -12 MHz
 		if detuning is None: detuning = self.PATSettings['2DRb_pump_detuning']
 		if mth.fabs(detuning) < 66.0:
@@ -188,6 +196,14 @@ class PATController(Recipe):
 			print 'setting 2D pump AOM to %.6f'%detuning
 		else:
 			print 'Error: 2D Pump detuning frequency greater than 60 MHz.'
+
+	def set_3DRb_pump_amplitude(self, amplitude = None):
+		if amplitude is None: amplitude = self.PATSettings['3DRb_pump_amplitude']
+		if amplitude > 1.0:
+			print "3D Pump amplitude too high (> 1.0). Setting amplitude to 1.0"
+			amplitude = 1.0
+		print 'setting 3D pump amplitude to %.3f'%amplitude
+		self.Rb_3Dpump.set_amplitude(amplitude)
 
 	def set_3DRb_pump_detuning(self, detuning = None):	# The usual detuning is -12 MHz
 		if detuning is None: detuning = self.PATSettings['3DRb_pump_detuning']
@@ -198,6 +214,14 @@ class PATController(Recipe):
 		else:
 			print 'Error: 3D Pump detuning frequency greater than 60 MHz.'
 
+	def set_Rb_repump_amplitude(self, amplitude = None):
+		if amplitude is None: amplitude = self.PATSettings['Rb_repump_amplitude']
+		if amplitude > 1.0:
+			print "Repump amplitude too high (> 1.0). Setting repump amplitude to 1.0"
+			amplitude = 1.0
+		print 'setting repump amplitude to %.3f'%amplitude
+		self.Rb_repump.set_amplitude(amplitude)
+
 	def set_Rb_repump_detuning(self, detuning = None):
 		if detuning is None: detuning = self.PATSettings['Rb_repump_detuning']
 		if mth.fabs(detuning) < 64.0:
@@ -207,6 +231,14 @@ class PATController(Recipe):
 		else:
 			print 'Error: Repump detuning frequency greater than 60 MHz.'
 
+	def set_Rb_push_amplitude(self, amplitude = None):
+		if amplitude is None: amplitude = self.PATSettings['Rb_push_amplitude']
+		if amplitude > 1.0:
+			print "Push amplitude too high (> 1.0). Setting repump amplitude to 1.0"
+			amplitude = 1.0
+		print 'setting push amplitude to %.3f'%amplitude
+		self.Rb_push.set_amplitude(amplitude)
+
 	def set_Rb_push_detuning(self, detuning = None):
 		if detuning is None: detuning = self.PATSettings['Rb_push_detuning']
 		if mth.fabs(detuning) < 64.0:
@@ -215,38 +247,6 @@ class PATController(Recipe):
 			print 'setting push AOM to %.6f'%detuning
 		else:
 			print 'Error: Push detuning frequency greater than 60 MHz.'
-
-	def set_2DRb_pump_amplitude(self, amplitude = None):
-		if amplitude is None: amplitude = self.PATSettings['2DRb_pump_amplitude']
-		if amplitude > 1.0:
-			print "AOM amplitude too high (>1.0). Setting amplitude to 1.0"
-			amplitude = 1.0
-		self.Rb_2Dpump.set_amplitude(amplitude)
-		print "2D Rb Pump amplitude set to %.3f" %amplitude
-
-	def set_3DRb_pump_amplitude(self, amplitude = None):
-		if amplitude is None: amplitude = self.PATSettings['3DRb_pump_amplitude']
-		if amplitude > 1.0:
-			print "3D Pump amplitude too high (> 1.0). Setting amplitude to 1.0"
-			amplitude = 1.0
-		print 'setting 3D pump amplitude to %.3f'%amplitude
-		self.Rb_3Dpump.set_amplitude(amplitude)
-
-	def set_Rb_repump_amplitude(self, amplitude = None):
-		if amplitude is None: amplitude = self.PATSettings['Rb_repump_amplitude']
-		if amplitude > 1.0:
-			print "Repump amplitude too high (> 1.0). Setting repump amplitude to 1.0"
-			amplitude = 1.0
-		print 'setting repump amplitude to %.3f'%amplitude
-		self.Rb_repump.set_amplitude(amplitude)
-
-	def set_Rb_push_amplitude(self, amplitude = None):
-		if amplitude is None: amplitude = self.PATSettings['Rb_push_amplitude']
-		if amplitude > 1.0:
-			print "Push amplitude too high (> 1.0). Setting repump amplitude to 1.0"
-			amplitude = 1.0
-		print 'setting push amplitude to %.3f'%amplitude
-		self.Rb_push.set_amplitude(amplitude)
 
 	def pat_lasers_on(self):
 	   # self.set_2DRb_pump_amplitude(0.5)
@@ -272,14 +272,6 @@ class PATController(Recipe):
 		self.set_Rb_push_amplitude(0.0)
 
 	def pat_2DMOT_off(self):
-		self.set_2DRb_pump_amplitude(0.0)
-		self.set_Rb_push_amplitude(0.0)
-		self.set_2D_I_1(0.0)
-		self.set_2D_I_2(0.0)
-		self.set_2D_I_3(0.0)
-		self.set_2D_I_4(0.0)
-
-	def pat_2DMOT_all_off(self):
 		self.set_2DRb_pump_amplitude(0.0)
 		self.set_Rb_push_amplitude(0.0)
 		self.set_2D_I_1(0.0)
@@ -395,8 +387,8 @@ class PATController(Recipe):
 		devName = 'Optimizer'
 		fName = 'getParticle'
 		part = self.PATClient.sendSpecificDeviceCommand(devName, fName, 
-																					waitForResponse = True, 
-																					pickledResponse = True)
+														waitForResponse = True, 
+														pickledResponse = True)
 		return part
 		
 	def evaluateFitness(self):
