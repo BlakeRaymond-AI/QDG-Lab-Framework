@@ -177,6 +177,13 @@ class PATController(Recipe):
 		else:
 			self.Comp_Zcoils.set_scaled_value(A/0.5) # current = 0.5 A/V
 
+	def set_2D_coils(self, I1, I2, I3, I4):
+		self.set_2D_I_1(I1)
+		self.set_2D_I_2(I2)
+		self.set_2D_I_3(I3)
+		self.set_2D_I_4(I4)
+		
+
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # PAT Laser Controls
 
