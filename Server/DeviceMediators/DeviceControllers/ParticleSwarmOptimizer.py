@@ -29,8 +29,7 @@ class ParticleSwarmOptimizer(object):
 		self.numOfParticles = numOfParticles
 		self.numOfGenerations = numOfGenerations
 		self.fitnessEvalScript = fitnessEvalScript
-
-		self.logFile = open('OptimizationLog.txt', 'wb')
+		self.logFile = None
 		if minimization:
 			weights = (-1.0,)
 		else:
@@ -95,13 +94,7 @@ class ParticleSwarmOptimizer(object):
 		stats.register("Avg", tools.mean)
 		stats.register("Std", tools.std)
 		self.stats = stats
-    
-		column_names = ["gen", "evals"]
-		column_names.extend(stats.functions.keys())
-		self.logger = tools.EvolutionLogger(column_names)
-		self.logger.output = self.logFile
-		self.logger.logHeader()
-    	
+        	
 		self.toolbox = toolbox
 		self.particles = toolbox.population(n = numOfParticles)
 		self.best = None
@@ -116,9 +109,12 @@ class ParticleSwarmOptimizer(object):
 			part = self.particles[currentPart]
 			return part
 		else:
+			self.logFile.close()
 			return False
 		
 	def evaluateParticle(self, args = {}):
+		if not self.logFile:
+			self.setLog(args['expPath'])
 		part = self.particles[self.currentPart]
 		best = self.best
 		part.fitness.values = self.toolbox.evaluate(args)
@@ -128,14 +124,27 @@ class ParticleSwarmOptimizer(object):
 		if not best or best.fitness < part.fitness:
 			self.best = creator.Particle(part)
 			self.best.fitness.values = part.fitness.values
-		self.incrementParticles()
-		trialPath = args{'dataPath'}
+		trialPath = args['trialPath']
 		fPath = path.join(trialPath, 'particle.csv')
-		file = csv.writer(fPath, delimiter=',')
-		file.writerow([self.currentGen, self.currentPart])
-		file.writerow([part, part.fitness])
-		file.writerow([part.best, part.best.fitness])
-		file.writerow(best, best.fitness)	
+		file = open(fPath, 'wb')
+		fileWriter = csv.writer(file, delimiter=',')
+		fileWriter.writerow(['Generation', 'Particle'])
+		fileWriter.writerow([self.currentGen, self.currentPart])
+		fileWriter.writerow(['Identifier', 'Parameters', 'Fitness'])
+		fileWriter.writerow(['Particle', part, part.fitness])
+		fileWriter.writerow(['Particle Best', part.best, part.best.fitness])
+		fileWriter.writerow(['Global Best', self.best, self.best.fitness])
+		file.close()
+		self.incrementParticles()
+		
+	def setLog(self, expPath):
+		logPath = path.join(expPath, 'OptimizationLog.txt')
+		self.logFile = open(logPath, 'wb')
+		column_names = ["gen", "evals"]
+		column_names.extend(self.stats.functions.keys())
+		self.logger = tools.EvolutionLogger(column_names)
+		self.logger.output = self.logFile
+		self.logger.logHeader()
 		
 	def incrementParticles(self):
 		self.currentPart += 1
