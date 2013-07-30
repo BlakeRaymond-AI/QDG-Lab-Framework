@@ -8,6 +8,7 @@ from DefaultSettings.MKS_SRG3_Settings import MKS_SRG3_Settings
 from DefaultSettings.PixeLinkSettings import PixeLinkSettings
 from DefaultSettings.PATSettings import PATSettings
 from DefaultSettings.PATClientSettings import PATClientSettings	
+from DefaultSettings.OptimizerSettings import OptimizerSettings
 
 # Store all settings dicts associated with devices in this dictionary. Data
 # format is:
@@ -18,6 +19,7 @@ deviceSettings = {
 	'Stabil_Ion' : ('Stabil_Ion_Mediator', Stabil_Ion_Settings),
 #	'MKS_SRG3' : ('MKG_SRG3_Mediator', MKG_SRG3_Settings),
 	'PixeLink' : ('PixeLinkMediator', PixeLinkSettings),
+	'Optimizer' : ('OptimizerMediator', OptimizerSettings),
 }
 
 # Store all other settings dicts in this dictionary
