@@ -27,13 +27,10 @@ class ParticleSwarmOptimizer(object):
 		self.numOfParticles = numOfParticles
 		self.numOfGenerations = numOfGenerations
 		self.fitnessEvalScript = fitnessEvalScript
-		
 		if minimization:
 			weights = (-1.0,)
 		else:
 			weights = (1.0,)	
-		print "Weights: ", weights
-		
 		creator.create("Fitness", base.Fitness, weights = weights)
 		creator.create("Particle", list, fitness=creator.Fitness, speed=list, smin=None, smax=None, best=None)
 
@@ -80,7 +77,7 @@ class ParticleSwarmOptimizer(object):
 			lcl['fitness'] = None
 		 	execfile(self.fitnessEvalScript, lcl)
 		 	fitness = lcl['fitness']
-			return fitness
+			return (fitness,)
 
 		toolbox = base.Toolbox()
 		toolbox.register("particle", generate, paramBounds = paramBounds)
@@ -142,8 +139,9 @@ class ParticleSwarmOptimizer(object):
 		self.logger.logGeneration(gen=self.currentGen, evals=len(self.particles), stats=self.stats)
 	
 if __name__ == '__main__':
-	paramBounds = ((-10, 10), (-10, 10))	
-	PSO = ParticleSwarmOptimizer(paramBounds, 10, 1000, 'DefaultFitnessEvaluator.py', 1, 1, 1)
+	paramBounds = ((-10, 10), (-10, 10))
+	fnPath = 'C:\PAT\OptimizationFunctions\h1.py'	
+	PSO = ParticleSwarmOptimizer(paramBounds, 10, 1000, fnPath, 1, 1, 1)
 	part = PSO.getParticle()
 	while part:
 		PSO.evaluateParticle({'part' : part})

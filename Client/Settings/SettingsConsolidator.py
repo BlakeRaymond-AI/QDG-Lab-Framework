@@ -4,8 +4,8 @@ from DefaultSettings.PMDSettings import PMDSettings
 from DefaultSettings.LabJackSettings import LabJackSettings
 from DefaultSettings.Stabil_Ion_Settings import Stabil_Ion_Settings
 from DefaultSettings.MKS_SRG3_Settings import MKS_SRG3_Settings
-
 from DefaultSettings.PixeLinkSettings import PixeLinkSettings
+
 from DefaultSettings.PATSettings import PATSettings
 from DefaultSettings.PATClientSettings import PATClientSettings	
 
