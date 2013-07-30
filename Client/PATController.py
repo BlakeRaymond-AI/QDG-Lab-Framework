@@ -41,7 +41,7 @@ class PATController(Recipe):
 		for key, val in deviceSettings.items():
 			if not val[1]['takeData']:
 				del deviceSettings[key]
-		self.deviceSettings = deviceSettings	
+		self.deviceSettings = deviceSettings
 				
 		# If there are no devices, there is no need for the PATClient
 		if not deviceSettings:
@@ -302,7 +302,7 @@ class PATController(Recipe):
 		self.set_2D_I_4(0.0)
 
 	def pat_2DMOT_on(self):
-		self.set_2DRb_pump_amplitude(0.5)
+		self.set_2DRb_pump_amplitude(0.8)
 		self.set_Rb_push_amplitude(0.6)
 		self.set_2D_I_1(3.9)
 		self.set_2D_I_2(5.0)
@@ -394,9 +394,9 @@ class PATController(Recipe):
 	def getParticle(self):
 		devName = 'Optimizer'
 		fName = 'getParticle'
-		part = self.PATClient.sendSpecificDeviceCommand(devName, fname, 
-														waitForResponse = True, 
-														pickledResponse = True)
+		part = self.PATClient.sendSpecificDeviceCommand(devName, fName, 
+																					waitForResponse = True, 
+																					pickledResponse = True)
 		return part
 		
 	def evaluateFitness(self):

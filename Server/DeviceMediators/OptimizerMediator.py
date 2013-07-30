@@ -11,7 +11,6 @@ class OptimizerMediator(DeviceMediatorInterface):
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
-		
 		self.optimizer = ParticleSwarmOptimizer(self.paramBounds, 
 												self.numOfParticles, 
 												self.numOfGenerations, 
@@ -33,7 +32,11 @@ class OptimizerMediator(DeviceMediatorInterface):
 		pass
 	
 	def getParticle(self):
-		part = self.optimizer.getParticle()	
+		deapPart = self.optimizer.getParticle()
+		if deapPart:
+			part = deapPart[:]
+		else:
+			part = deapPart
 		partString = pickle.dumps(part)
 		return partString
 		
@@ -50,7 +53,7 @@ if __name__ == '__main__':
 	numOfParticles = 30
 	numOfGenerations = 1000
 	paramBounds = ((-6, 6), (-6, 6))
-	fitnessEvalScript = 'DefaultFitnessEvaluator.py'
+	fitnessEvalScript = fnPath = 'C:\PAT\OptimizationFunctions\himmelblau.py'	
 	phiG = 1
 	phiP = 1
 	speedLimiter = 1

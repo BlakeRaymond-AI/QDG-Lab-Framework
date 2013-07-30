@@ -108,7 +108,7 @@ class PATServer(object):
 		elif cmdChar == 'c':
 			self.handleClientClosing()
 		elif cmdChar == 'e':
-			self.handleFitnessEvaluation()			
+			self.handleFitnessEval()			
 		else:
 			print "Invalid Command Char: " + cmdChar
 	

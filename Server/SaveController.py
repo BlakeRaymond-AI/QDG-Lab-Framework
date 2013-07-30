@@ -44,7 +44,6 @@ class SaveController(object):
 			trialName = "Trial_" + str(self._trialNum)
 			self._trialNum += 1
 		p = path.join(self.dataPath, trialName)
-
 		self.trialPath = p
 		self.makeFolder(p)
 		return p
