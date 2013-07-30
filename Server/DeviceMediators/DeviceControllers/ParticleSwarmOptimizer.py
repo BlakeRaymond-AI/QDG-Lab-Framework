@@ -11,6 +11,8 @@ from numpy import array
 from deap import base
 from deap import creator
 from deap import tools
+from os import path
+import csv
 
 class ParticleSwarmOptimizer(object):
 
@@ -127,6 +129,13 @@ class ParticleSwarmOptimizer(object):
 			self.best = creator.Particle(part)
 			self.best.fitness.values = part.fitness.values
 		self.incrementParticles()
+		trialPath = args{'dataPath'}
+		fPath = path.join(trialPath, 'particle.csv')
+		file = csv.writer(fPath, delimiter=',')
+		file.writerow([self.currentGen, self.currentPart])
+		file.writerow([part, part.fitness])
+		file.writerow([part.best, part.best.fitness])
+		file.writerow(best, best.fitness)	
 		
 	def incrementParticles(self):
 		self.currentPart += 1
