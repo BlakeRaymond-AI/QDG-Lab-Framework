@@ -40,8 +40,8 @@ class OptimizerMediator(DeviceMediatorInterface):
 		partString = pickle.dumps(part)
 		return partString
 		
-	def evaluateParticle(self, trialPath, extraArgs = {}):
-		args = {'dataPath' : trialPath}
+	def evaluateParticle(self, expPath, trialPath, extraArgs = {}):
+		args = {'expPath' : expPath, 'trialPath' : trialPath}
 		for (key, value) in extraArgs.items():
 			args[key] = value
 		self.optimizer.evaluateParticle(args)

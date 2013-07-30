@@ -174,7 +174,7 @@ class PATServer(object):
 	
 	def handleFitnessEval(self):
 		optimizer = self.deviceDict['Optimizer']
-		optimizer.evaluateParticle(self.saveController.trialPath)
+		optimizer.evaluateParticle(self.saveController.expPath, self.saveController.trialPath)
 		print "Evaluating fitness."
 	
 	def startDevices(self):

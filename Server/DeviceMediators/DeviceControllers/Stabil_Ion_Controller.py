@@ -27,7 +27,7 @@ class Stabil_Ion_Controller(Serial):
 		self.SIThread.start()
 		
 	def stop(self):
-		SIThread.join()
+		self.SIThread.join()
 		self.close()
 		
 	def IG1On(self):

@@ -51,6 +51,7 @@ class MKS_SRG3_Controller(Serial):
 		self.setPressureUnits(pUnits)
 		self.tUnits = tUnits
 		self.setTemperatureUnits(tUnits)
+		self.write("sta")
 
 	def write(self, msg):
 		msg = msg + "\r"
@@ -62,12 +63,10 @@ class MKS_SRG3_Controller(Serial):
 		super(MKS_SRG3_Controller, self).close()
 		
 	def start(self):
-		self.write("sta")
 		self.MKSThread.start()
 		
 	def stop(self):
 		self.MKSThread.join()
-		self.write("stp")
 		self.close()
 	
 	def waitRead(self):
