@@ -142,7 +142,7 @@ class LabJackController(object):
 		csvFile =  open(fileName, 'wb')
 		try:
 			fileWriter = csv.writer(csvFile, delimiter=',')
-			filewriter.writerow(['Start Time:', self.tStart])
+			fileWriter.writerow(['Start Time:', self.tStart])
 			fileWriter.writerow(labelArray)
 			for i in range(len(dataArray[0])):	# Num of data points.
 				output = [];

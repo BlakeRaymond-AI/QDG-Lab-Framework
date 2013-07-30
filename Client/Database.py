@@ -85,10 +85,11 @@ __MOL_devices = {
 
 __PAT_devices = {
     'DDS' : {
-        'Rb_2Dpump' : 180,
+        'Rb_2Dpump' : 140,
         'Rb_3Dpump' : 24,
         'Rb_repump' : 116,
-        'Rb_push': 92,       
+        'Rb_push': 92,
+		'optical_pump' : 188,
     },
     
     'DO' : {
