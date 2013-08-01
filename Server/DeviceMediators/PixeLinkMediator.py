@@ -1,11 +1,14 @@
 from DeviceControllers.PixeLinkController.CameraController import CameraController as Pixelink_Controller
+from DeviceControllers.PixeLinkController.Generic.Generic import PixeLINKException
 from DeviceControllers.PixeLinkController.frame_handler_basic import FramesHandler
+from time import sleep
 
 class PixeLinkMediator(object):
 	
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
+		attempt = 0
 		self.controller = Pixelink_Controller()
 		if self.useROICenter:
 			self.setROICenter()
@@ -28,10 +31,12 @@ class PixeLinkMediator(object):
 		print "PixeLink camera set. Waiting for %d triggers." % self.numberOfImages
 		
 	def stop(self):
-		self.controller.T.join()
+		print "Waiting for PixeLink Camera to finish."
+		self.controller.T.join(10.0)
+		print "PixeLink Done"
 		
 	def save(self, path):
-		self.framesHandler.save_frames(folder = path, data = False) 
+		self.framesHandler.save_frames(folder = path, data = False)
 		
 	def processExpData(self, pth):
 		pass

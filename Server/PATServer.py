@@ -5,6 +5,7 @@ import sys
 import pickle
 from string import zfill
 from SaveController import SaveController
+from time import sleep
 
 from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
@@ -124,13 +125,17 @@ class PATServer(object):
 		print self.deviceDict
 	
 	def handleReset(self, msg):
-		del(self.deviceDict)
+		print "Resetting Devices"
 		del(self.deviceSettings)
-		self.deviceDict = {}
+		for dev in self.deviceDict.values():
+			if dev.needsReset:
+				del(dev)
 		self.deviceSettings = pickle.loads(msg)
+		sleep(10.0)
 		for (key, deviceData) in self.deviceSettings.items():
-			constructor = globals()[deviceData[0]]
-			self.deviceDict[key] = constructor(deviceData[1])
+			if deviceData.needsReset:
+				constructor = globals()[deviceData[0]]
+				self.deviceDict[key] = constructor(deviceData[1])
 		self.sendMessage("SUCCESS: All devices reset.")
 		print self.deviceDict
 		print "Devices Reset"
@@ -206,13 +211,6 @@ class PATServer(object):
 			dev.save(path)	
 		print "Trial data saved."
 		self.sendMessage("SUCCESS: Trial data saved.")
-		
-	def resetDevices(self):
-		print "Resetting devices."
-		for dev in self.deviceDict.values():
-			dev.reset()
-		print "Devices reset."	
-		self.sendMessage("SUCCESS: Devices reset.")
 
 	def processExpData(self):
 		print "Processing Data."
@@ -224,4 +222,5 @@ class PATServer(object):
 			
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
-	server = PATServer()	
+	server = PATServer()
+	
