@@ -8,7 +8,7 @@ from UTBus1_Globals import lock_DDS_params
 from UTBus1.Exceptions import * # Make this explicit
 from Database import experiment_devices
 import math as mth
-from time import time, localtime, strftime
+from time import time, localtime, strftime, sleep
 
 from Settings.Settings import Settings
 from Settings.SettingsConsolidator import defaultSettings, overwriteSettings
@@ -394,7 +394,7 @@ class PATController(Recipe):
 	def triggerPixeLink(self):
 		self.numPixeLinkTriggers += 1
 		self.pixelink_trigger(1)
-		self.wait_us(5)
+		self.wait_us(50)
 		self.pixelink_trigger(0)
 		
 	def setPixeLinkImageCount(self):
@@ -403,6 +403,7 @@ class PATController(Recipe):
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
+		sleep(4.0)
 
 # #------------------------------------------------------------------------
 # # Optimizer Controls
@@ -426,7 +427,7 @@ class PATController(Recipe):
 	def triggerPMD(self):
 		self.PMD_trigger(1)
 		self.wait_us(5)
-		self.PMD_Trigger
+		self.PMD_trigger
 		
 		
 	
