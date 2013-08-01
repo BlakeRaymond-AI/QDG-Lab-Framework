@@ -51,7 +51,7 @@ class PMDController(object):
 		sampleRatePerChannel: Sample rate per channel.
 		scanDuration: Duration of scan in seconds.
 		vRange: Voltage range identifier code from PMDTypes.
-		trigger: Boolean indicate whether a trigger should be used or not.
+		trigger: Boolean to indicate whether a trigger should be used or not.
 		trigType: Trigger type identifier code to use from PMDTypes.
 		boardNum: Board number registered through InstaCal program.
 		
@@ -59,7 +59,7 @@ class PMDController(object):
 		- activeChannels and gainSettings must have the same size.
 		'''				
 						
- 		self.boardNum = 0
+ 		self.boardNum = boardNum
 		vRange = Range[vRange]
 		trigType = TrigType[trigType]
 		if len(activeChannels) != len(gainSettings):

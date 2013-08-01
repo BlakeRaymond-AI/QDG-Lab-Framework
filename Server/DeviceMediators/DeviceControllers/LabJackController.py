@@ -37,7 +37,7 @@ class LabJackController(object):
 	"""
 	LabJack Control Class. Instantiate an instance with the desired settings
 	and then call collectData() on it to collect voltage data.  A subsequent
-	call to save() wil then save this data. Controller can be set to trigger
+	call to save() will then save this data. The controller can be set to trigger
 	on a rising input. Uses ctypes to call LabJack c drivers so make sure 
 	they're installed. Time data is recorded in seconds and voltage data in
 	volts.
@@ -46,7 +46,12 @@ class LabJackController(object):
 	before calling save(), call stop().
 	"""
 		
-	def __init__(self, activeChannels = [0], sampleRatePerChannel = 200, scanDuration = 5, trigger = False, triggerChannel = 0, idnum=-1):
+	def __init__(self, activeChannels = [0], 
+						sampleRatePerChannel = 200,
+						scanDuration = 5,
+						trigger = False,
+						triggerChannel = 0, 
+						idnum=-1):
 		"""
 		Parameters:
 		activeChannels: Array of size 1,2 or 4 indicating which channels 
@@ -250,11 +255,14 @@ if __name__ == '__main__':
 	LJC = LabJackController()
 	LJC.collectData()
 	LJC.save()
+	LJC.plotData()
 	
-# Using LabJackController with start and stop.
+# Using the controller with start and stop.
 # 	LJC = LabJackController()
 # 	LJC.start()
 # 	print "OTHER CODE HERE"
 # 	LJC.stop()
-# 	LJC.save()	
+# 	LJC.save()
+#	LJC.plotData()	
+
 	
