@@ -6,4 +6,5 @@ Stabil_Ion_Settings['secondsPerSample'] = 1	# Max of 1 second per sample.
 Stabil_Ion_Settings['takeData'] = False
 Stabil_Ion_Settings['processData'] = False
 Stabil_Ion_Settings['needsReset'] = True
+Stabil_Ion_Settings['resetTime'] = 2
 Stabil_Ion_Settings['dataFolderName'] = "Stabil_Ion_Data"
