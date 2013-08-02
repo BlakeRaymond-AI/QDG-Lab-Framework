@@ -23,8 +23,9 @@ class MKS_SRG3_Mediator(DeviceMediatorInterface):
 		
 	def stop(self):
 		print "Waiting for MKS SRG3 to finish collecting data."
-		self.controller.stop()
+		status = self.controller.stop()
 		print "MKS SRG3 Gauge Done"
+		return status
 
 	def save(self, pth):
 		fname = path.join(pth, 'MKSData.csv')

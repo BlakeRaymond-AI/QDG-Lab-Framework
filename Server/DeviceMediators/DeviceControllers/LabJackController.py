@@ -90,8 +90,12 @@ class LabJackController(object):
 		self.LJThread.start()
 		
 	def stop(self):
-		"""Waits until data collection is complete before proceeding."""
+		"""
+		Waits until data collection is complete before proceeding. Returns
+		boolean indicating whether data collection failed.
+		"""
 		self.LJThread.join()
+		return self.LJThread.failed
 		
 	def collectData(self):
 		"""Initiates data collection."""

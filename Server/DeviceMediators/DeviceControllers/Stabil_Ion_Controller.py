@@ -27,8 +27,13 @@ class Stabil_Ion_Controller(Serial):
 		self.SIThread.start()
 		
 	def stop(self):
+		"""
+		Waits until data collection is complete before proceeding. Returns
+		boolean indicating whether data collection failed.
+		"""	
 		self.SIThread.join()
 		self.close()
+		return self.SIThread.failed
 		
 	def IG1On(self):
 		self.write("IG1 ON")

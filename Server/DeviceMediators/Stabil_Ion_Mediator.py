@@ -19,8 +19,9 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 		
 	def stop(self):
 		print "Waiting for Stabil Ion Gauge to finish collecting data."
-		self.controller.stop()
+		status = self.controller.stop()
 		print "Stabil Ion Gauge Done"
+		return status
 
 	def save(self, pth):
 		fname = path.join(pth, 'SIData.csv')

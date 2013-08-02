@@ -91,11 +91,12 @@ class PMDController(object):
 		self.PMDThread.start()
 		
 	def stop(self):
-		'''
-		Waits until data collection is complete, the partially processes
-		the data.
-		'''
+		"""
+		Waits until data collection is complete before proceeding. Returns
+		boolean indicating whether data collection failed.
+		"""
 		self.PMDThread.join()
+		return self.PMDThread.failed
 
 	def saveData(self, fname= 'PMDData.csv'):
 		'''Saves the data collected by the PMD.'''

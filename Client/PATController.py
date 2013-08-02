@@ -114,6 +114,12 @@ class PATController(Recipe):
 		print "Processing data."
 		self.PATClient.sendMediatorCommand("processExpData")
 		self.PATClient.awaitConfirmation()
+	
+	def checkForFailure(self):
+		'''Returns a boolean indicating whether data collection failed.'''
+		self.PATClient.sendCommand({}, 'f')
+		msg = self.PATClient.recieveMessage()
+		return bool(int(msg))
 		
 	def closeClient(self):
 		self.PATClient.close()

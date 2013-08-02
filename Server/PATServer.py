@@ -34,7 +34,7 @@ class PATServer(object):
 		self.serverSocket = socket(AF_INET, SOCK_STREAM)
 		self.serverSocket.bind(ADDR)
 		self.serverSocket.listen(5)
-		self.available = True
+		self.dataCollectionFailed = False
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
@@ -104,6 +104,8 @@ class PATServer(object):
 			self.handleName(msg)
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
+		elif cmdChar == 'f':
+			self.handleFailureCheck()
 		elif cmdChar == 's':
 			self.handleSpecificDeviceCommand(msg)
 		elif cmdChar == 'c':
@@ -187,6 +189,15 @@ class PATServer(object):
 		optimizer.evaluateParticle(self.saveController.expPath, self.saveController.trialPath)
 		print "Evaluating fitness."
 	
+	def handleFailureCheck(self):
+		status = self.dataCollectionFailed
+		if status:
+			msg = '1'
+		else:
+			msg = '0'
+		self.dataCollectionFailed = False
+		self.endMessage(msg)	
+	
 	def startDevices(self):
 		print "Starting data collection devices."
 		for device in self.deviceDict.values():
@@ -197,7 +208,8 @@ class PATServer(object):
 	def stopDevices(self):
 		print "Stopping devices."
 		for device in self.deviceDict.values():
-			device.stop()
+			if device.stop():
+				self.dataCollectionFailed = True
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
 

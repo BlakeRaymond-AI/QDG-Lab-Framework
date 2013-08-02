@@ -91,9 +91,13 @@ class MKS_SRG3_Controller(Serial):
 		self.MKSThread.start()
 		
 	def stop(self):
-		''' Waits for the data collection thread to join then closes the connection.'''
+		"""
+		Waits until data collection is complete before proceeding. Returns
+		boolean indicating whether data collection failed.
+		"""
 		self.MKSThread.join()
 		self.close()
+		return self.MKSThread.failed
 	
 	def waitRead(self):
 		'''Waits for 2 seconds before reading.'''

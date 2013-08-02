@@ -23,8 +23,9 @@ class LabJackMediator(DeviceMediatorInterface):
 		
 	def stop(self):
 		print "Waiting for Lab Jack to finish collecting data."
-		self.controller.stop()
+		status = self.controller.stop()
 		print "Lab Jack Done"
+		return status
 
 	def save(self, pth):
 		fname = path.join(pth, 'LabJackData.csv')
