@@ -127,13 +127,18 @@ class PATServer(object):
 	def handleReset(self, msg):
 		print "Resetting Devices"
 		del(self.deviceSettings)
-		for dev in self.deviceDict.values():
-			if dev.needsReset:
-				del(dev)
+		savedDevices = []
+		for (key, dev) in self.deviceDict.items():
+			if not dev.needsReset:
+				savedDevices.append((key, dev))		
+		del(self.deviceDict)
+		sleep(30.0)
 		self.deviceSettings = pickle.loads(msg)
-		sleep(10.0)
+		self.deviceDict = {}
+		for (key, dev) in savedDevices:
+			self.deviceDict[key] = dev
 		for (key, deviceData) in self.deviceSettings.items():
-			if deviceData.needsReset:
+			if deviceData[1]['needsReset']:
 				constructor = globals()[deviceData[0]]
 				self.deviceDict[key] = constructor(deviceData[1])
 		self.sendMessage("SUCCESS: All devices reset.")

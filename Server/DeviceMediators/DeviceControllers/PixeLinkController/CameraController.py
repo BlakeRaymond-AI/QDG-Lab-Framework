@@ -85,5 +85,3 @@ class CameraController(object):
             self.__must_stop = True
             self.__driver.stop()
             self.__acquisition_stopped.wait()
-
-    
