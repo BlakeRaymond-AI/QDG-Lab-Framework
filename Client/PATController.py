@@ -393,6 +393,8 @@ class PATController(Recipe):
 
 	def triggerPixeLink(self):
 		self.numPixeLinkTriggers += 1
+		self.pixelink_trigger(0)
+		self.wait_us(50)
 		self.pixelink_trigger(1)
 		self.wait_us(50)
 		self.pixelink_trigger(0)
