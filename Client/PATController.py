@@ -18,7 +18,41 @@ class PATController(Recipe):
 	def __init__(self, controllerName, settingsDict, **kw):		   
 		Recipe.__init__(self,controllerName,**kw)
 		self.controllerName = controllerName
-		_D = experiment_devices['PAT']	# PAT Database Settings
+		self.buildDatabaseDevices(experiment_devices['PAT'])
+		deviceSettings = settingsDict['deviceSettings']
+		generalSettings = settingsDict['generalSettings']
+		# Filter out devices that aren't taking data.
+		for key, val in deviceSettings.items():
+			if not val[1]['takeData']:
+				del deviceSettings[key]
+		self.deviceSettings = deviceSettings		
+		# PAT Client is only created if there are devices.
+		if not deviceSettings:
+			del generalSettings['PATClient']	
+		# Create settings objects from general settings.
+		for (key, deviceData) in generalSettings.items():
+			constructor = globals()[deviceData[0]]
+			setattr(self, key, constructor(deviceData[1]))	
+		# Use client to signal server to create devices.		
+		if deviceSettings:
+			self.createDevices()
+		# Save settings.
+		self.settingsDict = settingsDict
+		self.generalSettings = generalSettings
+		self.deviceSettings = deviceSettings
+		# Keep track of the number of times cameras have been triggered.
+		self.numPixeLinkTriggers = 0	
+	
+	def createDevices(self):
+			self.PATClient.sendMessage('n' + self.controllerName)
+			self.PATClient.sendCommand(self.settingsDict, 'i')
+			self.PATClient.awaitConfirmation()
+				
+	def buildDatabaseDevices(self, _D)
+		'''
+		Constructs methods for controlling AO, DO and DDS systems defined in
+		the database.
+		'''
 		self.__devices = {}
 		for (name,addr) in _D['DDS'].items():	# Creates DDS Functions
 			self.__devices[addr] = d = DDS(address=addr)
@@ -33,41 +67,7 @@ class PATController(Recipe):
 			if not addr in self.__devices:
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
-		
-		deviceSettings = settingsDict['deviceSettings']
-		generalSettings = settingsDict['generalSettings']
-				
-		# Remove all devices that aren't taking data from the deviceSettings dict
-		for key, val in deviceSettings.items():
-			if not val[1]['takeData']:
-				del deviceSettings[key]
-		self.deviceSettings = deviceSettings
-				
-		# If there are no devices, there is no need for the PATClient
-		if not deviceSettings:
-			del generalSettings['PATClient']
-				
-		# Create settings objects from general settings.
-		for (key, deviceData) in generalSettings.items():
-			constructor = globals()[deviceData[0]]
-			setattr(self, key, constructor(deviceData[1]))	
-		
-		# Use client to signal server to create devices.		
-		if deviceSettings:
-			self.PATClient.sendMessage('n' + self.controllerName)
-			self.PATClient.sendCommand(settingsDict, 'i')
 	
-		# Save settings.
-		self.settingsDict = settingsDict
-		self.generalSettings = generalSettings
-		self.deviceSettings = deviceSettings
-	
-		# Initialise trigger DO
-		#self.PMD_trigger(0)
-			
-		# Keep track of the number of times cameras have been triggered.
-		self.numPixeLinkTriggers = 0	
-			
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
 		def DO_method(v):
@@ -78,6 +78,8 @@ class PATController(Recipe):
 	def start(self):
 		print strftime("Execution began at %H:%M on %x", localtime())
 		super(PATController, self).start()
+		self.PMD_trigger(0)
+		self.pixelink_trigger(0)
 		
 	def end(self):
 		super(PATController, self).end()	   
@@ -106,7 +108,8 @@ class PATController(Recipe):
 	def reset(self):
 		print "Resetting devices."
 		self.numPixeLinkTriggers = 0
-		self.PATClient.sendCommand(self.deviceSettings, 'r')
+		self.PATClient.sendCommand(self.settingsDict, 'r')
+		self.PATClient.awaitConfirmation()
 		self.PATClient.awaitConfirmation()
 	
 	def processData(self):
@@ -123,9 +126,6 @@ class PATController(Recipe):
 		self.set_2D_I_2(0)
 		self.set_2D_I_3(0)
 		self.set_2D_I_4(0)
-	
-	def cable3_ttl(self,value=0):
-		self.testcable3(value)
 
 ## ========================================================================
 # PAT Coil Controls
@@ -393,10 +393,8 @@ class PATController(Recipe):
 
 	def triggerPixeLink(self):
 		self.numPixeLinkTriggers += 1
-		self.pixelink_trigger(0)
-		self.wait_us(50)
 		self.pixelink_trigger(1)
-		self.wait_us(50)
+		self.wait_us(5)
 		self.pixelink_trigger(0)
 		
 	def setPixeLinkImageCount(self):
@@ -405,7 +403,7 @@ class PATController(Recipe):
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
-		sleep(5.0)
+		self.awaitConfirmation()
 
 # #------------------------------------------------------------------------
 # # Optimizer Controls
@@ -429,7 +427,7 @@ class PATController(Recipe):
 	def triggerPMD(self):
 		self.PMD_trigger(1)
 		self.wait_us(5)
-		self.PMD_trigger
+		self.PMD_trigger(0)
 		
 		
 	

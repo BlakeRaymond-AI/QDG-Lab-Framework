@@ -135,29 +135,15 @@ class PATServer(object):
 				constructor = globals()[deviceData[0]]
 				dev = constructor(deviceData[1])
 			self.deviceDict[key] = dev
+		self.sendMessage("SUCCESS: Devices created.")
 		print "Devices Created"
 		print self.deviceDict
 	
 	def handleReset(self, msg):
 		print "Resetting Devices"
-		del(self.deviceSettings)
-		savedDevices = []
-		for (key, dev) in self.deviceDict.items():
-			if dev.persistent:
-				savedDevices.append((key, dev))		
-		del(self.deviceDict)
-		sleep(15.0)
-		self.deviceSettings = pickle.loads(msg)
-		self.deviceDict = {}
-		for (key, dev) in savedDevices:
-			self.deviceDict[key] = dev
-		for (key, deviceData) in self.deviceSettings.items():
-			if not deviceData[1]['persistent']:
-				constructor = globals()[deviceData[0]]
-				self.deviceDict[key] = constructor(deviceData[1])
-		self.sendMessage("SUCCESS: All devices reset.")
-		print self.deviceDict
-		print "Devices Reset"
+		self.sendMessage("SUCCESS: Reset command recieved.")
+		self.handleClientClosing(multiTrial = True)
+		self.handleInitialization(self, msg)
 		
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
@@ -186,19 +172,20 @@ class PATServer(object):
 			fn(*functionArgs)
 		print "%s function in %s executed." % (functionName, deviceName)
 	
-	def handleClientClosing(self):
+	def handleClientClosing(self, multiTrial = False):
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
-		self.saveControllerPath = ''
-		self.expPath = ''
 		del(self.deviceDict)
 		del(self.deviceSettings)
 		self.deviceDict = {}
 		self.deviceSettings = {}
 		self.saveController = None
-		self.clientName = ''
-		print "Client Closed"
+		if not multiTrial:
+			self.clientName = ''
+			self.saveControllerPath = ''
+			self.expPath = ''
+			print "Client Closed"
 	
 	def handleFitnessEval(self):
 		optimizer = self.deviceDict['Optimizer']
