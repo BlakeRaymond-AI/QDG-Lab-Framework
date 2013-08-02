@@ -64,7 +64,7 @@ class MKS_SRG3_Controller(Serial):
 		self.duration_s = duration_s
 		self.measurementTime_s = measurementTime_s
 		self.MKSThread = DataCollectionThread(self)
-		self.setMeasurementTime(measurementTime_S)
+		self.setMeasurementTime(measurementTime_s)
 		self.gType = gType
 		self.setGasType(gType)		
 		self.pUnits = pUnits

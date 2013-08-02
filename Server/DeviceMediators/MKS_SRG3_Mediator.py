@@ -13,7 +13,7 @@ class MKS_SRG3_Mediator(DeviceMediatorInterface):
 			setattr(self, k, v)
 		self.controller = MKS_SRG3_Controller(self.port,
 												self.duration_s,
-												self.measurementTime_s
+												self.measurementTime_s,
 												self.gType, 
 												self.pUnits,
 												self.tUnits)
