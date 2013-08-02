@@ -246,9 +246,15 @@ class DataCollectionThread(Thread):
 	def __init__(self, LJController):
 		Thread.__init__(self)
 		self.LJC = LJController 
+		self.failed = False
 		
 	def run(self):
-		self.LJC.collectData()
+		try:	
+			self.LJC.collectData()
+		except:
+			self.failed = True
+			raise
+
 
 if __name__ == '__main__':			
 	# Creates a default LabJackController to collect and save data.

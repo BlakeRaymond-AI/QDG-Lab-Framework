@@ -222,10 +222,15 @@ class PMDThread(Thread):
 	def __init__(self, PMDController):
 		Thread.__init__(self)
 		self.PMDC = PMDController
+		self.failed = False
 	
 	def run(self):
-		self.PMDC.collectData()
-		self.PMDC.processData()
+		try:
+			self.PMDC.collectData()
+			self.PMDC.processData()
+		except:
+			self.failed = True
+			raise
 
 if __name__ == '__main__':	
 	PMDC = PMDController()

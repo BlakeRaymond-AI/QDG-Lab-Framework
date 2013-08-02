@@ -113,9 +113,14 @@ class DataCollectionThread(Thread):
 	def __init__(self, SIController):
 		Thread.__init__(self)
 		self.SIC = SIController
+		self.failed = False
 		
 	def run(self):
-		self.SIC.collectData()
+		try:
+			self.SIC.collectData()
+		except:
+			self.failed = True
+			raise
 
 if __name__ == '__main__':
 	SIC = Stabil_Ion_Controller(3, 10, 1)

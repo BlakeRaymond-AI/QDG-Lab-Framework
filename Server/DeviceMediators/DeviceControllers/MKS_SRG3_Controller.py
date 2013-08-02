@@ -219,10 +219,15 @@ class DataCollectionThread(Thread):
 	def __init__(self, MKSController):
 		Thread.__init__(self)
 		self.MKSC = MKSController
+		self.failed = False
 		
 	def run(self):
-		self.MKSC.collectData()	
-	
+		try:
+			self.MKSC.collectData()	
+		except:
+			self.failed = True
+			raise
+				
 if __name__ == '__main__':
 	MKSC = MKS_SRG3_Controller(2, 100)
 	MKSC.collectData()
