@@ -403,7 +403,7 @@ class PATController(Recipe):
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
-		sleep(4.0)
+		sleep(5.0)
 
 # #------------------------------------------------------------------------
 # # Optimizer Controls

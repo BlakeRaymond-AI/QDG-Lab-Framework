@@ -12,4 +12,5 @@ MKS_SRG3_Settings['tUnits'] = 1 # Temperature Units (Default: Celsius)
 MKS_SRG3_Settings['takeData'] = False
 MKS_SRG3_Settings['processData'] = False
 MKS_SRG3_Settings['needsReset'] = True
+MKS_SRG3_Settings['resetTime'] = 2
 MKS_SRG3_Settings['dataFolderName'] = "MKS_SRG3_Data"
