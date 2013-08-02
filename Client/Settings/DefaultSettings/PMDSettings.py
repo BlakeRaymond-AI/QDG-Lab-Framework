@@ -16,4 +16,5 @@ PMDSettings['boardNum'] = 0
 PMDSettings['takeData'] = False
 PMDSettings['processData'] = False
 PMDSettings['needsReset'] = True
+PMDSettings['resetTime'] = 2
 PMDSettings['dataFolderName'] = "PMDData"

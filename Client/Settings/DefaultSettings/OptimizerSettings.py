@@ -2,6 +2,7 @@
 OptimizerSettings = dict()
 OptimizerSettings['takeData'] = False	# Won't actually take data.
 OptimizerSettings['needsReset'] = False
+OptimizerSettings['resetTime'] = 0
 OptimizerSettings['fitnessEvalScript'] = 'C:\PAT\PATScripts\Optimizations\ScriptNameHere.py'
 OptimizerSettings['numOfParticles'] = 0		# Number of particles in a generation.
 OptimizerSettings['numOfGenerations'] = 0	# Number of generations.

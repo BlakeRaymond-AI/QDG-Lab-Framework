@@ -9,4 +9,5 @@ LabJackSettings['triggerChannel'] = 0	# Channel to use as trigger input.
 LabJackSettings['takeData'] = False
 LabJackSettings['processData'] = False
 LabJackSettings['needsReset'] = True
+LabJackSettings['resetTime'] = 2
 LabJackSettings['dataFolderName'] = "LabJackData"

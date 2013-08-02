@@ -12,4 +12,5 @@ PixeLinkSettings['ROI_center'] = (640, 512) # Location of center. (x, y)
 PixeLinkSettings['takeData'] = False
 PixeLinkSettings['processData'] = False
 PixeLinkSettings['needsReset'] = True
+PixeLinkSettings['resetTime'] = 15.0
 PixeLinkSettings['dataFolderName'] = "PixeLinkData"
