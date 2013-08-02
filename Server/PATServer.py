@@ -111,7 +111,9 @@ class PATServer(object):
 		elif cmdChar == 'c':
 			self.handleClientClosing()
 		elif cmdChar == 'e':
-			self.handleFitnessEval()			
+			self.handleFitnessEval()	
+		elif cmdChar == 'd':
+			self.handleDictionarySave(msg)			
 		else:
 			print "Invalid Command Char: " + cmdChar
 	
@@ -153,6 +155,17 @@ class PATServer(object):
 		fn = getattr(self, functionName)
 		fn(*functionArgs)
 	
+	def handleDictionarySave(msg):
+		dictionary = pickle.loads(msg)
+		fPath1 = path.join([self.saveController.trialPath, 'customDat.txt'])
+		fPath2 = path.join([self.saveController.trialPath, 'customDat.pkl'])
+		file1 = open(fPath1, 'wb')
+		file2 = open(fPath2, 'wb')
+		file1.write(str(dictionary))
+		file2.write(msg)
+		file1.close()
+		file2.close()
+	
 	def handleName(self, msg):
 		print "Client for %s started." % msg
 		self.clientName = msg
@@ -174,14 +187,14 @@ class PATServer(object):
 	
 	def handleClientClosing(self, multiTrial = False):
 		self.inUse = False
-		self.sessionSocket = None
-		self.sessionAddress = None
 		del(self.deviceDict)
 		del(self.deviceSettings)
 		self.deviceDict = {}
 		self.deviceSettings = {}
 		self.saveController = None
 		if not multiTrial:
+			self.sessionSocket = None
+			self.sessionAddress = None
 			self.clientName = ''
 			self.saveControllerPath = ''
 			self.expPath = ''

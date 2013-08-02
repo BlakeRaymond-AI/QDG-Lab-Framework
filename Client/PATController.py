@@ -105,9 +105,12 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("saveTrial", args)
 		self.PATClient.awaitConfirmation()
 		
+	def saveDictionary(self, dictionary):
+		self.PATClient.sendCommand(dictionary, 'd')
+		
 	def reset(self):
 		print "Resetting devices."
-		self.numPixeLinkTriggers = 0
+		self.numPixeLinkTriggers = 0		
 		self.PATClient.sendCommand(self.settingsDict, 'r')
 		self.PATClient.awaitConfirmation()
 		self.PATClient.awaitConfirmation()

@@ -64,7 +64,6 @@ class PATClient(object):
 	def close(self):
 		self.sendCommand({}, 'c')
 		self.sessionSocket.close()
-		# del(self)	
 		
 	def recieveMessage(self):
 		'''Retrieves a message string from the server.'''
