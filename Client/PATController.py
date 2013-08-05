@@ -33,13 +33,13 @@ class PATController(Recipe):
 		for (key, deviceData) in generalSettings.items():
 			constructor = globals()[deviceData[0]]
 			setattr(self, key, constructor(deviceData[1]))	
-		# Use client to signal server to create devices.		
-		if deviceSettings:
-			self.createDevices()
 		# Save settings.
 		self.settingsDict = settingsDict
 		self.generalSettings = generalSettings
 		self.deviceSettings = deviceSettings
+		# Use client to signal server to create devices.		
+		if deviceSettings:
+			self.createDevices()
 		# Keep track of the number of times cameras have been triggered.
 		self.numPixeLinkTriggers = 0	
 	
@@ -47,7 +47,7 @@ class PATController(Recipe):
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(self.settingsDict, 'i')
 				
-	def buildDatabaseDevices(self, _D)
+	def buildDatabaseDevices(self, _D):
 		'''
 		Constructs methods for controlling AO, DO and DDS systems defined in
 		the database.
