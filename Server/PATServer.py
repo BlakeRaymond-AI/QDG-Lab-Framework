@@ -6,6 +6,7 @@ import pickle
 from string import zfill
 from SaveController import SaveController
 from time import sleep
+from os import path
 
 from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
@@ -18,27 +19,25 @@ HOST = gethostbyname(gethostname())
 PORT = 15964
 ADDR = (HOST, PORT)
 server = None
-
 dataPath = 'C:\PAT\PATData'
 
-def signal_handler(signal, frame):
-	'''Handler designed to close server when Python instance is interrupted.'''
-	print ''
-	if server:
-		server.close()
-		print "Server Closed"
-	sys.exit(0)
-
 class PATServer(object):
-	def __init__(self):
+	def __init__(self, expPath = ''):
 		self.serverSocket = socket(AF_INET, SOCK_STREAM)
 		self.serverSocket.bind(ADDR)
-		self.serverSocket.listen(5)
+		self.serverSocket.listen(1)
+		if expPath:
+			self.expPath = expPath
+			self.saveControllerPath = path.join([expPath, 'SaveController.pkl']) 
+		else:
+			self.expPath = ''
+			self.saveControllerPath = ''
 		self.dataCollectionFailed = False
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
 		self.deviceDict = {}
+		self.deviceSettings = {}
 		self.clientName = ''
 		global server
 		server = self
@@ -49,6 +48,8 @@ class PATServer(object):
 		'''Allows server to pickup an incoming connection from the PAT Client.'''
 		while True:
 			print "---------- Waiting for PAT Client ----------"
+			if self.saveControllerPath:
+				print "In multi-trial mode. Experiment file is: ", self.expPath
 			(sessionSocket, sessionAddress) = self.serverSocket.accept()
 			self.inUse = True
 			self.sessionSocket = sessionSocket
@@ -66,8 +67,9 @@ class PATServer(object):
 					msg = sessionSocket.recv(int(size))
 					self.interpretMessage(msg)
 				else:
-					self.handClientClosing()
+					self.handleClientClosing()
 			except error, e:	# error imported from socket
+				print "Connection was reset."
 				if e.errno == errno.ECONNRESET:
 					self.handleClientClosing()
 				else:
@@ -111,41 +113,41 @@ class PATServer(object):
 		elif cmdChar == 'c':
 			self.handleClientClosing()
 		elif cmdChar == 'e':
-			self.handleFitnessEval()			
+			self.handleFitnessEval()	
+		elif cmdChar == 'd':
+			self.handleDictionarySave(msg)			
 		else:
 			print "Invalid Command Char: " + cmdChar
 	
 	def handleInitialization(self, msg):
 		settingsDict = pickle.loads(msg)
-		self.saveController = SaveController(dataPath, self.clientName)
-		settingsDict.save(self.saveController.expPath)
+		if self.saveControllerPath:
+			SCFile = open(self.saveControllerPath, 'rb')
+			self.saveController = pickle.load(SCFile)
+			SCFile.close()
+		else
+			self.saveController = SaveController(dataPath, self.clientName)
+			settingsDict.save(self.saveController.expPath)
 		self.deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in self.deviceSettings.items():
-			constructor = globals()[deviceData[0]]
-			self.deviceDict[key] = constructor(deviceData[1])
+			dPath = path.join([self.expPath, key + '.pkl'])
+			if deviceData[1]['persistent'] and path.exists(dPath):
+				dFile = open(dPath, 'rb')
+				dev = pickle.load(dFile)
+				dFile.close()
+			else:
+				constructor = globals()[deviceData[0]]
+				dev = constructor(deviceData[1])
+			self.deviceDict[key] = dev
+		self.sendMessage("SUCCESS: Devices created.")
 		print "Devices Created"
 		print self.deviceDict
 	
 	def handleReset(self, msg):
 		print "Resetting Devices"
-		del(self.deviceSettings)
-		savedDevices = []
-		for (key, dev) in self.deviceDict.items():
-			if not dev.needsReset:
-				savedDevices.append((key, dev))		
-		del(self.deviceDict)
-		sleep(30.0)
-		self.deviceSettings = pickle.loads(msg)
-		self.deviceDict = {}
-		for (key, dev) in savedDevices:
-			self.deviceDict[key] = dev
-		for (key, deviceData) in self.deviceSettings.items():
-			if deviceData[1]['needsReset']:
-				constructor = globals()[deviceData[0]]
-				self.deviceDict[key] = constructor(deviceData[1])
-		self.sendMessage("SUCCESS: All devices reset.")
-		print self.deviceDict
-		print "Devices Reset"
+		self.sendMessage("SUCCESS: Reset command recieved.")
+		self.handleClientClosing(multiTrial = True)
+		self.handleInitialization(self, msg)
 		
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
@@ -154,6 +156,17 @@ class PATServer(object):
 		functionArgs = cmdDict['arguments']
 		fn = getattr(self, functionName)
 		fn(*functionArgs)
+	
+	def handleDictionarySave(msg):
+		dictionary = pickle.loads(msg)
+		fPath1 = path.join([self.saveController.trialPath, 'customDat.txt'])
+		fPath2 = path.join([self.saveController.trialPath, 'customDat.pkl'])
+		file1 = open(fPath1, 'wb')
+		file2 = open(fPath2, 'wb')
+		file1.write(str(dictionary))
+		file2.write(msg)
+		file1.close()
+		file2.close()
 	
 	def handleName(self, msg):
 		print "Client for %s started." % msg
@@ -174,15 +187,20 @@ class PATServer(object):
 			fn(*functionArgs)
 		print "%s function in %s executed." % (functionName, deviceName)
 	
-	def handleClientClosing(self):
+	def handleClientClosing(self, multiTrial = False):
 		self.inUse = False
-		self.sessionSocket = None
-		self.sessionAddress = None
 		del(self.deviceDict)
+		del(self.deviceSettings)
 		self.deviceDict = {}
+		self.deviceSettings = {}
 		self.saveController = None
-		self.clientName = ''
-		print "Client Closed"
+		if not multiTrial:
+			self.sessionSocket = None
+			self.sessionAddress = None
+			self.clientName = ''
+			self.saveControllerPath = ''
+			self.expPath = ''
+			print "Client Closed"
 	
 	def handleFitnessEval(self):
 		optimizer = self.deviceDict['Optimizer']
@@ -227,6 +245,12 @@ class PATServer(object):
 		for dev in self.deviceDict.values():
 			dev.save(path)	
 		print "Trial data saved."
+		self.expPath = self.saveController.expPath
+		SCPath = path.join([self.expPath, 'SaveController.pkl'])
+		self.saveControllerPath = SCPath
+		SCFile = open(SCPath, 'wb')
+		pickle.dump(self.saveController)
+		SCFile.close()
 		self.sendMessage("SUCCESS: Trial data saved.")
 
 	def processExpData(self):
@@ -236,6 +260,14 @@ class PATServer(object):
 			if dev.processData:
 				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
+
+def signal_handler(signal, frame):
+	'''Handler designed to close server when Python instance is interrupted.'''
+	print ''
+	if server:
+		server.close()
+		print "Server Closed"
+	sys.exit(0)
 			
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)

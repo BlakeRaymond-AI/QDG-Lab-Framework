@@ -46,7 +46,7 @@ class PATController(Recipe):
 	def createDevices(self):
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(self.settingsDict, 'i')
-				
+						
 	def buildDatabaseDevices(self, _D):
 		'''
 		Constructs methods for controlling AO, DO and DDS systems defined in
@@ -66,7 +66,7 @@ class PATController(Recipe):
 			if not addr in self.__devices:
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
-	
+		
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
 		def DO_method(v):
@@ -104,10 +104,14 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("saveTrial", args)
 		self.PATClient.awaitConfirmation()
 		
+	def saveDictionary(self, dictionary):
+		self.PATClient.sendCommand(dictionary, 'd')
+		
 	def reset(self):
 		print "Resetting devices."
-		self.numPixeLinkTriggers = 0
-		self.PATClient.sendCommand(self.deviceSettings, 'r')
+		self.numPixeLinkTriggers = 0		
+		self.PATClient.sendCommand(self.settingsDict, 'r')
+		self.PATClient.awaitConfirmation()
 		self.PATClient.awaitConfirmation()
 	
 	def processData(self):
