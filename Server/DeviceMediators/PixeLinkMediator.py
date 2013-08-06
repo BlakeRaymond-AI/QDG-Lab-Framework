@@ -12,6 +12,7 @@ class PixeLinkMediator(object):
 		self.controller = Pixelink_Controller()
 		if self.useROICenter:
 			self.setROICenter()
+			
 		self.checkROI()
 		ROI = self.ROI()
 		self.controller.set_roi(*ROI)
@@ -32,9 +33,10 @@ class PixeLinkMediator(object):
 		
 	def stop(self):
 		print "Waiting for PixeLink Camera to finish."
-		self.controller.stop() #T.join(10.0)
-		print "PixeLink Done"
-		return status
+		self.controller.T.join()	
+		status = self.controller.failed
+		print "PixeLink Done", status
+		return False
 		
 	def save(self, path):
 		self.framesHandler.save_frames(folder = path, data = False)
@@ -81,3 +83,27 @@ class PixeLinkMediator(object):
 		if height > 1024 - top:
 			rop = 1024 - top
 		self.ROI_top = int(top/8)*8
+		
+if __name__ == '__main__':
+	PixeLinkSettings = dict()
+	PixeLinkSettings['gain'] = 0 	# Image Gain. Possible values: 0, 1.5, 3.1, 4.6	
+	PixeLinkSettings['expTime_ms'] = 10.0 #Image Exposure Time
+	PixeLinkSettings['ROI_width'] = 1280	
+	PixeLinkSettings['ROI_height'] = 1024
+	PixeLinkSettings['ROI_left'] = 0
+	PixeLinkSettings['ROI_top'] = 0
+	PixeLinkSettings['useROICenter'] = False	# Set region of interest based on 
+									# center location and width and height settings.
+	PixeLinkSettings['ROI_center'] = (640, 512) # Location of center. (x, y)
+	PixeLinkSettings['takeData'] = False
+	PixeLinkSettings['processData'] = False
+	PixeLinkSettings['persistent'] = False
+
+	PixeLinkSettings['dataFolderName'] = "PixeLinkData"
+	PLM = PixeLinkMediator(PixeLinkSettings)
+	PLM.setNumberOfImages(3)
+	PLM.start()
+	PLM.stop()
+	PLM.save('c:\\PAT')
+	
+		

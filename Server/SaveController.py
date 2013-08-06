@@ -2,7 +2,6 @@
 Controller which generates path to which data will be saved. 
 expPath: 	<basePath>/<Date>/<Time><_TimeSuffix>/
 dataPath:	<basePath>/<Date>/<Time><_TimeSuffix>/Data
-
 '''
 
 from os import mkdir, path
