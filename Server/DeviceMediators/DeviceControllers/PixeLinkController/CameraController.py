@@ -22,6 +22,7 @@ class CameraController(object):
         self.__driver = PixeLINK()
         self.__running = False
         self.__must_stop = False
+        self.failed = False
         self.__first_frame_captured = Event()
         self.__acquisition_stopped = Event()
     
@@ -59,7 +60,11 @@ class CameraController(object):
         interrupted = False
         self.__running = True
         for i in range(nr_frames):
-            frame = D.get_frame(copy=True,allow_interrupt=True)
+            try:
+           	    frame = D.get_frame(copy=True,allow_interrupt=True)
+           	except PixeLINKException as e:
+           		self.failed = True
+				raise e           	
             if self.__must_stop: 
                 interrupted = True
                 break            

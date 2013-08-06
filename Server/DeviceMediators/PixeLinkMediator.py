@@ -34,7 +34,8 @@ class PixeLinkMediator(object):
 	def stop(self):
 		print "Waiting for PixeLink Camera to finish."
 		self.controller.T.join()	
-		print "PixeLink Done"
+		status = self.controller.failed
+		print "PixeLink Done", status
 		return False
 		
 	def save(self, path):

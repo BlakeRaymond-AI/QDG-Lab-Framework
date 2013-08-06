@@ -121,7 +121,7 @@ class PixeLINK(Generic):
         self.__roi = map(int,self.get_feature('roi').parms)
         self.__update_frame_buffer()
         self.stop()
-#        self.__state= STOPPED
+        # self.__state= STOPPED
 
     def __del__(self):
         self.uninitialize()
