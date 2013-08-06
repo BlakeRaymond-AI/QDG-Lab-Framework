@@ -18,3 +18,4 @@ PMDSettings['processData'] = False
 PMDSettings['needsReset'] = True
 PMDSettings['resetTime'] = 2
 PMDSettings['dataFolderName'] = "PMDData"
+PMDSettings['persistent'] = False

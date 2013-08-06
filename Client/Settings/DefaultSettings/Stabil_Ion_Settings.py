@@ -8,3 +8,4 @@ Stabil_Ion_Settings['processData'] = False
 Stabil_Ion_Settings['needsReset'] = True
 Stabil_Ion_Settings['resetTime'] = 2
 Stabil_Ion_Settings['dataFolderName'] = "Stabil_Ion_Data"
+Stabil_Ion_Settings['persistent'] = False

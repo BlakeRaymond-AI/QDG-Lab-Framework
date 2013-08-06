@@ -16,3 +16,4 @@ MKS_SRG3_Settings['processData'] = False
 MKS_SRG3_Settings['needsReset'] = True
 MKS_SRG3_Settings['resetTime'] = 2
 MKS_SRG3_Settings['dataFolderName'] = "MKS_SRG3_Data"
+MKS_SRG3_Settings['persistent'] = False

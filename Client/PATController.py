@@ -46,6 +46,7 @@ class PATController(Recipe):
 	def createDevices(self):
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(self.settingsDict, 'i')
+			self.PATClient.awaitConfirmation()
 				
 	def buildDatabaseDevices(self, _D):
 		'''
@@ -107,8 +108,9 @@ class PATController(Recipe):
 	def reset(self):
 		print "Resetting devices."
 		self.numPixeLinkTriggers = 0
-		self.PATClient.sendCommand(self.deviceSettings, 'r')
+		self.PATClient.sendCommand(self.settingsDict, 'r')
 		self.PATClient.awaitConfirmation()
+		self.createDevices()
 	
 	def processData(self):
 		print "Processing data."
@@ -398,7 +400,7 @@ class PATController(Recipe):
 	def triggerPixeLink(self):
 		self.numPixeLinkTriggers += 1
 		self.pixelink_trigger(1)
-		self.wait_us(5)
+		self.wait_us(10)
 		self.pixelink_trigger(0)
 		
 	def setPixeLinkImageCount(self):
@@ -407,8 +409,17 @@ class PATController(Recipe):
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
-		self.awaitConfirmation()
+		sleep(10.0)
 
+	def flushPixeLink(self):
+		self.start()
+		for _ in range(self.numPixeLinkTriggers):
+			self.pixelink_trigger(1)
+			self.wait_us(10)
+			self.pixelink_trigger(0)
+			self.wait_ms(100)
+		self.end()	
+		
 # #------------------------------------------------------------------------
 # # Optimizer Controls
 

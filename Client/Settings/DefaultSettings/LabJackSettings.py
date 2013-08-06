@@ -10,4 +10,5 @@ LabJackSettings['takeData'] = False
 LabJackSettings['processData'] = False
 LabJackSettings['needsReset'] = True
 LabJackSettings['resetTime'] = 2
+LabJackSettings['persistent'] = False
 LabJackSettings['dataFolderName'] = "LabJackData"

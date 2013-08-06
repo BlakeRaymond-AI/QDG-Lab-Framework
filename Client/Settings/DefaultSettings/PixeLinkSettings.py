@@ -14,3 +14,4 @@ PixeLinkSettings['processData'] = False
 PixeLinkSettings['needsReset'] = True
 PixeLinkSettings['resetTime'] = 15.0
 PixeLinkSettings['dataFolderName'] = "PixeLinkData"
+PixeLinkSettings['persistent'] = False
