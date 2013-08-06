@@ -79,7 +79,7 @@ class PATController(Recipe):
 		print strftime("Execution began at %H:%M on %x", localtime())
 		super(PATController, self).start()
 		self.PMD_trigger(0)
-		self.pixelink_trigger(0)
+		self.pixelink_trigger.set_scaled_value(0.0)
 		
 	def end(self):
 		super(PATController, self).end()	   
@@ -91,7 +91,7 @@ class PATController(Recipe):
 
 	def stopDevices(self):
 		print "Stopping data collection devices."
-		self.PATClient.sendMediatorCommand("stopDevices")
+		#self.PATClient.sendMediatorCommand("stopDevices")
 		self.PATClient.awaitConfirmation()
 
 	def save(self):
@@ -402,24 +402,23 @@ class PATController(Recipe):
 
 	def triggerPixeLink(self):
 		self.numPixeLinkTriggers += 1
-		self.pixelink_trigger(1)
-		self.wait_us(10)
-		self.pixelink_trigger(0)
+		self.pixelink_trigger.set_scaled_value(8.0)
+		self.wait_us(5)
+		self.pixelink_trigger.set_scaled_value(0.0)
 		
 	def setPixeLinkImageCount(self):
-		self.pixelink_trigger(0)
+		self.pixelink_trigger.set_scaled_value(0.0)
 		devName = 'PixeLink'
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
-		sleep(10.0)
 
 	def flushPixeLink(self):
 		self.start()
 		for _ in range(self.numPixeLinkTriggers):
-			self.pixelink_trigger(1)
+			self.pixelink_trigger.set_scaled_value(8.0)
 			self.wait_us(10)
-			self.pixelink_trigger(0)
+			self.pixelink_trigger.set_scaled_value(0.0)
 			self.wait_ms(100)
 		self.end()	
 		
