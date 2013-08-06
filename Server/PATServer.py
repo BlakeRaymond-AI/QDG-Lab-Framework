@@ -19,7 +19,7 @@ HOST = gethostbyname(gethostname())
 PORT = 15964
 ADDR = (HOST, PORT)
 server = None
-dataPath = 'C:\PAT\PATData'
+dataPath = 'C:\\PAT\\PATData'
 
 class PATServer(object):
 	def __init__(self, expPath = ''):
@@ -28,7 +28,7 @@ class PATServer(object):
 		self.serverSocket.listen(1)
 		if expPath:
 			self.expPath = expPath
-			self.saveControllerPath = path.join([expPath, 'SaveController.pkl']) 
+			self.saveControllerPath = path.join(expPath, 'SaveController.pkl') 
 		else:
 			self.expPath = ''
 			self.saveControllerPath = ''
@@ -125,12 +125,13 @@ class PATServer(object):
 			SCFile = open(self.saveControllerPath, 'rb')
 			self.saveController = pickle.load(SCFile)
 			SCFile.close()
-		else
+		else:
 			self.saveController = SaveController(dataPath, self.clientName)
 			settingsDict.save(self.saveController.expPath)
 		self.deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in self.deviceSettings.items():
-			dPath = path.join([self.expPath, key + '.pkl'])
+			dPath = path.join(self.expPath, key + '.pkl')
+			print dPath
 			if deviceData[1]['persistent'] and path.exists(dPath):
 				dFile = open(dPath, 'rb')
 				dev = pickle.load(dFile)
@@ -147,7 +148,6 @@ class PATServer(object):
 		print "Resetting Devices"
 		self.sendMessage("SUCCESS: Reset command recieved.")
 		self.handleClientClosing(multiTrial = True)
-		self.handleInitialization(self, msg)
 		
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
@@ -188,13 +188,13 @@ class PATServer(object):
 		print "%s function in %s executed." % (functionName, deviceName)
 	
 	def handleClientClosing(self, multiTrial = False):
-		self.inUse = False
 		del(self.deviceDict)
 		del(self.deviceSettings)
 		self.deviceDict = {}
 		self.deviceSettings = {}
 		self.saveController = None
 		if not multiTrial:
+			self.inUse = False
 			self.sessionSocket = None
 			self.sessionAddress = None
 			self.clientName = ''
@@ -240,16 +240,16 @@ class PATServer(object):
 
 	def saveTrial(self, trialName):
 		print "Saving trial data."
-		path = self.saveController.generateTrialPath(trialName)
-		self.deviceSettings.save(path)
+		trialPath = self.saveController.generateTrialPath(trialName)
+		self.deviceSettings.save(trialPath)
 		for dev in self.deviceDict.values():
-			dev.save(path)	
+			dev.save(trialPath)	
 		print "Trial data saved."
 		self.expPath = self.saveController.expPath
-		SCPath = path.join([self.expPath, 'SaveController.pkl'])
+		SCPath = path.join(self.expPath, "SaveController.pkl")
 		self.saveControllerPath = SCPath
 		SCFile = open(SCPath, 'wb')
-		pickle.dump(self.saveController)
+		pickle.dump(self.saveController, SCFile)
 		SCFile.close()
 		self.sendMessage("SUCCESS: Trial data saved.")
 
