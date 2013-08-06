@@ -131,7 +131,6 @@ class PATServer(object):
 		self.deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in self.deviceSettings.items():
 			dPath = path.join(self.expPath, key + '.pkl')
-			print dPath
 			if deviceData[1]['persistent'] and path.exists(dPath):
 				dFile = open(dPath, 'rb')
 				dev = pickle.load(dFile)
@@ -180,12 +179,14 @@ class PATServer(object):
 		waitForResponse = cmdDict['waitForResponse']
 		device = self.deviceDict[deviceName]
 		fn = getattr(device, functionName)
+		fnMsg = "%s function in %s executed." % (functionName, deviceName)
 		if waitForResponse:
 			msg = fn(*functionArgs)
 			self.sendMessage(msg)
 		else:
 			fn(*functionArgs)
-		print "%s function in %s executed." % (functionName, deviceName)
+			self.sendMessage("SUCCESS: " + fnMsg)
+		print fnMsg 
 	
 	def handleClientClosing(self, multiTrial = False):
 		del(self.deviceDict)
@@ -222,6 +223,7 @@ class PATServer(object):
 			device.start()
 		print "All devices started."
 		self.sendMessage("SUCCESS: All devices started.")
+		self.stopDevices()
 			
 	def stopDevices(self):
 		print "Stopping devices."
