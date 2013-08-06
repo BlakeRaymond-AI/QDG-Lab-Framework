@@ -67,7 +67,7 @@ class PATController(Recipe):
 			if not addr in self.__devices:
 				self.__devices[addr] = d = DigitalOutput(address=addr)
 			setattr(self,name,self.__build_DO_method(name,addr,port))
-	
+		
 	def __build_DO_method(self,name,addr,port):
 		'''Constructs Digital Output functions dynamically'''
 		def DO_method(v):
@@ -105,6 +105,9 @@ class PATController(Recipe):
 		self.PATClient.sendMediatorCommand("saveTrial", args)
 		self.PATClient.awaitConfirmation()
 		
+	def saveDictionary(self, dictionary):
+		self.PATClient.sendCommand(dictionary, 'd')
+		
 	def reset(self):
 		print "Resetting devices."
 		self.numPixeLinkTriggers = 0
@@ -133,7 +136,7 @@ class PATController(Recipe):
 		self.set_2D_I_3(0)
 		self.set_2D_I_4(0)
 
-## ========================================================================
+# # ========================================================================
 # PAT Coil Controls
 	def set_2D_I_1(self, A = None): # Set the coil current in amperes
 		if A is None: A = self.PATSettings['2D_I_1']
@@ -190,7 +193,7 @@ class PATController(Recipe):
 		self.set_2D_I_4(I4)
 		
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# # ========================================================================
 # PAT Laser Controls
 
 	def set_2DRb_pump_amplitude(self, amplitude = None):
