@@ -93,7 +93,9 @@ class PATController(Recipe):
 		print "Stopping data collection devices."
 		#self.PATClient.sendMediatorCommand("stopDevices")
 		self.PATClient.awaitConfirmation()
-
+		msg = self.PATClient.recieveMessage()
+		return bool(int(msg))
+		
 	def save(self):
 		print "Saving data."
 		self.PATClient.sendMediatorCommand("save")
@@ -123,9 +125,7 @@ class PATController(Recipe):
 	def checkForFailure(self):
 		'''Returns a boolean indicating whether data collection failed.'''
 		self.PATClient.sendCommand({}, 'f')
-		msg = self.PATClient.recieveMessage()
-		return bool(int(msg))
-		
+
 	def closeClient(self):
 		self.PATClient.close()
 		print "PATClient closed."
@@ -419,7 +419,7 @@ class PATController(Recipe):
 			self.pixelink_trigger.set_scaled_value(8.0)
 			self.wait_us(10)
 			self.pixelink_trigger.set_scaled_value(0.0)
-			self.wait_ms(100)
+			self.wait_s(1)
 		self.end()	
 		
 # #------------------------------------------------------------------------
