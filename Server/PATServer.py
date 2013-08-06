@@ -32,7 +32,6 @@ class PATServer(object):
 		else:
 			self.expPath = ''
 			self.saveControllerPath = ''
-		self.dataCollectionFailed = False
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
@@ -106,8 +105,6 @@ class PATServer(object):
 			self.handleName(msg)
 		elif cmdChar == 'i':
 			self.handleInitialization(msg)
-		elif cmdChar == 'f':
-			self.handleFailureCheck()
 		elif cmdChar == 's':
 			self.handleSpecificDeviceCommand(msg)
 		elif cmdChar == 'c':
@@ -208,15 +205,7 @@ class PATServer(object):
 		optimizer.evaluateParticle(self.saveController.expPath, self.saveController.trialPath)
 		print "Evaluating fitness."
 	
-	def handleFailureCheck(self):
-		status = self.dataCollectionFailed
-		if status:
-			msg = '1'
-		else:
-			msg = '0'
-		self.dataCollectionFailed = False
-		self.endMessage(msg)	
-	
+
 	def startDevices(self):
 		print "Starting data collection devices."
 		for device in self.deviceDict.values():
@@ -227,12 +216,21 @@ class PATServer(object):
 			
 	def stopDevices(self):
 		print "Stopping devices."
+		dataCollectionFailed = False
 		for device in self.deviceDict.values():
 			if device.stop():
-				self.dataCollectionFailed = True
+				dataCollectionFailed = True
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
-
+		self.sendDataCollectionStatus(dataCollectionFailed)
+	
+	def sendDataCollectionStatus(self, dataCollectionFailed):	
+		if dataCollectionFailed:
+			msg = '1'
+		else:
+			msg = '0'
+		self.sendMessage(msg)	
+		
 	def save(self):
 		print "Saving data."
 		path = self.saveController.dataPath
@@ -262,7 +260,7 @@ class PATServer(object):
 			if dev.processData:
 				dev.processExpData(path)
 		self.sendMessage("SUCCESS: Device data processed.")
-
+		
 def signal_handler(signal, frame):
 	'''Handler designed to close server when Python instance is interrupted.'''
 	print ''

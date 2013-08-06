@@ -1,6 +1,6 @@
 from ctypes import *
 from threading import Thread, Event
-from PixeLINK import PixeLINK, FREE_RUNNING, SOFTWARE,HARDWARE
+from PixeLINK import PixeLINK, FREE_RUNNING, SOFTWARE,HARDWARE, PixeLINKException
 
 """
 How to use the camera controller:
@@ -61,10 +61,11 @@ class CameraController(object):
         self.__running = True
         for i in range(nr_frames):
             try:
-           	    frame = D.get_frame(copy=True,allow_interrupt=True)
-           	except PixeLINKException as e:
-           		self.failed = True
-				raise e           	
+                frame = D.get_frame(copy=True,allow_interrupt=True)
+            except PixeLINKException as e:
+                print "!!!!! CATCH ME IF YOU CAN"
+                self.failed = True
+                raise e   
             if self.__must_stop: 
                 interrupted = True
                 break            
