@@ -99,7 +99,6 @@ __PAT_devices = {
         'MOT3D_pump_shutter':(253,3),
         'MOT3D_repump_shutter':(253,4),
         'push_shutter':(253,5),
-		'pixelink_trigger' : (253, 15),
 		'PMD_trigger' : (253, 14),
     },
     
@@ -110,6 +109,7 @@ __PAT_devices = {
         'MOT_2Dcoil_4' : 203,
         'MOT_3Dcoils' : 196,
 		'Comp_Zcoils': 207,
+		'pixelink_trigger' : 206,
     },
 }
 

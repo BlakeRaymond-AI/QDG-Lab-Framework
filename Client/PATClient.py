@@ -60,6 +60,8 @@ class PATClient(object):
 				return value
 			else:
 				return msg
+		else:
+			self.awaitConfirmation()
 		
 	def close(self):
 		self.sendCommand({}, 'c')

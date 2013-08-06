@@ -14,3 +14,4 @@ PixeLinkSettings['processData'] = False
 PixeLinkSettings['persistent'] = False
 
 PixeLinkSettings['dataFolderName'] = "PixeLinkData"
+PixeLinkSettings['persistent'] = False

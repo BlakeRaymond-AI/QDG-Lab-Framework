@@ -46,7 +46,8 @@ class PATController(Recipe):
 	def createDevices(self):
 			self.PATClient.sendMessage('n' + self.controllerName)
 			self.PATClient.sendCommand(self.settingsDict, 'i')
-						
+			self.PATClient.awaitConfirmation()
+				
 	def buildDatabaseDevices(self, _D):
 		'''
 		Constructs methods for controlling AO, DO and DDS systems defined in
@@ -78,7 +79,7 @@ class PATController(Recipe):
 		print strftime("Execution began at %H:%M on %x", localtime())
 		super(PATController, self).start()
 		self.PMD_trigger(0)
-		self.pixelink_trigger(0)
+		self.pixelink_trigger.set_scaled_value(0.0)
 		
 	def end(self):
 		super(PATController, self).end()	   
@@ -90,7 +91,7 @@ class PATController(Recipe):
 
 	def stopDevices(self):
 		print "Stopping data collection devices."
-		self.PATClient.sendMediatorCommand("stopDevices")
+		#self.PATClient.sendMediatorCommand("stopDevices")
 		self.PATClient.awaitConfirmation()
 
 	def save(self):
@@ -109,10 +110,10 @@ class PATController(Recipe):
 		
 	def reset(self):
 		print "Resetting devices."
-		self.numPixeLinkTriggers = 0		
+		self.numPixeLinkTriggers = 0
 		self.PATClient.sendCommand(self.settingsDict, 'r')
 		self.PATClient.awaitConfirmation()
-		self.PATClient.awaitConfirmation()
+		self.createDevices()
 	
 	def processData(self):
 		print "Processing data."
@@ -135,7 +136,7 @@ class PATController(Recipe):
 		self.set_2D_I_3(0)
 		self.set_2D_I_4(0)
 
-## ========================================================================
+# # ========================================================================
 # PAT Coil Controls
 	def set_2D_I_1(self, A = None): # Set the coil current in amperes
 		if A is None: A = self.PATSettings['2D_I_1']
@@ -192,7 +193,7 @@ class PATController(Recipe):
 		self.set_2D_I_4(I4)
 		
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# # ========================================================================
 # PAT Laser Controls
 
 	def set_2DRb_pump_amplitude(self, amplitude = None):
@@ -401,18 +402,26 @@ class PATController(Recipe):
 
 	def triggerPixeLink(self):
 		self.numPixeLinkTriggers += 1
-		self.pixelink_trigger(1)
+		self.pixelink_trigger.set_scaled_value(8.0)
 		self.wait_us(5)
-		self.pixelink_trigger(0)
+		self.pixelink_trigger.set_scaled_value(0.0)
 		
 	def setPixeLinkImageCount(self):
-		self.pixelink_trigger(0)
+		self.pixelink_trigger.set_scaled_value(0.0)
 		devName = 'PixeLink'
 		fName = 'setNumberOfImages'
 		args = (self.numPixeLinkTriggers,)
 		self.PATClient.sendSpecificDeviceCommand(devName, fName, args)
-		self.awaitConfirmation()
 
+	def flushPixeLink(self):
+		self.start()
+		for _ in range(self.numPixeLinkTriggers):
+			self.pixelink_trigger.set_scaled_value(8.0)
+			self.wait_us(10)
+			self.pixelink_trigger.set_scaled_value(0.0)
+			self.wait_ms(100)
+		self.end()	
+		
 # #------------------------------------------------------------------------
 # # Optimizer Controls
 

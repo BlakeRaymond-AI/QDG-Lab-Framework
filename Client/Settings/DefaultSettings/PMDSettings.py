@@ -17,3 +17,4 @@ PMDSettings['takeData'] = False
 PMDSettings['processData'] = False
 PMDSettings['persistent'] = False
 PMDSettings['dataFolderName'] = "PMDData"
+PMDSettings['persistent'] = False
