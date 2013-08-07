@@ -7,6 +7,7 @@ from string import zfill
 from SaveController import SaveController
 from time import sleep
 from os import path
+from threading import Thread
 
 from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
@@ -218,10 +219,11 @@ class PATServer(object):
 	def stopDevices(self):
 		print "Stopping devices."
 		dataCollectionFailed = False
-		for device in self.deviceDict.values():
-			if device.stop():
-				dataCollectionFailed = True
-				print "Data collection by", device, "failed."
+		clientCalledStop = False
+		stopThread = StopThread(self.deviceDict.values(), clientCalledStop, dataCollectionFailed)
+		sleep(5.0)
+		stopThread.start()
+		stopThread.join()
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
 		self.sendDataCollectionStatus(dataCollectionFailed)
@@ -272,7 +274,23 @@ def signal_handler(signal, frame):
 		server.close()
 		print "Server Closed"
 	sys.exit(0)
-			
+
+class StopThread(Thread):
+	
+	def __init__(self, deviceList, clientCalledStop, dataCollectionFailed):
+		Thread.__init__(self)
+		self.deviceList = deviceList
+		self.clientCalledStop = clientCalledStop
+		self.dataCollectionFailed = dataCollectionFailed
+	
+	def run(self):
+		for device in self.deviceList:
+			device.clientCalledStop = self.clientCalledStop
+			if device.stop():
+				dataCollectionFailed = True
+				print "Data collection by", device, "failed."
+			del device.clientCalledStop
+	
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	server = PATServer()
