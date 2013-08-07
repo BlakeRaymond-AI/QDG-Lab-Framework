@@ -124,19 +124,19 @@ class PATServer(object):
 			SCFile.close()
 		else:
 			self.saveController = SaveController(dataPath, self.clientName)
-			settingsDict.save(self.saveController.expPath)
+			self.expPath = self.saveController.expPath
+			settingsDict.save(self.expPath)
 		self.deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in self.deviceSettings.items():
-			dPath = path.join(self.expPath, key + '.pkl')
-			print dPath
-			if deviceData[1]['persistent'] and path.exists(dPath):
-				print "Unpickling:", key
-				dFile = open(dPath, 'rb')
+			devPicklePath = path.join(self.expPath, key + '.pkl')
+			if deviceData[1]['persistent'] and path.exists(devPicklePath):
+				dFile = open(devPicklePath, 'rb')
 				dev = pickle.load(dFile)
 				dFile.close()
 			else:
 				constructor = globals()[deviceData[0]]
 				dev = constructor(deviceData[1])
+				dev.devPicklePath = devPicklePath
 			self.deviceDict[key] = dev
 		self.sendMessage("SUCCESS: Devices created.")
 		print "Devices Created"
@@ -244,10 +244,12 @@ class PATServer(object):
 		print "Saving trial data."
 		trialPath = self.saveController.generateTrialPath(trialName)
 		self.deviceSettings.save(trialPath)
-		for dev in self.deviceDict.values():
-			dev.save(trialPath)	
-		print "Trial data saved."
 		self.expPath = self.saveController.expPath
+		for dev in self.deviceDict.values():
+			dev.save(trialPath)
+			if dev.persistent:
+				dev.saveState(self.expPath)
+		print "Trial data saved."
 		SCPath = path.join(self.expPath, "SaveController.pkl")
 		self.saveControllerPath = SCPath
 		SCFile = open(SCPath, 'wb')

@@ -37,18 +37,24 @@ class OptimizerMediator(DeviceMediatorInterface):
 			part = deapPart[:]
 		else:
 			part = deapPart
+		self.part = part
 		partString = pickle.dumps(part)
 		return partString
 		
-	def evaluateParticle(self, expPath, trialPath, extraArgs = {}):
-		args = {'expPath' : expPath, 'trialPath' : trialPath}
-		for (key, value) in extraArgs.items():
-			args[key] = value
-		self.optimizer.evaluateParticle(args)
+	def evaluateParticle(self, expPath, trialPath):
+		self.optimizer.evaluateParticle(expPath, trialPath)
 
 	def getBestParticle(self):
 		return self.optimizer.best
+		
+	def saveState(self, expPath):
+		fPath = path.join(expPath, "OptimizeState.pkl")
+		self.optimizer.saveState(fPath)
 
+	def restoreState(self, expPath):
+		fPath = path.join(expPath, "OptimizeState.pkl")
+		self.optimizer.restoreState(fPath) 
+		
 if __name__ == '__main__':
 	numOfParticles = 30
 	numOfGenerations = 1000
@@ -68,13 +74,16 @@ if __name__ == '__main__':
 		'speedLimiter' : speedLimiter,
 		'minimization' : minimization
 	}	
-	print settingsDict['minimization']
 	optMediator = OptimizerMediator(settingsDict)
 	part = pickle.loads(optMediator.getParticle())
 	while part:
-		optMediator.evaluateParticle('', {'part' : part})
+		print part
+		optMediator.evaluateParticle('', '')
 		part = pickle.loads(optMediator.getParticle())
 	best = optMediator.getBestParticle()
+	file = open("OptimizerPickle.pkl", 'wb')
+	pickle.dump(optMediator, file, -1)
+	file.close()
 	print "Best Particle"
 	print "Values: ", best
 	print "Fitness: ", best.fitness

@@ -13,6 +13,7 @@ from deap import creator
 from deap import tools
 from os import path
 import csv
+import pickle
 
 class ParticleSwarmOptimizer(object):
 
@@ -29,7 +30,6 @@ class ParticleSwarmOptimizer(object):
 		self.numOfParticles = numOfParticles
 		self.numOfGenerations = numOfGenerations
 		self.fitnessEvalScript = fitnessEvalScript
-		self.logFile = None
 		if minimization:
 			weights = (-1.0,)
 		else:
@@ -87,14 +87,7 @@ class ParticleSwarmOptimizer(object):
 		toolbox.register("population", tools.initRepeat, list, toolbox.particle)
 		toolbox.register("update", updateParticle, phiG = phiG, phiP = phiP)
 		toolbox.register("evaluate", evaluateParticle)
-
-		stats = tools.Statistics(lambda ind: ind.fitness.values)
-		stats.register("Min", min)
-		stats.register("Max", max)
-		stats.register("Avg", tools.mean)
-		stats.register("Std", tools.std)
-		self.stats = stats
-        	
+     	
 		self.toolbox = toolbox
 		self.particles = toolbox.population(n = numOfParticles)
 		self.best = None
@@ -104,19 +97,17 @@ class ParticleSwarmOptimizer(object):
 	def getParticle(self):
 		currentPart = self.currentPart
 		currentGen = self.currentGen
-		
 		if currentGen < self.numOfGenerations:
 			part = self.particles[currentPart]
+			print "OPTIMIZER: Generation %d, Particle %d" % (currentGen, currentPart)
 			return part
 		else:
-			self.logFile.close()
 			return False
 		
-	def evaluateParticle(self, args = {}):
-		if not self.logFile:
-			self.setLog(args['expPath'])
+	def evaluateParticle(self, expPath, trialPath):
 		part = self.particles[self.currentPart]
 		best = self.best
+		args = {'expPath' : expPath, 'trialPath' : trialPath, 'part' : part}
 		part.fitness.values = self.toolbox.evaluate(args)
 		if not part.best or part.best.fitness < part.fitness:
 			part.best = creator.Particle(part)
@@ -124,7 +115,6 @@ class ParticleSwarmOptimizer(object):
 		if not best or best.fitness < part.fitness:
 			self.best = creator.Particle(part)
 			self.best.fitness.values = part.fitness.values
-		trialPath = args['trialPath']
 		fPath = path.join(trialPath, 'particle.csv')
 		file = open(fPath, 'wb')
 		fileWriter = csv.writer(file, delimiter=',')
@@ -136,16 +126,7 @@ class ParticleSwarmOptimizer(object):
 		fileWriter.writerow(['Global Best', self.best, self.best.fitness])
 		file.close()
 		self.incrementParticles()
-		
-	def setLog(self, expPath):
-		logPath = path.join(expPath, 'OptimizationLog.txt')
-		self.logFile = open(logPath, 'wb')
-		column_names = ["gen", "evals"]
-		column_names.extend(self.stats.functions.keys())
-		self.logger = tools.EvolutionLogger(column_names)
-		self.logger.output = self.logFile
-		self.logger.logHeader()
-		
+			
 	def incrementParticles(self):
 		self.currentPart += 1
 		if self.currentPart >= self.numOfParticles:
@@ -156,19 +137,33 @@ class ParticleSwarmOptimizer(object):
 	def updateParticles(self):
 		for part in self.particles:
 			self.toolbox.update(part, self.best)
-		self.stats.update(self.particles)
-		self.logger.logGeneration(gen=self.currentGen, evals=len(self.particles), stats=self.stats)
+			
+	def saveState(self, fName):
+		file = open(fName, 'wb')
+		pickle.dump(self.currentGen, file)
+		pickle.dump(self.currentPart, file)
+		pickle.dump(self.best, file)
+		pickle.dump(self.particles, file)
+		file.close()
 	
+	def restoreState(self, fName):
+		file = open(fName, 'rb')
+		self.currentGen = pickle.load(file)
+		self.currentPart = pickle.load(file)
+		self.best = pickle.load(file)
+		self.particles = pickle.load(file)
+		file.close()
+
 if __name__ == '__main__':
 	paramBounds = ((-10, 10), (-10, 10))
 	fnPath = 'C:\PAT\OptimizationFunctions\h1.py'	
 	PSO = ParticleSwarmOptimizer(paramBounds, 10, 1000, fnPath, 1, 1, 1)
 	part = PSO.getParticle()
 	while part:
-		PSO.evaluateParticle({'part' : part})
+		PSO.evaluateParticle('', '')
 		part = PSO.getParticle()
 	print "BEST: ", PSO.best, PSO.best.fitness
-		
+
 	
 
 
