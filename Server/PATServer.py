@@ -128,7 +128,9 @@ class PATServer(object):
 		self.deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in self.deviceSettings.items():
 			dPath = path.join(self.expPath, key + '.pkl')
+			print dPath
 			if deviceData[1]['persistent'] and path.exists(dPath):
+				print "Unpickling:", key
 				dFile = open(dPath, 'rb')
 				dev = pickle.load(dFile)
 				dFile.close()
@@ -205,7 +207,6 @@ class PATServer(object):
 		optimizer.evaluateParticle(self.saveController.expPath, self.saveController.trialPath)
 		print "Evaluating fitness."
 	
-
 	def startDevices(self):
 		print "Starting data collection devices."
 		for device in self.deviceDict.values():
@@ -220,6 +221,7 @@ class PATServer(object):
 		for device in self.deviceDict.values():
 			if device.stop():
 				dataCollectionFailed = True
+				print "Data collection by", device, "failed."
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
 		self.sendDataCollectionStatus(dataCollectionFailed)

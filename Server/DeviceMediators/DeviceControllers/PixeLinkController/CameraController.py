@@ -63,7 +63,6 @@ class CameraController(object):
             try:
                 frame = D.get_frame(copy=True,allow_interrupt=True)
             except PixeLINKException as e:
-                print "!!!!! CATCH ME IF YOU CAN"
                 self.failed = True
                 raise e   
             if self.__must_stop: 
