@@ -58,7 +58,7 @@ class PMDController(object):
 		Notes:
 		- activeChannels and gainSettings must have the same size.
 		'''				
-						
+		print "!!!!!!!!!!!!! TRIGGER:", trigger				
  		self.boardNum = boardNum
 		vRange = Range[vRange]
 		trigType = TrigType[trigType]
@@ -155,7 +155,9 @@ class PMDController(object):
 		sampleRatePerChannel = c_long(self.totalSampleRate / self.numOfChannels)
 		options = Options['BLOCKIO'] | Options['CONVERTDATA']
 		if self.trigger:
-			option = options | Options['EXTTRIGGER']
+			print options
+			options = options | Options['EXTTRIGGER']
+			print options
 		self.tStart = time()
 		self.handleError(driver.cbAInScan(self.boardNum, 0, 0, numOfSamples, byref(sampleRatePerChannel), self.vRange[0], winBufferHandle, options))
 		self.sampleRatePerChannel = sampleRatePerChannel.value	
