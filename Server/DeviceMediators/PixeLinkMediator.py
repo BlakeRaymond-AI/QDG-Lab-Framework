@@ -8,11 +8,19 @@ class PixeLinkMediator(object):
 	def __init__(self, dictionary):
 		for (k, v) in dictionary.items():
 			setattr(self, k, v)
-		attempt = 0
+		# attempt = 0
+		# while attempt < 5:
+			# try:
 		self.controller = Pixelink_Controller()
+				# break
+			# except PixeLINKException as e:
+				# print "RUH ROH"
+				# if attempt == 4:
+					# raise e
+				# else:
+					# sleep(5.0)
 		if self.useROICenter:
 			self.setROICenter()
-			
 		self.checkROI()
 		ROI = self.ROI()
 		self.controller.set_roi(*ROI)
@@ -33,9 +41,15 @@ class PixeLinkMediator(object):
 		
 	def stop(self):
 		print "Waiting for PixeLink Camera to finish."
-		self.controller.T.join()	
-		status = self.controller.failed
-		return status
+		while not self.clientCalledStop[0]:
+			self.controller.T.join(10)
+		if self.controller.T.isAlive():
+			failureStatus = True
+			print "PixeLink requires flushing."
+		else:
+			failureStatus = self.controller.failed
+			print "PixeLink Done"
+		return failureStatus
 		
 	def save(self, path):
 		self.framesHandler.save_frames(folder = path, data = False)

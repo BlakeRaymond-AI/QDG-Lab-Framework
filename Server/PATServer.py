@@ -220,7 +220,7 @@ class PATServer(object):
 			
 	def stopDevices(self):
 		print "Waiting for devices to complete data collection."
-		dataCollectionFailed = False
+		dataCollectionFailed = [False]
 		clientCalledStop = [False]	# Lists are Mutable.
 		stopThread = StopThread(self.deviceDict.values(), clientCalledStop, dataCollectionFailed)
 		stopThread.start()
@@ -230,7 +230,7 @@ class PATServer(object):
 		stopThread.join()
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
-		self.sendDataCollectionStatus(dataCollectionFailed)
+		self.sendDataCollectionStatus(dataCollectionFailed[0])
 	
 	def sendDataCollectionStatus(self, dataCollectionFailed):	
 		if dataCollectionFailed:
@@ -291,7 +291,7 @@ class StopThread(Thread):
 		for device in self.deviceList:
 			device.clientCalledStop = self.clientCalledStop
 			if device.stop():
-				dataCollectionFailed = True
+				self.dataCollectionFailed[0] = True
 				print "Data collection by", device, "failed."
 			del device.clientCalledStop
 	
