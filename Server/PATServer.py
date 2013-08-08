@@ -7,6 +7,7 @@ from string import zfill
 from SaveController import SaveController
 from time import sleep
 from os import path
+from threading import Thread
 
 from DeviceMediators.LabJackMediator import LabJackMediator
 from DeviceMediators.PMDMediator import PMDMediator
@@ -112,7 +113,9 @@ class PATServer(object):
 		elif cmdChar == 'e':
 			self.handleFitnessEval()	
 		elif cmdChar == 'd':
-			self.handleDictionarySave(msg)			
+			self.handleDictionarySave(msg)
+		elif cmdChar == 'p':
+			print msg
 		else:
 			print "Invalid Command Char: " + cmdChar
 	
@@ -216,12 +219,15 @@ class PATServer(object):
 		self.stopDevices()
 			
 	def stopDevices(self):
-		print "Stopping devices."
+		print "Waiting for devices to complete data collection."
 		dataCollectionFailed = False
-		for device in self.deviceDict.values():
-			if device.stop():
-				dataCollectionFailed = True
-				print "Data collection by", device, "failed."
+		clientCalledStop = [False]	# Lists are Mutable.
+		stopThread = StopThread(self.deviceDict.values(), clientCalledStop, dataCollectionFailed)
+		stopThread.start()
+		size = self.sessionSocket.recv(4)
+		msg = self.sessionSocket.recv(int(size))
+		clientCalledStop[0] = True
+		stopThread.join()
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
 		self.sendDataCollectionStatus(dataCollectionFailed)
@@ -272,7 +278,23 @@ def signal_handler(signal, frame):
 		server.close()
 		print "Server Closed"
 	sys.exit(0)
-			
+
+class StopThread(Thread):
+	
+	def __init__(self, deviceList, clientCalledStop, dataCollectionFailed):
+		Thread.__init__(self)
+		self.deviceList = deviceList
+		self.clientCalledStop = clientCalledStop
+		self.dataCollectionFailed = dataCollectionFailed
+	
+	def run(self):
+		for device in self.deviceList:
+			device.clientCalledStop = self.clientCalledStop
+			if device.stop():
+				dataCollectionFailed = True
+				print "Data collection by", device, "failed."
+			del device.clientCalledStop
+	
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	server = PATServer()
