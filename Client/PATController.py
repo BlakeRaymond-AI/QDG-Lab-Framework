@@ -91,7 +91,7 @@ class PATController(Recipe):
 
 	def stopDevices(self):
 		print "Stopping data collection devices."
-		#self.PATClient.sendMediatorCommand("stopDevices")
+		self.PATClient.sendMessage("Client has called stopDevices")
 		self.PATClient.awaitConfirmation()
 		msg = self.PATClient.recieveMessage()
 		return bool(int(msg))
