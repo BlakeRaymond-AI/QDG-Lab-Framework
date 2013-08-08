@@ -113,7 +113,9 @@ class PATServer(object):
 		elif cmdChar == 'e':
 			self.handleFitnessEval()	
 		elif cmdChar == 'd':
-			self.handleDictionarySave(msg)			
+			self.handleDictionarySave(msg)
+		elif cmdChar == 'p':
+			print msg
 		else:
 			print "Invalid Command Char: " + cmdChar
 	
@@ -217,12 +219,14 @@ class PATServer(object):
 		self.stopDevices()
 			
 	def stopDevices(self):
-		print "Stopping devices."
+		print "Waiting for devices to complete data collection."
 		dataCollectionFailed = False
-		clientCalledStop = False
+		clientCalledStop = [False]	# Lists are Mutable.
 		stopThread = StopThread(self.deviceDict.values(), clientCalledStop, dataCollectionFailed)
-		sleep(5.0)
 		stopThread.start()
+		size = self.sessionSocket.recv(4)
+		msg = self.sessionSocket.recv(int(size))
+		clientCalledStop[0] = True
 		stopThread.join()
 		print "All devices stopped."
 		self.sendMessage("SUCCESS: All devices stopped.")
