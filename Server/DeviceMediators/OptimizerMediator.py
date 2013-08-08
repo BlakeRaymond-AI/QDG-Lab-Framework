@@ -43,17 +43,19 @@ class OptimizerMediator(DeviceMediatorInterface):
 		
 	def evaluateParticle(self, expPath, trialPath):
 		self.optimizer.evaluateParticle(expPath, trialPath)
+		self.saveState(expPath)
 
 	def getBestParticle(self):
 		return self.optimizer.best
 		
 	def saveState(self, expPath):
-		fPath = path.join(expPath, "OptimizeState.pkl")
+		fPath = path.join(expPath, "OptimizerState.pkl")
 		self.optimizer.saveState(fPath)
 
 	def restoreState(self, expPath):
-		fPath = path.join(expPath, "OptimizeState.pkl")
-		self.optimizer.restoreState(fPath) 
+		fPath = path.join(expPath, "OptimizerState.pkl")
+		if path.exists(fPath):
+			self.optimizer.restoreState(fPath) 
 		
 if __name__ == '__main__':
 	numOfParticles = 30

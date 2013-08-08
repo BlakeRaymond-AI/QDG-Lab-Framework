@@ -131,15 +131,10 @@ class PATServer(object):
 			settingsDict.save(self.expPath)
 		self.deviceSettings = settingsDict['deviceSettings']
 		for (key, deviceData) in self.deviceSettings.items():
-			devPicklePath = path.join(self.expPath, key + '.pkl')
-			if deviceData[1]['persistent'] and path.exists(devPicklePath):
-				dFile = open(devPicklePath, 'rb')
-				dev = pickle.load(dFile)
-				dFile.close()
-			else:
-				constructor = globals()[deviceData[0]]
-				dev = constructor(deviceData[1])
-				dev.devPicklePath = devPicklePath
+			constructor = globals()[deviceData[0]]
+			dev = constructor(deviceData[1])
+			if deviceData[1]['persistent']:
+				dev.restoreState(self.expPath)
 			self.deviceDict[key] = dev
 		self.sendMessage("SUCCESS: Devices created.")
 		print "Devices Created"
