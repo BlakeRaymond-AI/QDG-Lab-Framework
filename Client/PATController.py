@@ -420,7 +420,8 @@ class PATController(Recipe):
 			self.wait_us(10)
 			self.pixelink_trigger.set_scaled_value(0.0)
 			self.wait_s(1)
-		self.end()	
+		self.end()
+		self.PATClient.sendMessage("pPixeLink Flushed")
 		
 # #------------------------------------------------------------------------
 # # Optimizer Controls
