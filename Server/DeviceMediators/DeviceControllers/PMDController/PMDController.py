@@ -58,7 +58,6 @@ class PMDController(object):
 		Notes:
 		- activeChannels and gainSettings must have the same size.
 		'''				
-		print "!!!!!!!!!!!!! TRIGGER:", trigger				
  		self.boardNum = boardNum
 		vRange = Range[vRange]
 		trigType = TrigType[trigType]

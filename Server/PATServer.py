@@ -292,5 +292,9 @@ class StopThread(Thread):
 	
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
-	server = PATServer()
+	args = sys.argv
+	if len(sys.argv) == 2:
+		server = PATServer(args[1])
+	else:
+		server = PATServer()
 	
