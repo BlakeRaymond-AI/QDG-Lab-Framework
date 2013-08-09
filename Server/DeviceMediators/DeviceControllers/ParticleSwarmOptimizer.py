@@ -23,6 +23,7 @@ class ParticleSwarmOptimizer(object):
 						fitnessEvalScript,
 						phiG = 1, 
 						phiP = 1,
+						w = 1,
 						speedLimiter = 1,
 						minimization = False
 				):
@@ -45,7 +46,7 @@ class ParticleSwarmOptimizer(object):
 			part.speed = [uniform(part.smin[i], part.smax[i]) for i in range(len(part))]
 			return part
 	
-		def updateParticle(part, best, phiG, phiP):	
+		def updateParticle(part, best, phiG, phiP, w):	
 			'''
 			Updates the particles velocity and position as follows:
 			vNew = w*vOld + wP*(part-partBest) + wG(part - globBest)
@@ -54,7 +55,8 @@ class ParticleSwarmOptimizer(object):
 			wG = (uniform(0, 1) * phiG for _ in range(len(part)))	# Velocity weight toward global best.
 			vP = map(operator.mul, wP, map(operator.sub, part.best, part))	# Elementwise: wP(part.best - part)
 			vG = map(operator.mul, wG, map(operator.sub, best, part))		# Elementwise: wG(best - part)
-			part.speed = list(map(operator.add, part.speed, map(operator.add, vP, vG)))
+			vOld = map(operator.mul, w, part.speed)							# Elementwise: w * vOld
+			part.speed = list(map(operator.add, vOld, map(operator.add, vP, vG)))
 			for i in range(len(part)):
 				if part.speed[i] < part.smin[i]:
 					part.speed[i] = part.smin[i]
@@ -157,7 +159,7 @@ class ParticleSwarmOptimizer(object):
 if __name__ == '__main__':
 	paramBounds = ((-10, 10), (-10, 10))
 	fnPath = 'C:\PAT\OptimizationFunctions\h1.py'	
-	PSO = ParticleSwarmOptimizer(paramBounds, 10, 1000, fnPath, 1, 1, 1)
+	PSO = ParticleSwarmOptimizer(paramBounds, 10, 1000, fnPath)
 	part = PSO.getParticle()
 	while part:
 		PSO.evaluateParticle('', '')

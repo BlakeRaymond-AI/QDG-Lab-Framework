@@ -17,6 +17,7 @@ class OptimizerMediator(DeviceMediatorInterface):
 												self.fitnessEvalScript,
 												self.phiG, 
 												self.phiP,
+												self.w,
 												self.speedLimiter,
 												self.minimization)												
 	def start(self):
@@ -64,6 +65,7 @@ if __name__ == '__main__':
 	fitnessEvalScript = fnPath = 'C:\PAT\OptimizationFunctions\himmelblau.py'	
 	phiG = 1
 	phiP = 1
+	w = 1
 	speedLimiter = 1
 	minimization = True
 	settingsDict = {
@@ -73,6 +75,7 @@ if __name__ == '__main__':
 		'fitnessEvalScript' : fitnessEvalScript,
 		'phiG' : phiG,
 		'phiP' : phiP,
+		'w' : w,
 		'speedLimiter' : speedLimiter,
 		'minimization' : minimization
 	}	
