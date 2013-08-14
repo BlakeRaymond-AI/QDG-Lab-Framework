@@ -45,6 +45,7 @@ class OptimizerMediator(DeviceMediatorInterface):
 	def evaluateParticle(self, expPath, trialPath):
 		self.optimizer.evaluateParticle(expPath, trialPath)
 		self.saveState(expPath)
+		self.saveState(trialPath)
 
 	def getBestParticle(self):
 		return self.optimizer.best
@@ -60,7 +61,7 @@ class OptimizerMediator(DeviceMediatorInterface):
 		
 if __name__ == '__main__':
 	numOfParticles = 30
-	numOfGenerations = 1000
+	numOfGenerations = 200
 	paramBounds = ((-6, 6), (-6, 6))
 	fitnessEvalScript = fnPath = 'C:\PAT\OptimizationFunctions\himmelblau.py'	
 	phiG = 1
@@ -86,9 +87,6 @@ if __name__ == '__main__':
 		optMediator.evaluateParticle('', '')
 		part = pickle.loads(optMediator.getParticle())
 	best = optMediator.getBestParticle()
-	file = open("OptimizerPickle.pkl", 'wb')
-	pickle.dump(optMediator, file, -1)
-	file.close()
 	print "Best Particle"
 	print "Values: ", best
 	print "Fitness: ", best.fitness

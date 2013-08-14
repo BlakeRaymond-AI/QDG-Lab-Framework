@@ -260,7 +260,7 @@ class PATServer(object):
 
 	def processExpData(self):
 		print "Processing Data."
-		path = self.saveController.dataPath
+		path = self.saveController.trialPath
 		for dev in self.deviceDict.values():
 			if dev.processData:
 				dev.processExpData(path)

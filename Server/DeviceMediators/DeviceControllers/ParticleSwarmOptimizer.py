@@ -55,8 +55,8 @@ class ParticleSwarmOptimizer(object):
 			wG = (uniform(0, 1) * phiG for _ in range(len(part)))	# Velocity weight toward global best.
 			vP = map(operator.mul, wP, map(operator.sub, part.best, part))	# Elementwise: wP(part.best - part)
 			vG = map(operator.mul, wG, map(operator.sub, best, part))		# Elementwise: wG(best - part)
-			vOld = map(operator.mul, w, part.speed)							# Elementwise: w * vOld
-			part.speed = list(map(operator.add, vOld, map(operator.add, vP, vG)))
+			wvOld = [v * w for v in part.speed]  					# Elementwise: w * vOld
+			part.speed = list(map(operator.add, wvOld, map(operator.add, vP, vG)))
 			for i in range(len(part)):
 				if part.speed[i] < part.smin[i]:
 					part.speed[i] = part.smin[i]
@@ -87,7 +87,7 @@ class ParticleSwarmOptimizer(object):
 		toolbox = base.Toolbox()
 		toolbox.register("particle", generate, paramBounds = paramBounds)
 		toolbox.register("population", tools.initRepeat, list, toolbox.particle)
-		toolbox.register("update", updateParticle, phiG = phiG, phiP = phiP)
+		toolbox.register("update", updateParticle, phiG = phiG, phiP = phiP, w = w)
 		toolbox.register("evaluate", evaluateParticle)
      	
 		self.toolbox = toolbox
