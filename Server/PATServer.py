@@ -260,10 +260,14 @@ class PATServer(object):
 
 	def processExpData(self):
 		print "Processing Data."
-		path = self.saveController.dataPath
+		dPath = ''
+		try:
+			dPath = self.saveController.trialPath
+		except AttributeError:
+			dPath = self.saveController.dataPath	
 		for dev in self.deviceDict.values():
 			if dev.processData:
-				dev.processExpData(path)
+				dev.processExpData(dPath)
 		self.sendMessage("SUCCESS: Device data processed.")
 		
 def signal_handler(signal, frame):

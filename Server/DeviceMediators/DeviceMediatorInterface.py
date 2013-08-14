@@ -29,3 +29,11 @@ class DeviceMediatorInterface(object):
 	def processData(self, path):
 		'''Process the data associated with the device to the path given.'''
 		raise NotImplementedError() 
+		
+	def saveState(self, path):
+		'''Saves the state of the device mediator into an external file.'''
+		raise NotImplementedError() 
+			
+	def restoreState(self, path):
+		'''Restores the state of the device mediator from an external file.'''
+		raise NotImplementedError() 
