@@ -118,9 +118,7 @@ class Stabil_Ion_Controller(Serial):
 			plt.clf()
 		except AttributeError:
 			print "CANNOT PLOT STABIL ION DATA"
-		
 
-		
 class DataCollectionThread(Thread):
 	'''Data collection threads collect data.'''
 	

@@ -30,9 +30,13 @@ class PATServer(object):
 		if expPath:
 			self.expPath = expPath
 			self.saveControllerPath = path.join(expPath, 'SaveController.pkl') 
+			SCFile = open(self.saveControllerPath, 'rb')
+			self.saveController = pickle.load(SCFile)
+			SCFile.close()
 		else:
 			self.expPath = ''
 			self.saveControllerPath = ''
+			self.saveController = None
 		self.inUse = False
 		self.sessionSocket = None
 		self.sessionAddress = None
@@ -48,7 +52,7 @@ class PATServer(object):
 		'''Allows server to pickup an incoming connection from the PAT Client.'''
 		while True:
 			print "---------- Waiting for PAT Client ----------"
-			if self.saveControllerPath:
+			if self.saveController:
 				print "In multi-trial mode. Experiment file is: ", self.expPath
 			(sessionSocket, sessionAddress) = self.serverSocket.accept()
 			self.inUse = True
@@ -121,11 +125,7 @@ class PATServer(object):
 	
 	def handleInitialization(self, msg):
 		settingsDict = pickle.loads(msg)
-		if self.saveControllerPath:
-			SCFile = open(self.saveControllerPath, 'rb')
-			self.saveController = pickle.load(SCFile)
-			SCFile.close()
-		else:
+		if not self.saveController:
 			self.saveController = SaveController(dataPath, self.clientName)
 			self.expPath = self.saveController.expPath
 			settingsDict.save(self.expPath)
@@ -190,8 +190,8 @@ class PATServer(object):
 		del(self.deviceSettings)
 		self.deviceDict = {}
 		self.deviceSettings = {}
-		self.saveController = None
 		if not multiTrial:
+			self.saveController = None
 			self.inUse = False
 			self.sessionSocket = None
 			self.sessionAddress = None
@@ -254,6 +254,10 @@ class PATServer(object):
 		SCPath = path.join(self.expPath, "SaveController.pkl")
 		self.saveControllerPath = SCPath
 		SCFile = open(SCPath, 'wb')
+		pickle.dump(self.saveController, SCFile)
+		SCFile.close()
+		SCTPath = path.join(trialPath, "SaveController.pkl")
+		SCFile = open(SCTPath, 'wb')
 		pickle.dump(self.saveController, SCFile)
 		SCFile.close()
 		self.sendMessage("SUCCESS: Trial data saved.")
