@@ -90,27 +90,36 @@ class Stabil_Ion_Controller(Serial):
 				
 	def saveData(self, fname = "SIPressureData.csv"):		
 		csvFile = open(fname, "wb")
-		tDat = self.tDat
-		pDat = self.pDat
-		filewriter = csv.writer(csvFile, delimiter = ',')
-		filewriter.writerow(['Start Time:', self.tStart])
-		filewriter.writerow(["Time (s)", "Pressures (Torr)"])
-		for i in range(len(tDat)):
-			output = [tDat[i], pDat[i]]
-			filewriter.writerow(output)
-		csvFile.close()
+		try:
+			tDat = self.tDat
+			pDat = self.pDat
+			filewriter = csv.writer(csvFile, delimiter = ',')
+			filewriter.writerow(['Start Time:', self.tStart])
+			filewriter.writerow(["Time (s)", "Pressures (Torr)"])
+			for i in range(len(tDat)):
+				output = [tDat[i], pDat[i]]
+				filewriter.writerow(output)
+		except AttributeError:
+			print "CANNOT SAVE STABIL ION DATA"
+		finally:
+			csvFile.close()
 		
 	def plotData(self, fname = "SIPressurePlot.png"):
 		'''Plots the data collected by the Stabil Ion gauge.'''
 		import matplotlib.pyplot as plt
 		plt.clf()
-		tDat = self.tDat
-		pDat = self.pDat
-		plt.plot(tDat, pDat, ls = 'None', marker = '.')
-		plt.xlabel('Time (s)')
-		plt.ylabel('Pressure (Torr)')
-		plt.savefig(fname)		
-		plt.clf()
+		try:
+			tDat = self.tDat
+			pDat = self.pDat
+			plt.plot(tDat, pDat, ls = 'None', marker = '.')
+			plt.xlabel('Time (s)')
+			plt.ylabel('Pressure (Torr)')
+			plt.savefig(fname)		
+			plt.clf()
+		except AttributeError:
+			print "CANNOT PLOT STABIL ION DATA"
+		
+
 		
 class DataCollectionThread(Thread):
 	'''Data collection threads collect data.'''
