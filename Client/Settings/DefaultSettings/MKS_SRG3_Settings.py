@@ -15,4 +15,3 @@ MKS_SRG3_Settings['takeData'] = False
 MKS_SRG3_Settings['processData'] = False
 MKS_SRG3_Settings['persistent'] = False
 MKS_SRG3_Settings['dataFolderName'] = "MKS_SRG3_Data"
-MKS_SRG3_Settings['persistent'] = False

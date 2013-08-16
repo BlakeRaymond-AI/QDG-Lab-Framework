@@ -9,12 +9,10 @@ class NonExistentValueError(Exception):
 	'''
 	
 	def __init__(self, attrName):
-		self.attrName = attrName
+		self.msg = 'The attribute %s does not exist within the settings dictionary.' % attrName
 		
 	def __str__(self):
-		msg = 'The attribute {0} does not exist within the specified settings dictionary.'
-		msg = repr(msg.format(self.attrName))
-		return msg
+		return repr(self.msg)
 		
 
 class Settings(dict):

@@ -45,6 +45,11 @@ defaultSettings = {
 
 defaultSettings = Settings(defaultSettings)
 
+def update(target, updater):
+	for key, value in updater.items():
+		target[key] = value
+
+
 def overwriteSettings(default, updatePackage):
 	'''
 	Overwrites the settings in the default settings dictionary with the
@@ -55,10 +60,9 @@ def overwriteSettings(default, updatePackage):
 	
 	for key, updatedSettings in updatePackage.items():
 		if key in deviceSettings:
-			deviceSettings[key][1].update(updatedSettings)
+			update(deviceSettings[key][1], updatedSettings)
 		if key in generalSettings:
-			generalSettings[key][1].update(updatedSettings)
-	
+			update(generalSettings[key][1], updatedSettings)
 	return default
 		
 	
