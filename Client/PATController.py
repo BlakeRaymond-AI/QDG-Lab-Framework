@@ -282,27 +282,14 @@ class PATController(Recipe):
 			print 'Error: Push detuning frequency greater than 60 MHz.'
 
 	def pat_lasers_on(self):
-		self.set_2DRb_pump_amplitude(self.PATSettings['2DRb_pump_amplitude'])
-		self.set_2DRb_pump_detuning(self.PATSettings['2DRb_pump_detuning'])
-		self.set_3DRb_pump_amplitude(self.PATSettings['3DRb_pump_amplitude'])
-		self.set_3DRb_pump_detuning(self.PATSettings['3DRb_pump_detuning'])
-		self.set_Rb_repump_amplitude(self.PATSettings['Rb_repump_amplitude'])
-		self.set_Rb_repump_detuning(self.PATSettings['Rb_repump_detuning'])
-		self.set_Rb_push_amplitude(self.PATSettings['Rb_push_amplitude'])
-		self.set_Rb_push_detuning(self.PATSettings['Rb_push_detuning'])
-		print 'All Lasers On'
-
-	def pat_3DMOT_lasers_on(self):
-		self.set_3DRb_pump_amplitude(self.PATSettings['3DRb_pump_amplitude'])
-		self.set_3DRb_pump_detuning(self.PATSettings['3DRb_pump_detuning'])
-		self.set_Rb_repump_amplitude(self.PATSettings['Rb_repump_amplitude'])
-		self.set_Rb_repump_detuning(self.PATSettings['Rb_repump_detuning'])
-		print '3D Lasers on'
-
-	def pat_3DMOT_lasers_off(self):
-		self.set_3DRb_pump_amplitude(0.0)
-		self.set_Rb_repump_amplitude(0.0)
-		print '3D Lasers off'
+		self.set_2DRb_pump_amplitude()
+		self.set_2DRb_pump_detuning()
+		self.set_3DRb_pump_amplitude()
+		self.set_3DRb_pump_detuning()
+		self.set_Rb_repump_amplitude()
+		self.set_Rb_repump_detuning()
+		self.set_Rb_push_amplitude()
+		self.set_Rb_push_detuning()
 
 	def pat_lasers_off(self):
 		self.set_2DRb_pump_amplitude(0.0)
@@ -310,23 +297,31 @@ class PATController(Recipe):
 		self.set_Rb_repump_amplitude(0.0)
 		self.set_Rb_push_amplitude(0.0)
 
-	def pat_2DMOT_off(self):
-		self.set_2DRb_pump_amplitude(0.0)
-		self.set_Rb_push_amplitude(0.0)
-		self.set_2D_I_1(0.0)
-		self.set_2D_I_2(0.0)
-		self.set_2D_I_3(0.0)
-		self.set_2D_I_4(0.0)
+	def pat_3DMOT_lasers_on(self):
+		self.set_3DRb_pump_amplitude()
+		self.set_3DRb_pump_detuning()
+		self.set_Rb_repump_amplitude()
+		self.set_Rb_repump_detuning()
+
+	def pat_3DMOT_lasers_off(self):
+		self.set_3DRb_pump_amplitude(0.0)
+		self.set_Rb_repump_amplitude(0.0)
+
+	def pat_2DMOT_lasers_on(self):
+		self.set_2DRb_pump_amplitude()
+		self.set_2DRb_pump_detuning()
+		self.set_Rb_push_amplitude()
+		self.set_Rb_push_detuning()
 
 	def pat_2DMOT_lasers_off(self):
 		self.set_2DRb_pump_amplitude(0.0)
 		self.set_Rb_push_amplitude(0.0)
 
-	def pat_2DMOT_lasers_on(self):
-		self.set_2DRb_pump_amplitude(self.PATSettings['2DRb_pump_amplitude'])
-		self.set_2DRb_pump_detuning(self.PATSettings['2DRb_pump_detuning'])
-		self.set_Rb_push_amplitude(self.PATSettings['Rb_push_amplitude'])
-		self.set_Rb_push_detuning(self.PATSettings['Rb_push_detuning'])
+	def pat_2DMOT_Bfield_on(self):
+		self.set_2D_I_1()
+		self.set_2D_I_2()
+		self.set_2D_I_3()
+		self.set_2D_I_4()
 
 	def pat_2DMOT_Bfield_off(self):
 		self.set_2D_I_1(0.0)
@@ -335,16 +330,13 @@ class PATController(Recipe):
 		self.set_2D_I_4(0.0)
 
 	def pat_2DMOT_on(self):
-		self.set_2DRb_pump_amplitude(0.8)
-		self.set_Rb_push_amplitude(0.6)
+		self.pat_2DMOT_lasers_on()
 		self.pat_2DMOT_Bfield_on()
-
-	def pat_2DMOT_Bfield_on(self):
-		self.set_2D_I_1(self.PATSettings['2D_I_1'])
-		self.set_2D_I_2(self.PATSettings['2D_I_2'])
-		self.set_2D_I_3(self.PATSettings['2D_I_3'])
-		self.set_2D_I_4(self.PATSettings['2D_I_4'])
-		
+	
+	def pat_2DMOT_off(self):
+		self.pat_2DMOT_lasers_off()
+		self.pat_2DMOT_Bfield_off()
+	
 # #------------------------------------------------------------------------
 # # Shutter Controls trigger controls
 	def trig_scope_on(self):
