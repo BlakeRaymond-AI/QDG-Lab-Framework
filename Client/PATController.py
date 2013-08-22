@@ -282,14 +282,14 @@ class PATController(Recipe):
 			print 'Error: Push detuning frequency greater than 60 MHz.'
 
 	def pat_lasers_on(self):
-	    self.set_2DRb_pump_amplitude(self.PATSettings['2DRb_pump_amplitude'])
-	    self.set_2DRb_pump_detuning(self.PATSettings['2DRb_pump_detuning'])
+		self.set_2DRb_pump_amplitude(self.PATSettings['2DRb_pump_amplitude'])
+		self.set_2DRb_pump_detuning(self.PATSettings['2DRb_pump_detuning'])
 		self.set_3DRb_pump_amplitude(self.PATSettings['3DRb_pump_amplitude'])
 		self.set_3DRb_pump_detuning(self.PATSettings['3DRb_pump_detuning'])
 		self.set_Rb_repump_amplitude(self.PATSettings['Rb_repump_amplitude'])
 		self.set_Rb_repump_detuning(self.PATSettings['Rb_repump_detuning'])
-	   	self.set_Rb_push_amplitude(self.PATSettings['Rb_push_amplitude'])
-	   	self.set_Rb_push_detuning(self.PATSettings['Rb_push_detuning'])
+		self.set_Rb_push_amplitude(self.PATSettings['Rb_push_amplitude'])
+		self.set_Rb_push_detuning(self.PATSettings['Rb_push_detuning'])
 		print 'All Lasers On'
 
 	def pat_3DMOT_lasers_on(self):
@@ -324,9 +324,9 @@ class PATController(Recipe):
 
 	def pat_2DMOT_lasers_on(self):
 		self.set_2DRb_pump_amplitude(self.PATSettings['2DRb_pump_amplitude'])
-	    self.set_2DRb_pump_detuning(self.PATSettings['2DRb_pump_detuning'])
-	   	self.set_Rb_push_amplitude(self.PATSettings['Rb_push_amplitude'])
-	   	self.set_Rb_push_detuning(self.PATSettings['Rb_push_detuning'])
+		self.set_2DRb_pump_detuning(self.PATSettings['2DRb_pump_detuning'])
+		self.set_Rb_push_amplitude(self.PATSettings['Rb_push_amplitude'])
+		self.set_Rb_push_detuning(self.PATSettings['Rb_push_detuning'])
 
 	def pat_2DMOT_Bfield_off(self):
 		self.set_2D_I_1(0.0)
