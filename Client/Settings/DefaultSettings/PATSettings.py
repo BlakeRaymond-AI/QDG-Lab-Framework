@@ -11,10 +11,10 @@ PATSettings['2DRb_pump_detuning'] = 12.014217918080053
 PATSettings['3DRb_pump_detuning'] = 11.181703291771417
 PATSettings['Rb_repump_detuning'] = 4.4578685047937929
 PATSettings['Rb_push_detuning'] = 10.577814782792434
-PATSettings['optical_pump_detuning'] = 0
+
 # Pump amplitude in ...
 PATSettings['2DRb_pump_amplitude'] = 0.81403689617537489
 PATSettings['3DRb_pump_amplitude'] = 0.9734310799923549     
 PATSettings['Rb_repump_amplitude'] = 0.74128861551863034   
 PATSettings['Rb_push_amplitude'] = 0.41064188475343033 
-PATSettings['optical_pump_amplitude'] = 0.8
+

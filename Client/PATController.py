@@ -332,10 +332,24 @@ class PATController(Recipe):
 	def pat_2DMOT_on(self):
 		self.pat_2DMOT_lasers_on()
 		self.pat_2DMOT_Bfield_on()
+		self.push_shutter_open()
+		self.open_2D_shutters
 	
 	def pat_2DMOT_off(self):
 		self.pat_2DMOT_lasers_off()
 		self.pat_2DMOT_Bfield_off()
+		self.push_shutter_close()
+		self.close_2D_shutters()
+		
+	def pat_3DMOT_on(self):
+		self.pat_3DMOT_lasers_on()
+		self.set_3D_coils_I()
+		self.open_3D_shutters()
+		
+	def pat_3DMOT_off(self):
+		self.pat_3DMOT_lasers_off()
+		self.set_3D_coils_I(0.0)
+		self.close_3D_shutters()
 	
 # #------------------------------------------------------------------------
 # # Shutter Controls trigger controls
