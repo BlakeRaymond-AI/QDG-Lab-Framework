@@ -9,9 +9,8 @@ PixeLinkSettings['ROI_top'] = 0
 PixeLinkSettings['useROICenter'] = False	# Set region of interest based on 
 								# center location and width and height settings.
 PixeLinkSettings['ROI_center'] = (640, 512) # Location of center. (x, y)
+
 PixeLinkSettings['takeData'] = False
 PixeLinkSettings['processData'] = False
 PixeLinkSettings['persistent'] = False
-
 PixeLinkSettings['dataFolderName'] = "PixeLinkData"
-PixeLinkSettings['persistent'] = False

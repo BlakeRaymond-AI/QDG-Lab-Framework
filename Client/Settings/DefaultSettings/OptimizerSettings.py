@@ -1,7 +1,5 @@
 '''Default Optimizer Settings'''
 OptimizerSettings = dict()
-OptimizerSettings['takeData'] = False	# Won't actually take data.
-OptimizerSettings['persistent'] = True
 OptimizerSettings['fitnessEvalScript'] = 'C:\PAT\PATScripts\Optimizations\ScriptNameHere.py'
 OptimizerSettings['numOfParticles'] = 0		# Number of particles in a generation.
 OptimizerSettings['numOfGenerations'] = 0	# Number of generations.
@@ -11,7 +9,6 @@ OptimizerSettings['w'] = 1	#
 OptimizerSettings['speedLimiter'] = 1 # Limits the max speed of a particle in 
 			# any of it's dimensions to speedLimiter * (upperBound - lowerBound)
 OptimizerSettings['minimization'] = False	# Toggles minimization or maximization. 
-OptimizerSettings['persistent'] = True
 
 # paramBounds is an n-tuple of 2-tuples representing the lower and upper bounds  
 # of paramaters
@@ -20,4 +17,9 @@ paramBounds = (
 	# (lowerBound2, upperBound2),
 	# ...
 )
+
+OptimizerSettings['takeData'] = False	# Won't actually take data, but will enable optimizer.
+OptimizerSettings['persistent'] = True
+
+
 OptimizerSettings['paramBounds'] = paramBounds
