@@ -5,14 +5,16 @@ Adapted from:
 http://deap.gel.ulaval.ca/doc/default/examples/pso_basic.html
 '''
 ### DEAP Imports
-import operator
+
 from random import uniform
 from numpy import array
 from deap import base
 from deap import creator
 from deap import tools
 from os import path
+import copy
 import csv
+import operator
 import pickle
 
 class ParticleSwarmOptimizer(object):
@@ -57,11 +59,16 @@ class ParticleSwarmOptimizer(object):
 			vG = map(operator.mul, wG, map(operator.sub, best, part))		# Elementwise: wG(best - part)
 			wvOld = [v * w for v in part.speed]  					# Elementwise: w * vOld
 			part.speed = list(map(operator.add, wvOld, map(operator.add, vP, vG)))
+			
+			# Check that all of the particles individual velocity components are
+			# within the velocity bounds.
 			for i in range(len(part)):
 				if part.speed[i] < part.smin[i]:
 					part.speed[i] = part.smin[i]
 				elif part.speed[i] > part.smax[i]:
 					part.speed[i] = part.smax[i]
+			
+			partOld = copy.copy(part[:])
 			part[:] = list(map(operator.add, part, part.speed))
 			
 			for i in range(len(part)):
