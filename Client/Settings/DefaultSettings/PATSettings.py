@@ -1,5 +1,6 @@
 '''Default PAT Settings'''
 PATSettings = dict()
+
 # Coil current in Amperes
 PATSettings['2D_I_1'] = 4.0445672330089026
 PATSettings['2D_I_2'] = 4.8677651953079595

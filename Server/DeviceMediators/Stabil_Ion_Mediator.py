@@ -30,4 +30,9 @@ class Stabil_Ion_Mediator(DeviceMediatorInterface):
 	def processExpData(self, pth):
 		fname = path.join(pth, 'SIDataPlot.png')
 		self.controller.plotData(fname)
-	
+		
+	def saveState(self, pth):
+		pass
+		
+	def restoreState(self, pth):
+		pass	

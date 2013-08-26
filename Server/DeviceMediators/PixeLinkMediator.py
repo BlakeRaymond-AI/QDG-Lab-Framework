@@ -31,8 +31,6 @@ class PixeLinkMediator(object):
 		self._imagelist = []
 		self.framesHandler = FramesHandler()
 	
-	def setNumberOfImages(self, numberOfImages):
-		self.numberOfImages = numberOfImages
 				
 	def start(self):
 		self.framesHandler.N = self.numberOfImages
@@ -56,6 +54,17 @@ class PixeLinkMediator(object):
 		
 	def processExpData(self, pth):
 		pass
+
+	def saveState(self, pth):
+		pass
+		
+	def restoreState(self, pth):
+		pass
+
+# ----- Additional Functions
+	
+	def setNumberOfImages(self, numberOfImages):
+		self.numberOfImages = numberOfImages
 	
 	def setROICenter(self):
 		cx, cy, w, h = self.ROI_center[0], self.ROI_center[1], self.ROI_width, self.ROI_height

@@ -5,7 +5,8 @@ from os import path
 
 class OptimizerMediator(DeviceMediatorInterface):
 	"""
-	Magic
+	Mediator for Particle Swarm Optimizer. Majority of functionality arises from
+	function calls unique to this mediator and not the normal common calls.
 	""" 
 	
 	def __init__(self, dictionary):
@@ -31,6 +32,17 @@ class OptimizerMediator(DeviceMediatorInterface):
 		
 	def processExpData(self, pth):
 		pass
+
+	def saveState(self, expPath):
+		fPath = path.join(expPath, "OptimizerState.pkl")
+		self.optimizer.saveState(fPath)
+
+	def restoreState(self, expPath):
+		fPath = path.join(expPath, "OptimizerState.pkl")
+		if path.exists(fPath):
+			self.optimizer.restoreState(fPath) 
+	
+# ----- Additional Functions	
 	
 	def getParticle(self):
 		deapPart = self.optimizer.getParticle()
@@ -50,16 +62,9 @@ class OptimizerMediator(DeviceMediatorInterface):
 	def getBestParticle(self):
 		return self.optimizer.best
 		
-	def saveState(self, expPath):
-		fPath = path.join(expPath, "OptimizerState.pkl")
-		self.optimizer.saveState(fPath)
-
-	def restoreState(self, expPath):
-		fPath = path.join(expPath, "OptimizerState.pkl")
-		if path.exists(fPath):
-			self.optimizer.restoreState(fPath) 
 		
 if __name__ == '__main__':
+	print "Running Optimization on Himmelblau Function"
 	numOfParticles = 30
 	numOfGenerations = 200
 	paramBounds = ((-6, 6), (-6, 6))

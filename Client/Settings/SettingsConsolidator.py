@@ -49,7 +49,6 @@ def update(target, updater):
 	for key, value in updater.items():
 		target[key] = value
 
-
 def overwriteSettings(default, updatePackage):
 	'''
 	Overwrites the settings in the default settings dictionary with the

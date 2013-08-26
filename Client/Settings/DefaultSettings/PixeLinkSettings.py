@@ -1,3 +1,4 @@
+'key:PixeLink'
 '''Default settings for PixeLink Camera'''
 PixeLinkSettings = dict()
 PixeLinkSettings['gain'] = 0 	# Image Gain. Possible values: 0, 1.5, 3.1, 4.6	
@@ -9,9 +10,8 @@ PixeLinkSettings['ROI_top'] = 0
 PixeLinkSettings['useROICenter'] = False	# Set region of interest based on 
 								# center location and width and height settings.
 PixeLinkSettings['ROI_center'] = (640, 512) # Location of center. (x, y)
+
 PixeLinkSettings['takeData'] = False
 PixeLinkSettings['processData'] = False
 PixeLinkSettings['persistent'] = False
-
 PixeLinkSettings['dataFolderName'] = "PixeLinkData"
-PixeLinkSettings['persistent'] = False
