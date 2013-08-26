@@ -73,13 +73,11 @@ class ParticleSwarmOptimizer(object):
 			
 			for i in range(len(part)):
 				if part[i] < paramBounds[i][0]:
-					distanceOver = paramBounds[i][0] - part[i]
-					part[i] = paramBounds[i][1] - distanceOver
-					part.speed[i] = uniform(part.smin[i], part.smax[i])
+					part[i] = uniform(paramBounds[i][0], partOld[i])
+					part.speed[i] = part[i] - partOld[i]
 				elif part[i] > paramBounds[i][1]:
-					distanceOver = part[i] - paramBounds[i][1]
-					part[i] = paramBounds[i][0] + distanceOver
-					part.speed[i] = uniform(part.smin[i], part.smax[i])
+					part[i] = uniform(partOld[i], paramBounds[i][1])
+					part.speed[i] = part[i] - partOld[i]
 			
 		def evaluateParticle(args):
 			''' Evaluate the goodness of particle based on the MOT loading.'''

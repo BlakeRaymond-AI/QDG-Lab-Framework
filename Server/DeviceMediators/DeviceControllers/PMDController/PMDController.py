@@ -101,9 +101,9 @@ class PMDController(object):
 		'''Saves the data collected by the PMD.'''
 		data = self.data
 		csvFile = open(fname, 'wb')
-		labels = ['Time']
+		labels = ['Time (s)']
 		for ch in self.activeChannels:
-			labels.append(''.join(['Channels: ', str(ch)]))
+			labels.append(''.join(['Channels ', str(ch), ' (V)']))
 		try:
 			filewriter = csv.writer(csvFile, delimiter=',')
 			filewriter.writerow(['Start Time (No Trigger):', self.tStart])
