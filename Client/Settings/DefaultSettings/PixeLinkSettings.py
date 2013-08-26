@@ -1,3 +1,4 @@
+'key:PixeLink'
 '''Default settings for PixeLink Camera'''
 PixeLinkSettings = dict()
 PixeLinkSettings['gain'] = 0 	# Image Gain. Possible values: 0, 1.5, 3.1, 4.6	

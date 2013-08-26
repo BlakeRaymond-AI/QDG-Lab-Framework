@@ -1,3 +1,4 @@
+'key:MKS_SRG3'
 '''
 Default settings for MKG SRG3. Consult device controller for 
 more information on gas type, pressure and temperature codes.

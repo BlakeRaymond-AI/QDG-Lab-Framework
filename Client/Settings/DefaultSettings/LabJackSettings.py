@@ -1,3 +1,4 @@
+'key:LabJack'
 '''Default settings for LabJack'''
 LabJackSettings = dict()
 LabJackSettings['activeChannels'] = [0]	# Array of size 1, 2 or 4 (# Valid Channels: 0-7)				
@@ -10,3 +11,5 @@ LabJackSettings['takeData'] = False
 LabJackSettings['processData'] = False
 LabJackSettings['persistent'] = False
 LabJackSettings['dataFolderName'] = "LabJackData"
+
+

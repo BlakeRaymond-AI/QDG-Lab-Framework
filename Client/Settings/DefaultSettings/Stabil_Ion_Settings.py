@@ -1,3 +1,4 @@
+'key:Stabil_Ion'
 '''Default settings for Stabil Ion Gauge'''
 Stabil_Ion_Settings = dict()
 Stabil_Ion_Settings['port'] = 3	# The COMx port the gauge is connected to.			

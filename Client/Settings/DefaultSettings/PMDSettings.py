@@ -1,3 +1,4 @@
+'key:PMD'
 '''
 Default settings for PMD. Consult PMD API Specification for voltage range
 and trigger specifications. Device model is PMD-1208FS (USB-1208FS in manual). 

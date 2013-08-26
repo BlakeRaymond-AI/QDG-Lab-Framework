@@ -1,3 +1,4 @@
+'key:Optimizer'
 '''Default Optimizer Settings'''
 OptimizerSettings = dict()
 OptimizerSettings['fitnessEvalScript'] = 'C:\PAT\PATScripts\Optimizations\ScriptNameHere.py'
