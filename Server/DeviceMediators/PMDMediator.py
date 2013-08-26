@@ -39,4 +39,10 @@ class PMDMediator(DeviceMediatorInterface):
 		fname = path.join(pth, 'PMDDataPlot.png')
 		self.controller.plotData(fname)
 		
+	def saveState(self, pth):
+		pass
+		
+	def restoreState(self, pth):
+		pass
+		
 	

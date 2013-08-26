@@ -22,18 +22,18 @@ class DeviceMediatorInterface(object):
 		'''Stop a device after an experimental run.'''
 		raise NotImplementedError()	
 
-	def save(self, path):
-		'''Save the data associated with the device to the path given.'''
+	def save(self, pth):
+		'''Save the data associated with the device to the pth given.'''
 		raise NotImplementedError()
 		
-	def processData(self, path):
-		'''Process the data associated with the device to the path given.'''
+	def processExpData(self, pth):
+		'''Process the data associated with the device to the pth given.'''
 		raise NotImplementedError() 
 		
-	def saveState(self, path):
+	def saveState(self, pth):
 		'''Saves the state of the device mediator into an external file.'''
 		raise NotImplementedError() 
 			
-	def restoreState(self, path):
+	def restoreState(self, pth):
 		'''Restores the state of the device mediator from an external file.'''
 		raise NotImplementedError() 

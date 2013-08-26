@@ -35,6 +35,12 @@ class LabJackMediator(DeviceMediatorInterface):
 		fname = path.join(pth, 'LabJackPlot.png')
 		self.controller.plotData(fname)
 		
+	def saveState(self, pth):
+		pass
+		
+	def restoreState(self, pth):
+		pass
+		
 	
 					
 	
