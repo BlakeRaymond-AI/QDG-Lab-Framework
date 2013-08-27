@@ -3,6 +3,8 @@ Optimizer for MOT Loading
 
 Adapted from:
 http://deap.gel.ulaval.ca/doc/default/examples/pso_basic.html
+
+Designed to be used from within the PATFramework.
 '''
 ### DEAP Imports
 
@@ -61,7 +63,7 @@ class ParticleSwarmOptimizer(object):
 			part.speed = list(map(operator.add, wvOld, map(operator.add, vP, vG)))
 			
 			# Check that all of the particles individual velocity components are
-			# within the velocity bounds.
+			# within the velocity bounds and correct them if not.
 			for i in range(len(part)):
 				if part.speed[i] < part.smin[i]:
 					part.speed[i] = part.smin[i]
@@ -71,6 +73,8 @@ class ParticleSwarmOptimizer(object):
 			partOld = copy.copy(part[:])
 			part[:] = list(map(operator.add, part, part.speed))
 			
+			# Check that all of the particles individual position components are
+			# within the position bounds and correct them if not.
 			for i in range(len(part)):
 				if part[i] < paramBounds[i][0]:
 					part[i] = uniform(paramBounds[i][0], partOld[i])
@@ -80,7 +84,10 @@ class ParticleSwarmOptimizer(object):
 					part.speed[i] = part[i] - partOld[i]
 			
 		def evaluateParticle(args):
-			''' Evaluate the goodness of particle based on the MOT loading.'''
+			'''
+			Returns a fitness value which is the result of the 
+			fitnessEvalScript.
+			'''
 			lcl = dict()
 			for (key, value ) in args.items():
 				lcl[key] = value
@@ -102,6 +109,10 @@ class ParticleSwarmOptimizer(object):
 		self.currentPart = 0
 		
 	def getParticle(self):
+		'''
+		Gets the next particle for the optimization. Returns false the 
+		optimization is complete.
+		'''
 		currentPart = self.currentPart
 		currentGen = self.currentGen
 		if currentGen < self.numOfGenerations:
@@ -112,6 +123,11 @@ class ParticleSwarmOptimizer(object):
 			return False
 		
 	def evaluateParticle(self, expPath, trialPath):
+		'''
+		Passes the expPath and trialPath to the fitnessEvalScript, assigns a
+		fitness to the current particle, updates the local and global
+		best and writes the information into a file in the trialPath given.
+		'''
 		part = self.particles[self.currentPart]
 		best = self.best
 		args = {'expPath' : expPath, 'trialPath' : trialPath, 'part' : part}
@@ -135,6 +151,7 @@ class ParticleSwarmOptimizer(object):
 		self.incrementParticles()
 			
 	def incrementParticles(self):
+		'''Increments the particle count and/or generation count.'''
 		self.currentPart += 1
 		if self.currentPart >= self.numOfParticles:
 			self.currentGen += 1
@@ -142,10 +159,12 @@ class ParticleSwarmOptimizer(object):
 			self.updateParticles()
 	
 	def updateParticles(self):
+		'''Updates all of the particles.'''
 		for part in self.particles:
 			self.toolbox.update(part, self.best)
 			
 	def saveState(self, fName):
+		'''Saves the state of the optimizer to the given file name.'''
 		file = open(fName, 'wb')
 		pickle.dump(self.currentGen, file)
 		pickle.dump(self.currentPart, file)
@@ -154,6 +173,7 @@ class ParticleSwarmOptimizer(object):
 		file.close()
 	
 	def restoreState(self, fName):
+		'''Restores the state of the optimizer from the given file name.'''
 		file = open(fName, 'rb')
 		self.currentGen = pickle.load(file)
 		self.currentPart = pickle.load(file)
