@@ -1,7 +1,7 @@
 from socket import *
 from string import zfill
 import pickle
-# test comment
+# This is Victor overriding the comment.
 class PATClient(object):
 	def __init__(self, dictionary):
 		for (key, value) in dictionary.items():
