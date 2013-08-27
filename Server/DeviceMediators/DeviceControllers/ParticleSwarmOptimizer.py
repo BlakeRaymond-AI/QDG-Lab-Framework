@@ -26,7 +26,7 @@ class ParticleSwarmOptimizer(object):
 						phiG = 1, 
 						phiP = 1,
 						w = 1,
-						speedLimiter = 1,
+						alpha = 1,
 						minimization = False
 				):
 		self.paramBounds = paramBounds
@@ -43,8 +43,8 @@ class ParticleSwarmOptimizer(object):
 		def generate(paramBounds):
 			''' Generate a particle with a set position and velocity'''
 			part = creator.Particle(uniform(bL, bH) for bL, bH in paramBounds) 
-			part.smax = [(bH - bL) * speedLimiter for bL, bH in paramBounds]
-			part.smin = [(bL - bH) * speedLimiter for bL, bH in paramBounds]
+			part.smax = [(bH - bL) * alpha for bL, bH in paramBounds]
+			part.smin = [(bL - bH) * alpha for bL, bH in paramBounds]
 			part.speed = [uniform(part.smin[i], part.smax[i]) for i in range(len(part))]
 			return part
 	

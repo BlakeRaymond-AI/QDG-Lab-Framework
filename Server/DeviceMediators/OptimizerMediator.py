@@ -19,7 +19,7 @@ class OptimizerMediator(DeviceMediatorInterface):
 												self.phiG, 
 												self.phiP,
 												self.w,
-												self.speedLimiter,
+												self.alpha,
 												self.minimization)												
 	def start(self):
 		pass
