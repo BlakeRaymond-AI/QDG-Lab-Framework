@@ -18,13 +18,13 @@ for root, dirs, files in walk(settingsPath):
 			if l[1:4] == "key":
 				keys.append(l[5:-2])
 			for line in f:
-				line = '# ' + line
+				line = '#' + line
 				template.write(line)
 			f.close()
 			template.write('\n# ----------------------------------- \n')
 	template.write('\nupdatePackage = { \n')				
 	for key in keys:
-		template.write(''.join(['# \'', key, '\'', ' :	,\n']))
+		template.write(''.join(['#\'', key, '\'', ' :	,\n']))
 	template.write('}\n')
 template.close()
 
