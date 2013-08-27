@@ -1,7 +1,7 @@
 from socket import *
 from string import zfill
 import pickle
-# I'm being really frustrating.
+
 class PATClient(object):
 	def __init__(self, dictionary):
 		for (key, value) in dictionary.items():
