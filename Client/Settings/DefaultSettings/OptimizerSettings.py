@@ -10,7 +10,7 @@ OptimizerSettings['w'] = 1		# Velocity damping factor.
 OptimizerSettings['alpha'] = 1 # Limits the max speed of a particle in any of it's dimensions to alpha * (upperBound - lowerBound)
 OptimizerSettings['minimization'] = False	# Toggles minimization or maximization. 
 
-# paramBounds is an n-tuple of 2-tuples representing the lower and upper bounds of paramaters
+# paramBounds is an n-tuple of 2-tuples representing the lower and upper bounds of paramaters.
 paramBounds = (
 	# (lowerBound1, upperBound1),
 	# (lowerBound2, upperBound2),
