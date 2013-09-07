@@ -54,7 +54,7 @@ class PATClient(object):
 		self.sendCommand(cmdDict, 's')
 		msg = ''
 		if waitForResponse:
-			msg = self.recieveMessage()
+			msg = self.receiveMessage()
 			if pickledResponse:
 				value = pickle.loads(msg)
 				return value
@@ -67,7 +67,7 @@ class PATClient(object):
 		self.sendCommand({}, 'c')
 		self.sessionSocket.close()
 		
-	def recieveMessage(self):
+	def receiveMessage(self):
 		'''Retrieves a message string from the server.'''
 		sessionSocket = self.sessionSocket
 		size = sessionSocket.recv(4)
@@ -79,7 +79,7 @@ class PATClient(object):
 		Forces client to wait until server confirms that the last command
 		sent was executed.
 		'''
-		msg = self.recieveMessage()
+		msg = self.receiveMessage()
 		status = msg[:7]
 		if status == "SUCCESS":
 			print msg

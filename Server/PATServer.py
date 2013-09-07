@@ -58,9 +58,9 @@ class PATServer(object):
 			self.inUse = True
 			self.sessionSocket = sessionSocket
 			print "---------- New Client Connected ----------"
-			self.recieveMessage()
+			self.receiveMessage()
 	
-	def recieveMessage(self):
+	def receiveMessage(self):
 		'''Server will loop through this method, receiving messages from the client.'''	
 		sessionSocket = self.sessionSocket
 		while self.inUse:
@@ -142,13 +142,13 @@ class PATServer(object):
 	
 	def handleReset(self, msg):
 		print "Resetting Devices"
-		self.sendMessage("SUCCESS: Reset command recieved.")
+		self.sendMessage("SUCCESS: Reset command received.")
 		self.handleClientClosing(multiTrial = True)
 		
 	def handleMediatorCommand(self, msg):
 		cmdDict = pickle.loads(msg)
 		functionName = cmdDict['function']
-		print "Mediator Command Recieved: " + functionName
+		print "Mediator Command Received: " + functionName
 		functionArgs = cmdDict['arguments']
 		fn = getattr(self, functionName)
 		fn(*functionArgs)

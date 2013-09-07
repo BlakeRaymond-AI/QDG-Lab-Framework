@@ -93,7 +93,7 @@ class PATController(Recipe):
 		print "Stopping data collection devices."
 		self.PATClient.sendMessage("Client has called stopDevices")
 		self.PATClient.awaitConfirmation()
-		msg = self.PATClient.recieveMessage()
+		msg = self.PATClient.receiveMessage()
 		return bool(int(msg))
 		
 	def save(self):

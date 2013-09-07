@@ -14,8 +14,8 @@ at each frame arrival it called the frames_handler.add_frame(frame) method.
 frames_handler can be any class.  you can make as many as you want to do anything
 you want but it must have an 'add_frame(frame)' method, that accepts the pixelink frame format.
 
-you can stop the camera before it recieves all the frames, but otherwise it will either keep waiting 
-or stop itself when it recieves all the frames it was supposed to.
+you can stop the camera before it receives all the frames, but otherwise it will either keep waiting 
+or stop itself when it receives all the frames it was supposed to.
 """
 class CameraController(object):
     def __init__(self):
