@@ -3,9 +3,9 @@ import time
 from threading import Thread
 import csv
 import os
-from OpenOPC import OpenOPC as opc
+from OpenOPC import OpenOPC
 
-PRISMA_ADDR = '192.168.1.254'
+PRISMA_ADDR = '10.1.213.41'
 
 class PrismaPlusController(object):
 	"""
@@ -18,6 +18,12 @@ class PrismaPlusController(object):
 	def __init__():
 		self.prismaHost = socket.getHostByName(PRISMA_ADDR)
 		self.PPThread = DataCollectionThread(self)
+		# set up the OPC client. The PrismaPlus server is a DA server
+		# so we use the Graybox OPC DA Wrapper to connect
+		# The OPC client is running in DCOM mode (Windows only).
+		# Refer to OpenOPC documentation for UNIX-like systems.
+		self.opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
+		self.opc.connect("QMG220-DA")
 
 	def write(self, msg):
 		msg = msg + "\r"
@@ -33,6 +39,7 @@ class PrismaPlusController(object):
 		Returns boolean value indicating whether data collection failed.
 		"""
 		self.PPCThread.join()
+		self.opc.close()
 		self.close()
 		return self.PPCThread
 
