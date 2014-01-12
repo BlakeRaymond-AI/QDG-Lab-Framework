@@ -15,7 +15,7 @@ PATSettings['Rb_push_detuning'] = 10.577814782792434
 
 # Pump amplitude in ...
 PATSettings['2DRb_pump_amplitude'] = 0.81403689617537489
-PATSettings['3DRb_pump_amplitude'] = 0.9734310799923549     
-PATSettings['Rb_repump_amplitude'] = 0.74128861551863034   
+PATSettings['3DRb_pump_amplitude'] = 0.9734310799923549
+PATSettings['Rb_repump_amplitude'] = 0.74128861551863034
 PATSettings['Rb_push_amplitude'] = 0.41064188475343033 
 
