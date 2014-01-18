@@ -34,34 +34,38 @@ class MeasureMode(object):
     RF_TUNE = 3,
     OFFSET = 4
 
+class IonDetectorType(object):
+    FARADAY = 0,
+    SEM = 1
+
 class RingBufferPacket(object):
     def __init__(self, buffered_reader):
         self.read_header(buffered_reader)
         self.read_body(buffered_reader)
 
     def read_header(self, buffered_reader):
-        self.channel_number = buffered_reader.read(1)
+        self.channel_number = ord(buffered_reader.read(1))
 
         if self.channel_number is None:
             raise IOError
 
-        self.data_type = buffered_reader.read(1)
-        self.status = buffered_reader.read(1)
+        self.data_type = ord(buffered_reader.read(1))
+        self.status = ord(buffered_reader.read(1))
 
     def read_body(self, buffered_reader):
         if self.status == DeviceStatus.CHANNEL_START:
-            numberOfData = buffered_reader.read(1) #will be 10
+            numberOfData = ord(buffered_reader.read(1)) #will be 10
             self.timeStamp = struct.unpack('q', buffered_reader.read(8))
             # timeStamp is in Windows FILETIME format,
             # i.e. number of 100 ns intervals since 1 January 1601.
             self.maxNumberOfDataTuples = struct.unpack('h', buffered_reader.read(2))
 
         elif self.status == DeviceStatus.CHANNEL_INFORMATION:
-            numberOfData = buffered_reader.read(1) #will be 6
+            numberOfData = ord(buffered_reader.read(1)) #will be 6
             self.firstMass = struct.unpack('h', buffered_reader.read(2))
             self.lastMass = struct.unpack('h', buffered_reader.read(2))
-            self.dwellSpeed = buffered_reader.read(1)
-            unitAndResolution = buffered_reader.read(1)
+            self.dwellSpeed = ord(buffered_reader.read(1))
+            unitAndResolution = ord(buffered_reader.read(1))
             # extract bits 2 and 3
             self.unit = ["Ampere", "cps", "Volt", "mbar"][(unitAndResolution & (0x3 << 4)) >> 4]
             # extract bits 4 and 5
@@ -69,16 +73,16 @@ class RingBufferPacket(object):
 
         elif self.status == DeviceStatus.CONTINUOUS_MEASURING_DATA or \
                         self.status == DeviceStatus.CHANNEL_END:
-            numberOfTuples = buffered_reader.read(1)
+            numberOfTuples = ord(buffered_reader.read(1))
             self.masses = []
             self.intensities = []
             self.status1 = []
             self.status2 = []
             for _ in xrange(numberOfTuples):
                 self.intensities.append(struct.unpack('f', buffered_reader.read(4))[0])
-                self.masses.append(buffered_reader.read(2))
-                self.status1.append(buffered_reader.read(1))
-                self.status2.append(buffered_reader.read(1))
+                self.masses.append(struct.unpack('h', buffered_reader.read(2)))
+                self.status1.append(ord(buffered_reader.read(1)))
+                self.status2.append(ord(buffered_reader.read(1)))
 
 class PrismaPlusController(object):
     """
@@ -89,25 +93,21 @@ class PrismaPlusController(object):
 	3) implement the settings file
 	"""
 
-    def __init__(self,
-                 opc_class_name="Graybox.OPC.DAWrapper",
-                 server_name="QMG220-DA",
-                 validate_physical_address=True):
+    def __init__(self, server_name="QMG220-DA"):
         # set up the OPC client. The PrismaPlus server is a DA server
         # so we use the Graybox OPC DA Wrapper to connect
         # The OPC client is running in DCOM mode (Windows only).
         # Refer to OpenOPC documentation for UNIX-like systems.
-        self.opc = OpenOPC.client(opc_class=opc_class_name)
+        self.opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
         self.opc.connect(server_name)
         # check if the connection was successful and to the correct device
         # (and not to, say, one of the simulated devices running on the PC)
-        if validate_physical_address:
-            try:
-                physical_address = self.opc.read('General.LanConfiguration.PhysicalAddress')
-                assert physical_address[0] == PRISMA_PHYSICAL_ADDR
-            except AssertionError:
-                raise AssertionError("Physical address of the residual gas analyser\
-                    is different than expected.")
+        try:
+            physical_address = self.opc.read('General.LanConfiguration.PhysicalAddress')
+            assert physical_address[0] == PRISMA_PHYSICAL_ADDR
+        except AssertionError:
+            raise AssertionError("Physical address of the residual gas analyser\
+                is different than expected.")
 
     def write(self, msg):
         self.opc.write(msg)
@@ -135,24 +135,10 @@ class PrismaPlusController(object):
         return exception
 
     def initiate_data_collection(self):
-        self.opc.write([
-            ('Hardware.Modules.Analyser.SI220.SimulationMode', 0), #simulation off
-            ('General.DataPump.Mode', DataPumpMode.HOLD), #when ring buffer full, hold data until enough free space
-            #more settings will go here
-            ('Analyser.Filament.Command', 1), #filament on
-            ('General.Cycle.CycleMode', CycleMode.MULTI),
-            ('General.Cycle.MeasureMode', MeasureMode.CYCLE),
-            ('General.Cycle.NumberOfCycles', 0), #repeated endlessly
-            ('General.Cycle.BeginChannel', 0),
-            ('General.Cycle.EndChannel', 6),
-            ('General.Cycle.Command', 1) #start measurement
-        ])
+        self.write(('General.Cycle.Command', 1))
 
     def terminate_data_collection(self):
-        self.opc.write([
-            ('General.Cycle.Command', 2), #stop measurement
-            ('Analyser.Filament.Command', 2) #filament off
-        ])
+        self.write(('General.Cycle.Command', 2))
 
     def collectData(self):
         """
@@ -175,7 +161,6 @@ class PrismaPlusController(object):
                 except IOError:
                     break
 
-    #We will probably need the timestamps at some point.
     def extract_data_from_packets(self):
         if not self.packets:
             return
@@ -218,9 +203,63 @@ class PrismaPlusController(object):
     def close(self):
         self.opc.close()
 
+    def filament_on(self):
+        self.write(('Analyser.Filament.Command', 1))
+
+    def filament_off(self):
+        self.write(('Analyser.Filament.Command', 0))
+
+    def set_detector_type(self, detector_type):
+        self.write(('Analyser.Detector.Type', detector_type))
+
+    def enable_channels(self, active_channels):
+        all_channels = [0]*128
+        for channel in active_channels:
+            all_channels[channel] = 1
+        self.write(('Channels.Parameters.General.State', all_channels))
+
+    def set_number_of_cycles(self, cycles): #0 for endless loop
+        self.write(('General.Cycle.NumberOfCycles', cycles))
+
+    def simulation_on(self):
+        self.write(('Hardware.Modules.Analyser.SI220.SimulationMode', 1))
+
+    def simulation_off(self):
+        self.write(('Hardware.Modules.Analyser.SI220.SimulationMode', 0))
+
+    def set_data_pump_mode(self, mode):
+        self.write(('General.DataPump.Mode', mode))
+
+    def set_cycle_mode(self, mode):
+        self.write(('General.Cycle.CycleMode', mode))
+
+    def set_measure_mode(self, mode):
+        self.write(('General.Cycle.MeasureMode', mode))
+
+    def set_begin_channel(self, channel):
+        self.write(('General.Cycle.BeginChannel', channel))
+
+    def set_end_channel(self, channel):
+        self.write(('General.Cycle.EndChannel', channel))
+
+    def set_first_masses(self, first_masses):
+        self.write(('Channels.Parameters.Mass.FirstMass', first_masses))
+
+    def set_dwell_speeds(self, dwell_speeds):
+        self.write(('Channels.Parameters.Mass.DwellSpeed', dwell_speeds))
+
+    def set_mass_modes(self, mass_modes):
+        self.write(('Channels.Parameters.Mass.MassMode', mass_modes))
+
+    def set_auto_range_modes(self, range_modes):
+        self.write(('Channels.Parameters.Amplifier.AutoRangeMode', range_modes))
+
+    def set_detector_types(self, detector_types):
+        self.write(('Channels.Parameters.Detector.DetectorType', detector_types))
+
 
 if __name__ == '__main__':
-    PPC = PrismaPlusController(server_name="Matrikon.OPC.Simulation.1", validate_physical_address=False)
+    PPC = PrismaPlusController()
     PPC.collectData()
     PPC.saveData()
     PPC.plotData()
