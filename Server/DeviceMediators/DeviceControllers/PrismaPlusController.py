@@ -3,6 +3,7 @@ import csv
 import struct
 from OpenOPC import OpenOPC
 import io
+import time
 
 PRISMA_ADDR = '10.1.213.41'
 
@@ -44,10 +45,12 @@ class RingBufferPacket(object):
         self.read_body(buffered_reader)
 
     def read_header(self, buffered_reader):
-        self.channel_number = ord(buffered_reader.read(1))
+        channel_number = buffered_reader.read(1)
 
-        if self.channel_number is None:
+        if not channel_number:
             raise IOError
+
+        self.channel_number = ord(channel_number)
 
         self.data_type = ord(buffered_reader.read(1))
         self.status = ord(buffered_reader.read(1))
@@ -80,7 +83,7 @@ class RingBufferPacket(object):
             self.status2 = []
             for _ in xrange(numberOfTuples):
                 self.intensities.append(struct.unpack('f', buffered_reader.read(4))[0])
-                self.masses.append(struct.unpack('h', buffered_reader.read(2)))
+                self.masses.append(struct.unpack('h', buffered_reader.read(2))[0])
                 self.status1.append(ord(buffered_reader.read(1)))
                 self.status2.append(ord(buffered_reader.read(1)))
 
@@ -93,24 +96,30 @@ class PrismaPlusController(object):
 	3) implement the settings file
 	"""
 
-    def __init__(self, server_name="QMG220-DA"):
+    def __init__(self, server_name="QMG220-DA", check_physical_address=True):
         # set up the OPC client. The PrismaPlus server is a DA server
         # so we use the Graybox OPC DA Wrapper to connect
         # The OPC client is running in DCOM mode (Windows only).
         # Refer to OpenOPC documentation for UNIX-like systems.
+        self.server_name = server_name
+        
         self.opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
-        self.opc.connect(server_name)
+        self.opc.connect(self.server_name)
         # check if the connection was successful and to the correct device
         # (and not to, say, one of the simulated devices running on the PC)
-        try:
-            physical_address = self.opc.read('General.LanConfiguration.PhysicalAddress')
-            assert physical_address[0] == PRISMA_PHYSICAL_ADDR
-        except AssertionError:
-            raise AssertionError("Physical address of the residual gas analyser\
-                is different than expected.")
+        if check_physical_address:
+            try:
+                physical_address = self.opc.read('General.LanConfiguration.PhysicalAddress')
+                assert physical_address[0] == PRISMA_PHYSICAL_ADDR
+            except AssertionError:
+                raise AssertionError("Physical address of the residual gas analyser\
+                    is different than expected.")
 
     def write(self, msg):
         self.opc.write(msg)
+
+    def read(self, msg):
+        return self.opc.read(msg)
 
     def start(self):
         '''Starts the data collection thread.'''
@@ -147,13 +156,18 @@ class PrismaPlusController(object):
 		Warning: I have not finished writing this function yet so it may not 
 		be implemented correctly.
 		"""
+        self.data_opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
+        self.data_opc.connect(self.server_name)
+        
         self.packets = []
-        self.massRange = self.opc.read('Hardware.MassRange')[0]
+        self.massRange = self.data_opc.read('Hardware.MassRange')[0]
 
         while True:
-            packet_bytes = bytearray(self.opc.read('General.DataPump.Data'))
+            packet_bytes = self.data_opc.read('General.DataPump.Data')[0]
             if not packet_bytes:
+                print 'No data returned'
                 break
+            packet_bytes = bytearray(packet_bytes)
             bytes_io = io.BytesIO(packet_bytes)
             while True:
                 try:
@@ -169,9 +183,9 @@ class PrismaPlusController(object):
         for packet in self.packets:
             if not (packet.status == DeviceStatus.CONTINUOUS_MEASURING_DATA or
                             packet.status == DeviceStatus.CHANNEL_END):
-                pass
-            masses.append(packet.masses)
-            intensities.append(packet.intensities)
+                continue
+            masses.append(*packet.masses)
+            intensities.append(*packet.intensities)
 
         return zip(masses, intensities)
 
@@ -202,6 +216,7 @@ class PrismaPlusController(object):
 
     def close(self):
         self.opc.close()
+        self.data_opc.close()
 
     def filament_on(self):
         self.write(('Analyser.Filament.Command', 1))
@@ -254,13 +269,39 @@ class PrismaPlusController(object):
     def set_auto_range_modes(self, range_modes):
         self.write(('Channels.Parameters.Amplifier.AutoRangeMode', range_modes))
 
+    def set_detector_ranges(self, detector_ranges):
+        self.write(('Channels.Parameters.Amplifier.DetectorRange', detector_ranges))
+
     def set_detector_types(self, detector_types):
         self.write(('Channels.Parameters.Detector.DetectorType', detector_types))
 
+    def reset_buffer(self):
+        self.write(('General.DataPump.Command', 1))
+
+    def read_status(self):
+        return self.opc.read('General.Cycle.Status')
+
 
 if __name__ == '__main__':
-    PPC = PrismaPlusController()
-    PPC.collectData()
+    PPC = PrismaPlusController(server_name="QMG220-DA", check_physical_address=False)
+    PPC.simulation_on()
+    PPC.set_data_pump_mode(DataPumpMode.DATA_LOOSE)
+    PPC.set_begin_channel(0)
+    PPC.set_end_channel(6)
+    PPC.set_first_masses([14,16,18,28,32,40,44])
+    PPC.set_dwell_speeds([5]*7)
+    PPC.set_mass_modes([0]*7)
+    PPC.set_auto_range_modes([0]*7)
+    PPC.set_detector_ranges([0]*7)
+    PPC.set_detector_types([0]*7)
+    PPC.set_cycle_mode(CycleMode.MULTI)
+    PPC.set_measure_mode(MeasureMode.CYCLE)
+    PPC.set_number_of_cycles(0)
+    PPC.reset_buffer()
+    PPC.start()
+    assert PPC.read_status()[0] == 5
+    PPC.stop()
     PPC.saveData()
     PPC.plotData()
     PPC.close()
+    
