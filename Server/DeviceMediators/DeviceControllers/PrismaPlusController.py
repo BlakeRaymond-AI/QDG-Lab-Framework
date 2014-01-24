@@ -216,7 +216,8 @@ class PrismaPlusController(object):
 
     def close(self):
         self.opc.close()
-        self.data_opc.close()
+        if hasattr(self, 'data_opc'):
+            self.data_opc.close()
 
     def filament_on(self):
         self.write(('Analyser.Filament.Command', 1))
@@ -227,7 +228,7 @@ class PrismaPlusController(object):
     def set_detector_type(self, detector_type):
         self.write(('Analyser.Detector.Type', detector_type))
 
-    def enable_channels(self, active_channels):
+    def set_active_channels(self, active_channels):
         all_channels = [0]*128
         for channel in active_channels:
             all_channels[channel] = 1
