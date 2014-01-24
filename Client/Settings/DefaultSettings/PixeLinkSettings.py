@@ -7,8 +7,7 @@ PixeLinkSettings['ROI_width'] = 1280
 PixeLinkSettings['ROI_height'] = 1024
 PixeLinkSettings['ROI_left'] = 0
 PixeLinkSettings['ROI_top'] = 0
-PixeLinkSettings[
-    'useROICenter'] = False    # Set region of interest based on center location and width and height settings.
+PixeLinkSettings['useROICenter'] = False    # Set region of interest based on center location and width and height settings.
 PixeLinkSettings['ROI_center'] = (640, 512) # Location of center. (x, y)
 
 PixeLinkSettings['takeData'] = False
