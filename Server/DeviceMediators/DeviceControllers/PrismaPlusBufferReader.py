@@ -9,6 +9,9 @@ def readInt8(buffer):
 def readInt16(buffer):
     return struct.unpack('h', buffer.read(2))[0]
 
+def readUInt16(buffer):
+    return struct.unpack('H', buffer.read(2))[0]
+
 def readInt32(buffer):
     return struct.unpack('i', buffer.read(4))[0]
 
@@ -34,6 +37,8 @@ class ChannelInformationPacket:
         self.unit = measurementUnitAndResolution & 0b00110000
         self.massResolution = measurementUnitAndResolution & 0b00001100
 
+        print "Channel information : %s %s %s %s %s %s" % (self.channelNumber, self.firstMass, self.lastMass, self.dwellSpeed, self.unit, self.massResolution)
+
 class ChannelAbortedPacket:
     def __init__(self, channelNumber):
         self.channelNumber = channelNumber
@@ -49,7 +54,7 @@ class ChannelEndPacket:
         self.mass = array.array('i')
         for _ in range(numberOfData):
             self.intensity.append(readFloat(buffer))
-            self.mass.append(readInt16(buffer))
+            self.mass.append(readInt16(buffer)/32)
             _ = buffer.read(2)
 
 
@@ -69,11 +74,17 @@ CHANNEL_INFORMATION = 5
 MEASUREMENT_END = 6
 
 class PrismaPlusBufferReader:
+    def __init__(self):
+        self.intensitiesByMass = {}
+        self.timestamps = []
+
     def read(self, buffer):
         channelNumber = readInt8(buffer)
         dataType = readInt8(buffer)
         status = readInt8(buffer)
         numberOfData = readInt8(buffer)
+
+        print channelNumber, status, numberOfData
 
         if status == CHANNEL_START:
             return ChannelStartPacket(buffer, channelNumber)
@@ -86,7 +97,7 @@ class PrismaPlusBufferReader:
         elif status == CHANNEL_ABORTED:
             return ChannelAbortedPacket(channelNumber)
         else:
-            raise RuntimeError('New status %s' % status)
+            raise RuntimeError('Unknown status %s' % status)
 
     def readAll(self, buffer):
         packets = []
@@ -106,8 +117,28 @@ class PrismaPlusBufferReader:
         for packet in filter(lambda packet: isinstance(packet, ChannelEndPacket), packets):
             if packet.channelNumber > len(channels):
                 continue
-            for intsty in packet.intensity:
-                intensities[packet.channelNumber].append(intsty)
+            for intensity in packet.intensity:
+                intensities[packet.channelNumber].append(intensity)
             masses[packet.channelNumber] = packet.mass[0]
 
         return (timestamps, intensities, masses)
+
+    def consume(self, buffer):
+        while True:
+            try:
+                packet = self.read(buffer)
+
+                if isinstance(packet, ChannelStartPacket):
+                    self.timestamps.append(packet.timestamp)
+                    print "Timestamp: %s" % packet.timestamp
+                elif isinstance(packet, ChannelEndPacket):
+                    for mass, intensity in zip(packet.mass, packet.intensity):
+                        if not mass in self.intensitiesByMass:
+                            self.intensitiesByMass[mass] = []
+                        self.intensitiesByMass[mass].append(intensity)
+                        print "Data: %s %s" % (mass, intensity)
+                else:
+                    print packet
+
+            except TypeError:
+                break

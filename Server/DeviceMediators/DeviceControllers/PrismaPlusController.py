@@ -1,9 +1,14 @@
+import json
 import threading
 import csv
 import struct
 from OpenOPC import OpenOPC
 import io
 import time
+from Server.DeviceMediators.DeviceControllers.PrismaPlusBufferReader import PrismaPlusBufferReader
+
+import matplotlib.pyplot as plt
+
 
 PRISMA_ADDR = '10.1.213.41'
 
@@ -162,18 +167,34 @@ class PrismaPlusController(object):
         self.packets = []
         self.massRange = self.data_opc.read('Hardware.MassRange')[0]
 
+        self.bufferReader = PrismaPlusBufferReader()
+
         while True:
-            packet_bytes = self.data_opc.read('General.DataPump.Data')[0]
-            if not packet_bytes:
-                print 'No data returned'
-                break
-            packet_bytes = bytearray(packet_bytes)
-            bytes_io = io.BytesIO(packet_bytes)
-            while True:
-                try:
-                    self.packets.append(RingBufferPacket(bytes_io))
-                except IOError:
+            try:
+                if not self.data_opc.read("General.Cycle.Status")[0] == 5:
+                    print "Device not collecting data"
                     break
+                print "Reading from device..."
+                packet_bytes = self.data_opc.read('General.DataPump.Data')[0]
+                print "Got data; len %s" % len(packet_bytes)
+                if not packet_bytes:
+                    raise RuntimeError("No bytes returned from General.DataPump.Data")
+                buf = io.BytesIO(bytearray(packet_bytes))
+                self.bufferReader.consume(buf)
+                #(timestamps, intensities, masses) = bufferReader.readAll(buf)
+                #self.aggregateTimestamps.extend(timestamps)
+                #self.aggregateIntensities.append(intensities)
+                #self.aggregateMasses.extend(masses)
+            except Exception as e:
+                print e
+                break
+
+        #numChannels = max(len(group) for group in self.aggregateIntensities)
+        #newIntensities = [[] for _ in range(numChannels)]
+        #for group in self.aggregateIntensities:
+        #    for index, l in enumerate(group):
+        #        newIntensities[index].extend(l)
+        #self.aggregateIntensities = newIntensities
 
     def extract_data_from_packets(self):
         if not self.packets:
@@ -201,7 +222,6 @@ class PrismaPlusController(object):
 
     def plotData(self, fname="PrismaPlus_RGA_Plot.png"):
         '''Plots the data collected by the gauge.'''
-        import matplotlib.pyplot as plt
 
         plt.clf()
         data = self.extract_data_from_packets()
@@ -213,6 +233,13 @@ class PrismaPlusController(object):
         plt.ylabel('Reading')
         plt.savefig(fname)
         plt.clf()
+
+    def saveData_2(self):
+        print 'Saving data'
+        with open('intensities.data', 'w') as f:
+            f.write(json.dumps(self.bufferReader.intensitiesByMass, sort_keys=True, indent=4, separators=(',', ': ')))
+        with open('timestamps.data', 'w') as f:
+            f.write(json.dumps(self.bufferReader.timestamps, sort_keys=True, indent=4, separators=(',', ': ')))
 
     def close(self):
         self.opc.close()
@@ -284,25 +311,32 @@ class PrismaPlusController(object):
 
 
 if __name__ == '__main__':
-    PPC = PrismaPlusController(server_name="QMG220-DA", check_physical_address=False)
-    PPC.simulation_on()
-    PPC.set_data_pump_mode(DataPumpMode.DATA_LOOSE)
-    PPC.set_begin_channel(0)
-    PPC.set_end_channel(6)
-    PPC.set_first_masses([14,16,18,28,32,40,44])
-    PPC.set_dwell_speeds([5]*7)
-    PPC.set_mass_modes([0]*7)
-    PPC.set_auto_range_modes([0]*7)
-    PPC.set_detector_ranges([0]*7)
-    PPC.set_detector_types([0]*7)
-    PPC.set_cycle_mode(CycleMode.MULTI)
-    PPC.set_measure_mode(MeasureMode.CYCLE)
-    PPC.set_number_of_cycles(0)
-    PPC.reset_buffer()
-    PPC.start()
-    assert PPC.read_status()[0] == 5
-    PPC.stop()
-    PPC.saveData()
-    PPC.plotData()
-    PPC.close()
+    PPC = PrismaPlusController(server_name="QMG220-DA", check_physical_address=True)
+    # PPC.simulation_on()
+    # PPC.set_data_pump_mode(DataPumpMode.HOLD)
+    # PPC.set_first_masses([14,16,18,28,32,40,44])
+    # PPC.set_dwell_speeds([5]*7)
+    # PPC.set_mass_modes([0]*7)
+    # PPC.set_auto_range_modes([0]*7)
+    # PPC.set_detector_ranges([0]*7)
+    # PPC.set_detector_type([0]*7)
+    #
+    # PPC.set_cycle_mode(CycleMode.MULTI)
+    # PPC.set_measure_mode(MeasureMode.CYCLE)
+    # PPC.set_number_of_cycles(0)
+
+    #PPC.set_begin_channel(0)
+    #PPC.set_end_channel(6)
+
+
+
+    #PPC.reset_buffer()
+    #PPC.start()
+    #assert PPC.read_status()[0] == 5
+    #time.sleep(10)
+    #PPC.stop()
+    #PPC.saveData_2()
+    #PPC.plotData()
+    PPC.simulation_off()
+    #PPC.close()
     
