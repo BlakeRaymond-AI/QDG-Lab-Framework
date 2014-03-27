@@ -15,6 +15,7 @@ from DeviceMediators.Stabil_Ion_Mediator import Stabil_Ion_Mediator
 from DeviceMediators.MKS_SRG3_Mediator import MKS_SRG3_Mediator
 from DeviceMediators.PixeLinkMediator import PixeLinkMediator
 from DeviceMediators.OptimizerMediator import OptimizerMediator
+from DeviceMediators.PrismaPlusMediator import PrismaPlusMediator
 
 HOST = gethostbyname(gethostname())
 PORT = 15964
@@ -154,7 +155,7 @@ class PATServer(object):
         fn = getattr(self, functionName)
         fn(*functionArgs)
 
-    def handleDictionarySave(msg):
+    def handleDictionarySave(self, msg):
         dictionary = pickle.loads(msg)
         fPath1 = path.join([self.saveController.trialPath, 'customDat.txt'])
         fPath2 = path.join([self.saveController.trialPath, 'customDat.pkl'])
@@ -308,4 +309,3 @@ if __name__ == "__main__":
         server = PATServer(args[1])
     else:
         server = PATServer()
-	

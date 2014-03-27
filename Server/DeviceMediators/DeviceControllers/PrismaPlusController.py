@@ -1,7 +1,5 @@
-import json
 import threading
 import csv
-import struct
 from OpenOPC import OpenOPC
 import io
 import time
@@ -15,7 +13,7 @@ PRISMA_ADDR = '10.1.213.41'
 # If you physically replace the device, please update this line.
 PRISMA_PHYSICAL_ADDR = '00-50-C2-C1-0A-26'
 
-class DeviceStatus(object):
+class DeviceStatus:
     CONTINUOUS_MEASURING_DATA = 0
     CHANNEL_START = 1
     CHANNEL_END = 2
@@ -24,82 +22,34 @@ class DeviceStatus(object):
     CHANNEL_INFORMATION = 5
     MEASUREMENT_END = 6
 
-class DataPumpMode(object):
+class DataPumpMode:
     DATA_LOOSE = 0,
     HOLD = 1,
     HOLD_EMPTY = 2
 
-class CycleMode(object):
+class CycleMode:
     MONO = 0,
     MULTI = 1
 
-class MeasureMode(object):
+class MeasureMode:
     CYCLE = 0,
     ADJ_FINE = 1,
     ADJ_COARSE = 2,
     RF_TUNE = 3,
     OFFSET = 4
 
-class IonDetectorType(object):
+class IonDetectorType:
     FARADAY = 0,
     SEM = 1
 
-class RingBufferPacket(object):
-    def __init__(self, buffered_reader):
-        self.read_header(buffered_reader)
-        self.read_body(buffered_reader)
 
-    def read_header(self, buffered_reader):
-        channel_number = buffered_reader.read(1)
-
-        if not channel_number:
-            raise IOError
-
-        self.channel_number = ord(channel_number)
-
-        self.data_type = ord(buffered_reader.read(1))
-        self.status = ord(buffered_reader.read(1))
-
-    def read_body(self, buffered_reader):
-        if self.status == DeviceStatus.CHANNEL_START:
-            numberOfData = ord(buffered_reader.read(1)) #will be 10
-            self.timeStamp = struct.unpack('q', buffered_reader.read(8))
-            # timeStamp is in Windows FILETIME format,
-            # i.e. number of 100 ns intervals since 1 January 1601.
-            self.maxNumberOfDataTuples = struct.unpack('h', buffered_reader.read(2))
-
-        elif self.status == DeviceStatus.CHANNEL_INFORMATION:
-            numberOfData = ord(buffered_reader.read(1)) #will be 6
-            self.firstMass = struct.unpack('h', buffered_reader.read(2))
-            self.lastMass = struct.unpack('h', buffered_reader.read(2))
-            self.dwellSpeed = ord(buffered_reader.read(1))
-            unitAndResolution = ord(buffered_reader.read(1))
-            # extract bits 2 and 3
-            self.unit = ["Ampere", "cps", "Volt", "mbar"][(unitAndResolution & (0x3 << 4)) >> 4]
-            # extract bits 4 and 5
-            self.resolution = [1 / 64., 1 / 32., 1 / 16., 1 / 8.][(unitAndResolution & (0x3 << 2)) >> 4]
-
-        elif self.status == DeviceStatus.CONTINUOUS_MEASURING_DATA or \
-                        self.status == DeviceStatus.CHANNEL_END:
-            numberOfTuples = ord(buffered_reader.read(1))
-            self.masses = []
-            self.intensities = []
-            self.status1 = []
-            self.status2 = []
-            for _ in xrange(numberOfTuples):
-                self.intensities.append(struct.unpack('f', buffered_reader.read(4))[0])
-                self.masses.append(struct.unpack('h', buffered_reader.read(2))[0])
-                self.status1.append(ord(buffered_reader.read(1)))
-                self.status2.append(ord(buffered_reader.read(1)))
-
-class PrismaPlusController(object):
+class PrismaPlusController:
     """
-	Pfeiffer Vacuum PrismaPlus (TM) QMG 220 mass spectrometer control class
-	TODO:
-	1) implement this thing
-	2) import this in the PATServer file
-	3) implement the settings file
-	"""
+    Pfeiffer Vacuum PrismaPlus (TM) QMG 220 mass spectrometer control class
+    TODO:
+    2) import this in the PATServer file
+    3) implement the settings file
+    """
 
     def __init__(self, server_name="QMG220-DA", check_physical_address=True):
         # set up the OPC client. The PrismaPlus server is a DA server
@@ -112,13 +62,10 @@ class PrismaPlusController(object):
         self.opc.connect(self.server_name)
         # check if the connection was successful and to the correct device
         # (and not to, say, one of the simulated devices running on the PC)
-        if check_physical_address:
-            try:
-                physical_address = self.opc.read('General.LanConfiguration.PhysicalAddress')
-                assert physical_address[0] == PRISMA_PHYSICAL_ADDR
-            except AssertionError:
-                raise AssertionError("Physical address of the residual gas analyser\
-                    is different than expected.")
+        physical_address = self.opc.read('General.LanConfiguration.PhysicalAddress')
+        if not physical_address[0] == PRISMA_PHYSICAL_ADDR:
+            raise AssertionError("Physical address of the residual gas analyser\
+                is different than expected.")
 
     def write(self, msg):
         self.opc.write(msg)
@@ -128,129 +75,81 @@ class PrismaPlusController(object):
 
     def start(self):
         '''Starts the data collection thread.'''
-        self.initiate_data_collection()
-        self.data_collection_thread = threading.Thread(target = self.collectData)
-        self.data_collection_thread.start()
+        self.startDataCollection()
+        self.dataCollectionThread = threading.Thread(target = self.collectData)
+        self.dataCollectionThread.start()
 
     def stop(self):
         """
 		Waits until data collection is complete before proceeding.
 		Returns boolean value indicating whether data collection failed.
 		"""
-        self.terminate_data_collection()
+        self.stopDataCollection()
 
         exception = False
         try:
-            self.data_collection_thread.join()
+            self.dataCollectionThread.join()
         except:
             exception = True
 
         self.close()
         return exception
 
-    def initiate_data_collection(self):
+    def startDataCollection(self):
         self.write(('General.Cycle.Command', 1))
 
-    def terminate_data_collection(self):
+    def stopDataCollection(self):
         self.write(('General.Cycle.Command', 2))
 
     def collectData(self):
         """
         Initiates data collection.
         Data collection is documented in 7.3 of PrismaPlusComm.pdf
-		Warning: I have not finished writing this function yet so it may not 
-		be implemented correctly.
 		"""
         self.data_opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
         self.data_opc.connect(self.server_name)
         
-        self.packets = []
-        self.massRange = self.data_opc.read('Hardware.MassRange')[0]
-
         self.bufferReader = PrismaPlusBufferReader()
 
         while True:
             try:
-                if not self.data_opc.read("General.Cycle.Status")[0] == 5:
-                    print "Device not collecting data"
+                if not self.data_opc.read("General.Cycle.Status")[0] == 5: # Device is not collecting data -- abort.
                     break
-                print "Reading from device..."
                 packet_bytes = self.data_opc.read('General.DataPump.Data')[0]
-                print "Got data; len %s" % len(packet_bytes)
                 if not packet_bytes:
                     raise RuntimeError("No bytes returned from General.DataPump.Data")
-                buf = io.BytesIO(bytearray(packet_bytes))
-                self.bufferReader.consume(buf)
-                #(timestamps, intensities, masses) = bufferReader.readAll(buf)
-                #self.aggregateTimestamps.extend(timestamps)
-                #self.aggregateIntensities.append(intensities)
-                #self.aggregateMasses.extend(masses)
+                buf = io.BytesIO(bytes(packet_bytes))
+                self.bufferReader.readAndAppend(buf)
             except Exception as e:
                 print e
                 break
-
-        #numChannels = max(len(group) for group in self.aggregateIntensities)
-        #newIntensities = [[] for _ in range(numChannels)]
-        #for group in self.aggregateIntensities:
-        #    for index, l in enumerate(group):
-        #        newIntensities[index].extend(l)
-        #self.aggregateIntensities = newIntensities
-
-    def extract_data_from_packets(self):
-        if not self.packets:
-            return
-        masses = []
-        intensities = []
-        for packet in self.packets:
-            if not (packet.status == DeviceStatus.CONTINUOUS_MEASURING_DATA or
-                            packet.status == DeviceStatus.CHANNEL_END):
-                continue
-            masses.append(*packet.masses)
-            intensities.append(*packet.intensities)
-
-        return zip(masses, intensities)
-
-    def saveData(self, fname="PrismaPlus_RGA_Data.csv"):
-        '''Save the data collected by the gauge.'''
-        data = self.extract_data_from_packets()
-        with open(fname, 'wb') as csvFile:
-            file_writer = csv.writer(csvFile, delimiter=',')
-            file_writer.writerow(["Mass (amu)", "Reading"])
-
-            for mass, intensity in data:
-                file_writer.writerow([mass, intensity])
-
-    def plotData(self, fname="PrismaPlus_RGA_Plot.png"):
-        '''Plots the data collected by the gauge.'''
-
-        plt.clf()
-        data = self.extract_data_from_packets()
-        unzipped = zip(*data)
-        masses = list(unzipped[0])
-        intensities = list(unzipped[1])
-        plt.plot(masses, intensities, ls='None', marker='.')
-        plt.xlabel('Mass (amu)')
-        plt.ylabel('Reading')
-        plt.savefig(fname)
-        plt.clf()
-
-    def saveData_2(self):
-        print 'Saving data'
-        with open('intensities.data', 'w') as f:
-            f.write(json.dumps(self.bufferReader.intensitiesByMass, sort_keys=True, indent=4, separators=(',', ': ')))
-        with open('timestamps.data', 'w') as f:
-            f.write(json.dumps(self.bufferReader.timestamps, sort_keys=True, indent=4, separators=(',', ': ')))
 
     def close(self):
         self.opc.close()
         if hasattr(self, 'data_opc'):
             self.data_opc.close()
 
-    def filament_on(self):
-        self.write(('Analyser.Filament.Command', 1))
+    def saveData(self, path="PrismaPlusData.csv"):
+        timestamps = self.bufferReader.timestamps
+        intensities = self.bufferReader.intensities
+        with open(path, 'w') as f:
+            csvwriter = csv.writer(f, delimiter=',')
+            csvwriter.writerow("Timestamp (Windows FILETIME), Mass (AMU), Intensity (A)")
+            for time, valuePair in zip(timestamps, intensities):
+                csvwriter.writerow([time, valuePair[0], valuePair[1]])
 
-    def filament_off(self):
-        self.write(('Analyser.Filament.Command', 0))
+    def plotData(self, path):
+        data = self.bufferReader.getData()
+        masses = sorted(data.keys())
+        for mass in masses:
+            x = [pair[0] for pair in data[mass]]
+            y = [pair[1] for pair in data[mass]]
+            plt.plot(x, y)
+            plt.hold(True)
+        plt.legend(masses)
+        plt.xlabel('Windows Filetime (10 ns)')
+        plt.ylabel('Intensity (A)')
+        plt.savefig(path)
 
     def set_detector_type(self, detector_type):
         self.write(('Analyser.Detector.Type', detector_type))
@@ -312,31 +211,26 @@ class PrismaPlusController(object):
 
 if __name__ == '__main__':
     PPC = PrismaPlusController(server_name="QMG220-DA", check_physical_address=True)
-    # PPC.simulation_on()
-    # PPC.set_data_pump_mode(DataPumpMode.HOLD)
-    # PPC.set_first_masses([14,16,18,28,32,40,44])
-    # PPC.set_dwell_speeds([5]*7)
-    # PPC.set_mass_modes([0]*7)
-    # PPC.set_auto_range_modes([0]*7)
-    # PPC.set_detector_ranges([0]*7)
-    # PPC.set_detector_type([0]*7)
-    #
-    # PPC.set_cycle_mode(CycleMode.MULTI)
-    # PPC.set_measure_mode(MeasureMode.CYCLE)
-    # PPC.set_number_of_cycles(0)
 
-    #PPC.set_begin_channel(0)
-    #PPC.set_end_channel(6)
+    PPC.set_data_pump_mode(DataPumpMode.HOLD)
+    PPC.set_first_masses([14, 16, 18, 28, 32, 40, 44])
+    PPC.set_dwell_speeds([5]*7)
+    PPC.set_mass_modes([0]*7)
+    PPC.set_auto_range_modes([0]*7)
+    PPC.set_detector_ranges([0]*7)
+    PPC.set_detector_type([0]*7)
 
+    PPC.set_cycle_mode(CycleMode.MULTI)
+    PPC.set_measure_mode(MeasureMode.CYCLE)
+    PPC.set_number_of_cycles(0)
 
+    PPC.set_begin_channel(0)
+    PPC.set_end_channel(6)
 
-    #PPC.reset_buffer()
-    #PPC.start()
-    #assert PPC.read_status()[0] == 5
-    #time.sleep(10)
-    #PPC.stop()
-    #PPC.saveData_2()
-    #PPC.plotData()
-    PPC.simulation_off()
-    #PPC.close()
+    PPC.start()
+    time.sleep(30)
+    PPC.stop()
+    PPC.saveData("PrismaPlusData.csv")
+    PPC.plotData("PrismaPlusPlot.png")
+    PPC.close()
     

@@ -1,14 +1,8 @@
 from unittest import TestCase
-import array
 from io import BytesIO
-import struct
-from PrismaPlusBufferReader import PrismaPlusBufferReader, ChannelStartPacket, ChannelInformationPacket, \
-    ChannelEndPacket, CycleEndPacket, ChannelAbortedPacket
+from PrismaPlusBufferReader import *
 
-import numpy as np
 import matplotlib.pyplot as plt
-
-__author__ = 'Blake'
 
 def loadData():
     filename = 'PrismaPlusData.buf'
@@ -86,57 +80,44 @@ class TestPrismaPlusBufferReader(TestCase):
         else:
             self.fail()
 
-    def test___(self):
+    def test_canReadAndAppendTimestampsAndIntensities(self):
         reader = PrismaPlusBufferReader()
         buffer = BytesIO(bytes(self.data))
-        packets = []
-        while True:
-            try:
-                packets.append(reader.read(buffer))
-            except (IOError, TypeError):
-                break
-        startPackets = filter(lambda packet: isinstance(packet, ChannelStartPacket) and packet.channelNumber == 0, packets)
-        endPackets = filter(lambda packet: isinstance(packet, ChannelEndPacket) and packet.channelNumber == 0, packets)
+        reader.readAndAppend(buffer)
 
-        self.assertEqual(len(startPackets), len(endPackets))
-        self.assertGreater(len(startPackets), 0)
+        times = reader.timestamps
+        massIntensityTuples = reader.intensities
 
-        times = []
-        masses = []
-        intensities = []
+        self.assertEqual(1061, len(times))
+        self.assertEqual(1061, len(massIntensityTuples))
+        self.assertEqual({14, 16, 18, 28, 32, 40, 44}, set([pair[0] for pair in massIntensityTuples]))
+        for pair in massIntensityTuples:
+            self.assertAlmostEqual(0.0, pair[1], delta=2E-9)
 
-        for packet in startPackets:
-            times.append(packet.timestamp)
-        for packet in endPackets:
-            for mass in packet.mass:
-                masses.append(mass)
-            for intensity in packet.intensity:
-                intensities.append(intensity)
-
-        times = np.array(times)
-        masses = np.array(masses)
-        intensities = np.array(intensities)
-
-        plt.plot(times, intensities)
-        plt.show()
-
-    def test_readAll(self):
+    def test_canOrganizeTimestampsAndIntensitiesByMass(self):
         reader = PrismaPlusBufferReader()
         buffer = BytesIO(bytes(self.data))
-        (timestamps, intensities, masses) = reader.readAll(buffer)
+        reader.readAndAppend(buffer)
 
-        intensities = intensities[:len(intensities)-1]
+        data = reader.getData()
+        self.assertEqual({14, 16, 18, 28, 32, 40, 44}, set(data.keys()))
+        for timesAndIntensities in data.values():
+            self.assertGreater(len(timesAndIntensities), 0)
 
-        sz = min([len(timestamps)] + [len(intensity) for intensity in intensities])
+    def test_canPlot(self):
+        reader = PrismaPlusBufferReader()
+        buffer = BytesIO(bytes(self.data))
+        reader.readAndAppend(buffer)
 
-        plt.plot(timestamps[:sz], intensities[0][:sz])
-        plt.plot(timestamps[:sz], intensities[1][:sz])
-        plt.plot(timestamps[:sz], intensities[2][:sz])
-        plt.plot(timestamps[:sz], intensities[3][:sz])
-        plt.plot(timestamps[:sz], intensities[4][:sz])
-        plt.plot(timestamps[:sz], intensities[5][:sz])
-        plt.plot(timestamps[:sz], intensities[6][:sz])
+        data = reader.getData()
 
+        masses = sorted(data.keys())
+        for mass in masses:
+            x = [pair[0] for pair in data[mass]]
+            y = [pair[1] for pair in data[mass]]
+            plt.plot(x, y)
+            plt.hold(True)
         plt.legend(masses)
-
-        plt.show()
+        plt.xlabel('Windows Filetime (10 ns)')
+        plt.ylabel('Intensity (A)')
+        plt.savefig(path)

@@ -1,3 +1,4 @@
+from os import path
 from DeviceMediatorInterface import DeviceMediatorInterface
 from DeviceControllers.PrismaPlusController import PrismaPlusController
 
@@ -37,8 +38,8 @@ class PrismaPlusMediator(DeviceMediatorInterface):
         for key, value in self.settings.items():
             if key in self.setting_function_dict:
                 self.setting_function_dict[key](value)
-
-
+            else:
+                raise NameError('Unknown parameter %s' % key)
 
     def start(self):
         '''Initialise the device for an experimental run.'''
@@ -50,11 +51,13 @@ class PrismaPlusMediator(DeviceMediatorInterface):
 
     def save(self, pth):
         '''Save the data associated with the device to the pth given.'''
-        self.controller.saveData(pth)
+        fname = path.join(pth, 'PrismaPlusData.csv')
+        self.controller.saveData(fname)
 
     def processExpData(self, pth):
         '''Process the data associated with the device to the pth given.'''
-        raise NotImplementedError()
+        fname = path.join(pth, 'PMDDataPlot.png')
+        self.controller.plotData(fname)
 
     def saveState(self, pth):
         '''Saves the state of the device mediator into an external file.'''
@@ -63,21 +66,3 @@ class PrismaPlusMediator(DeviceMediatorInterface):
     def restoreState(self, pth):
         '''Restores the state of the device mediator from an external file.'''
         raise NotImplementedError()
-
-    def filament_on(self):
-        self.controller.filament_on()
-
-    def filament_off(self):
-        self.controller.filament_off()
-
-    def simulation_on(self):
-        self.controller.simulation_on()
-
-    def simulation_off(self):
-        self.controller.simulation_off()
-
-    def reset_buffer(self):
-        self.controller.reset_buffer()
-
-    def read_status(self):
-        return self.controller.read_status()
