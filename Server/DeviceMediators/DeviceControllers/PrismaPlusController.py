@@ -3,7 +3,8 @@ import csv
 from OpenOPC import OpenOPC
 import io
 import time
-from Server.DeviceMediators.DeviceControllers.PrismaPlusBufferReader import PrismaPlusBufferReader
+from PrismaPlusBufferReader import PrismaPlusBufferReader
+from Queue import Queue
 
 import matplotlib.pyplot as plt
 
@@ -75,7 +76,6 @@ class PrismaPlusController:
 
     def start(self):
         '''Starts the data collection thread.'''
-        self.startDataCollection()
         self.dataCollectionThread = threading.Thread(target = self.collectData)
         self.dataCollectionThread.start()
 
@@ -84,38 +84,36 @@ class PrismaPlusController:
 		Waits until data collection is complete before proceeding.
 		Returns boolean value indicating whether data collection failed.
 		"""
-        self.stopDataCollection()
 
-        exception = False
+        print "Waiting for PrismaPlus to finish collecting data"
+
         try:
             self.dataCollectionThread.join()
+            return True
         except:
-            exception = True
+            return False
 
-        self.close()
-        return exception
-
-    def startDataCollection(self):
-        self.write(('General.Cycle.Command', 1))
-
-    def stopDataCollection(self):
-        self.write(('General.Cycle.Command', 2))
+    def set_scan_duration(self, scanDuration):
+        self.scanDuration = scanDuration
 
     def collectData(self):
         """
         Initiates data collection.
         Data collection is documented in 7.3 of PrismaPlusComm.pdf
 		"""
-        self.data_opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
-        self.data_opc.connect(self.server_name)
+        data_opc = OpenOPC.client(opc_class="Graybox.OPC.DAWrapper")
+        data_opc.connect(self.server_name)
         
         self.bufferReader = PrismaPlusBufferReader()
 
-        while True:
+        data_opc.write(('General.Cycle.Command', 1)) # Start collecting data
+        startTime = time.time()
+
+        while time.time() - startTime < self.scanDuration:
             try:
-                if not self.data_opc.read("General.Cycle.Status")[0] == 5: # Device is not collecting data -- abort.
+                if not data_opc.read("General.Cycle.Status")[0] == 5: # Device is not collecting data -- abort.
                     break
-                packet_bytes = self.data_opc.read('General.DataPump.Data')[0]
+                packet_bytes = data_opc.read('General.DataPump.Data')[0]
                 if not packet_bytes:
                     raise RuntimeError("No bytes returned from General.DataPump.Data")
                 buf = io.BytesIO(bytes(packet_bytes))
@@ -124,10 +122,11 @@ class PrismaPlusController:
                 print e
                 break
 
+        data_opc.write(('General.Cycle.Command', 2)) # Stop collecting data
+        data_opc.close()
+
     def close(self):
         self.opc.close()
-        if hasattr(self, 'data_opc'):
-            self.data_opc.close()
 
     def saveData(self, path="PrismaPlusData.csv"):
         timestamps = self.bufferReader.timestamps
@@ -232,5 +231,4 @@ if __name__ == '__main__':
     PPC.stop()
     PPC.saveData("PrismaPlusData.csv")
     PPC.plotData("PrismaPlusPlot.png")
-    PPC.close()
-    
+

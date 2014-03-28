@@ -19,8 +19,6 @@ class PrismaPlusMediator(DeviceMediatorInterface):
             self.controller = PrismaPlusController(*args, **kwargs)
 
         self.setting_function_dict = {
-            'detector_type': self.controller.set_detector_type,
-            'active_channels': self.controller.set_active_channels,
             'number_of_cycles': self.controller.set_number_of_cycles,
             'data_pump_mode': self.controller.set_data_pump_mode,
             'cycle_mode': self.controller.set_cycle_mode,
@@ -32,14 +30,18 @@ class PrismaPlusMediator(DeviceMediatorInterface):
             'mass_modes': self.controller.set_mass_modes,
             'auto_range_modes': self.controller.set_auto_range_modes,
             'detector_ranges': self.controller.set_detector_ranges,
-            'detector_types': self.controller.set_detector_types
+            'detector_types': self.controller.set_detector_types,
+            'scanDuration': self.controller.set_scan_duration
         }
 
         for key, value in self.settings.items():
             if key in self.setting_function_dict:
                 self.setting_function_dict[key](value)
-            else:
-                raise NameError('Unknown parameter %s' % key)
+
+        self.controller.close()
+
+        for key, value in self.settings.items():
+            setattr(self, key, value)
 
     def start(self):
         '''Initialise the device for an experimental run.'''
@@ -51,12 +53,12 @@ class PrismaPlusMediator(DeviceMediatorInterface):
 
     def save(self, pth):
         '''Save the data associated with the device to the pth given.'''
-        fname = path.join(pth, 'PrismaPlusData.csv')
+        fname = path.join(pth, 'RGAData.csv')
         self.controller.saveData(fname)
 
     def processExpData(self, pth):
         '''Process the data associated with the device to the pth given.'''
-        fname = path.join(pth, 'PMDDataPlot.png')
+        fname = path.join(pth, 'RGADataPlot.png')
         self.controller.plotData(fname)
 
     def saveState(self, pth):

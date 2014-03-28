@@ -97,6 +97,8 @@ class PrismaPlusBufferReader:
                 break
 
     def getData(self):
+        if not self.intensities:
+            return {}
         dataByMass = {}
         timestamps = self.timestamps
         unzippedMassesAndIntensities = zip(*self.intensities)

@@ -1,5 +1,6 @@
 'key:PrismaPlus'
 '''Default settings for the PrismaPlus RGA'''
+
 PrismaPlusSettings = dict()
 PrismaPlusSettings['data_pump_mode'] = 0 # DATA-LOOSE
 PrismaPlusSettings['begin_channel']= 0
@@ -13,3 +14,10 @@ PrismaPlusSettings['detector_types'] = [0]*7
 PrismaPlusSettings['cycle_mode'] = 1 # MULTI
 PrismaPlusSettings['measure_mode'] = 0 # CYCLE
 PrismaPlusSettings['number_of_cycles'] = 0 # Repeat endlessly
+
+PrismaPlusSettings['takeData'] = False
+PrismaPlusSettings['processData'] = False
+PrismaPlusSettings['persistent'] = False
+PrismaPlusSettings['dataFolderName'] = 'PrismaPlusData'
+
+PrismaPlusSettings['scanDuration'] = 10 # 10 seconds

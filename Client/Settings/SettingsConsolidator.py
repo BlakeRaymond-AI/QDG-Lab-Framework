@@ -9,6 +9,7 @@ from DefaultSettings.PixeLinkSettings import PixeLinkSettings
 from DefaultSettings.PATSettings import PATSettings
 from DefaultSettings.PATClientSettings import PATClientSettings
 from DefaultSettings.OptimizerSettings import OptimizerSettings
+from DefaultSettings.PrismaPlusSettings import PrismaPlusSettings
 
 # Store all settings dicts associated with devices in this dictionary. Data
 # format is:
@@ -20,6 +21,7 @@ deviceSettings = {
 'MKS_SRG3': ('MKS_SRG3_Mediator', MKS_SRG3_Settings),
 'PixeLink': ('PixeLinkMediator', PixeLinkSettings),
 'Optimizer': ('OptimizerMediator', OptimizerSettings),
+'RGA': ('PrismaPlusMediator', PrismaPlusSettings)
 }
 
 # Store all other settings dicts in this dictionary
